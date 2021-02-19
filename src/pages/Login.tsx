@@ -32,18 +32,18 @@ const LoginButtons = () => {
     return (
         <>
             <Row>
-                <Col className={"offset-md-2"} md={6}>
-                    <h3>Log in with either provider below</h3>
-                    <p>We use your email address to allow notifications to be sent to you when any content changes / is
-                        updated</p>
+                <Col className={"offset-md-4"} md={4}>
+                    <h3>Log in via federation</h3>
+                    <p>We currently only log users in via OAuth2, using Google as the identity provider. More
+                        options will be added in due course.
+                    </p>
                 </Col>
             </Row>
             <Row>
-                <Col className={"offset-md-2"} md={4}>
+                <Col className={"offset-md-4"} md={4}>
                     <Card>
                         <Card.Header>Google Login</Card.Header>
                         <Card.Body>
-                            <Card.Title>Sign in with Google</Card.Title>
                             <Card.Text>
                                 <Button size={"lg"} className={"rounded"} block onClick={() => {
                                     const googleAuthProvider = new firebase.auth.GoogleAuthProvider();
@@ -52,33 +52,6 @@ const LoginButtons = () => {
                                 }}>
                                     <div className={"d-flex justify-content-between align-items-center"}>
                                         <FontAwesome name={"google"} size={"3x"}/>
-                                        <h3>Sign in</h3>
-                                    </div>
-                                </Button>
-                            </Card.Text>
-                        </Card.Body>
-                    </Card>
-                </Col>
-                <Col md={4} className={"mt-3 mt-md-0"}>
-                    <Card>
-                        <Card.Header>Email &amp; Password</Card.Header>
-                        <Card.Body>
-                            <Card.Title>Sign in with email address</Card.Title>
-                            <Card.Text>
-                                <Button size={"lg"} className={"rounded"} block variant={"success"} onClick={() => {
-                                    const provider = new firebase.auth.OAuthProvider('microsoft.com');
-                                    provider.setCustomParameters({
-                                        // Force re-consent.
-                                        prompt: 'consent',
-                                    });
-                                    provider.addScope('email');
-
-                                    firebase.auth().signInWithPopup(provider).then(r => {
-                                        console.log(r);
-                                    });
-                                }}>
-                                    <div className={"d-flex justify-content-between align-items-center"}>
-                                        <FontAwesome name={"envelope-o"} size={"3x"}/>
                                         <h3>Sign in</h3>
                                     </div>
                                 </Button>
