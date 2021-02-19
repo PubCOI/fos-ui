@@ -1,4 +1,4 @@
-import {Alert, Button, Modal} from "react-bootstrap";
+import {Button, Modal} from "react-bootstrap";
 import {AlertWrapper} from "../AlertWrapper";
 import axios from "axios";
 import React, {useEffect, useState} from "react";
@@ -8,7 +8,8 @@ import {hide} from "react-functional-modal";
 import {toNormalised} from "postcode";
 import FontAwesome from "react-fontawesome";
 import firebase from "firebase";
-import {BrowserRouter} from "react-router-dom";
+import {ToastProvider, useToasts} from "react-toast-notifications";
+import {FOSToastContainer} from "../FOSToastContainer";
 
 interface ClientDetailsDAO {
     id: string,
@@ -19,7 +20,6 @@ interface ClientDetailsDAO {
 }
 
 export const ResolveClientModal = (props: { id: string }) => {
-    let history = useHistory();
     const [client, setClient] = useState<ClientDetailsDAO>();
     const [loaded, setLoaded] = useState(false);
     const [error, setError] = useState(false);
@@ -82,7 +82,11 @@ export const ResolveClientModal = (props: { id: string }) => {
                     }
                     <tr>
                         <td>&nbsp;</td>
-                        <td><ActionsButtons clientID={client?.id}/></td>
+                        <td>
+                            <ToastProvider components={{ToastContainer: FOSToastContainer}}>
+                                <ActionsButtons clientID={client?.id}/>
+                            </ToastProvider>
+                        </td>
                     </tr>
                     </tbody>
                 </table>
@@ -100,10 +104,9 @@ interface SetAsCanonicalResponse {
     response: string
 }
 
-const ActionsButtons = (props: {clientID: string | undefined}) => {
-    const [showStatus, setShowStatus] = useState(false);
-    const [statusString, setStatusString] = useState("");
-    const [response, setResponse] = useState<SetAsCanonicalResponse>();
+const ActionsButtons = (props: { clientID: string | undefined }) => {
+
+    const {addToast} = useToasts();
 
     if (undefined === props.clientID || null === firebase || null === firebase.auth()) {
         return <></>
@@ -118,11 +121,19 @@ const ActionsButtons = (props: {clientID: string | undefined}) => {
             authToken: idToken
         })
             .then(value => {
-                setResponse(value.data);
+
+                addToast(value.data.response, {
+                    appearance: "success",
+                    autoDismiss: true,
+                    id: id,
+                    onDismiss: () => {hide("key#" + id)}
+                });
             })
             .catch(reason => {
-                setShowStatus(true);
-                setStatusString(reason.toString());
+                addToast(reason.toString(), {
+                    appearance: "error",
+                    autoDismiss: true,
+                });
             })
     }
 
@@ -133,15 +144,15 @@ const ActionsButtons = (props: {clientID: string | undefined}) => {
                     currentUser.getIdToken(/* forceRefresh */ true).then(function (idToken) {
                         setAsCanonical(props.clientID, idToken);
                     }).catch(function (error) {
-                        setShowStatus(true);
-                        setStatusString(error);
+                        addToast(error.toString(), {
+                            appearance: "error",
+                            autoDismiss: true,
+                        });
                     });
                 }}>
                     Designate as canonical entity
                 </Button>
             </div>
-            <Alert show={showStatus} variant={"secondary"} className={"shadow my-2"}>{statusString}</Alert>
-            {undefined !== response?.response ? "Response: " + response?.response : null}
         </>
     )
 };

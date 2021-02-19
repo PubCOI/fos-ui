@@ -54,7 +54,8 @@ export const Tasks = () => {
                 {
                     openTasks.length > 0 ?
                         openTasks.map(task => (
-                            <ListGroup.Item action key={task.taskID} onClick={() => openResolveModal(task.taskType, task.entity)}>
+                            <ListGroup.Item action key={task.taskID}
+                                            onClick={() => openResolveModal(task.taskType, task.entity)}>
                                 <div className={"d-flex"}>
                                     <div className={"mr-3"}>
                                         <Badge variant={"info"}>{task.taskType}</Badge>
