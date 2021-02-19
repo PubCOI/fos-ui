@@ -4,7 +4,7 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import {BrowserRouter} from "react-router-dom";
-import {DefaultToastContainer, ToastProvider} from "react-toast-notifications";
+import {ToastProvider} from "react-toast-notifications";
 import firebase from "firebase/app";
 import "firebase/auth";
 import {FirebaseAuthProvider} from "@react-firebase/auth";

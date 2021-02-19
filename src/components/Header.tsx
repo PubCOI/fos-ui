@@ -1,14 +1,17 @@
 import {Link, NavLink, useHistory} from "react-router-dom";
 import {Nav, Navbar, NavDropdown} from "react-bootstrap";
 import {FirebaseAuthConsumer} from "@react-firebase/auth";
-import React, {useEffect} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import firebase from "firebase";
+import AppContext from "./AppContext";
 
 export const Header = () => {
+
     let pathname = window.location.pathname;
     useEffect(() => {
         pathname = window.location.pathname;
     }, [window.location.pathname]);
+
     return (
         <>
             <Navbar bg="dark" variant="dark" className={"shadow mb-3"} sticky={"top"} expand={"sm"}
@@ -52,16 +55,23 @@ export const Header = () => {
     )
 };
 
-
 const LoginNavbar = () => {
     const history = useHistory();
+
+    const appContext = useContext(AppContext);
+    const [displayName, setDisplayName] = useState(appContext.displayName);
+
+    useEffect(() => {
+        setDisplayName(appContext.displayName);
+    }, [appContext.displayName]);
+
     return (
         <FirebaseAuthConsumer>
             {({isSignedIn}) => {
                 if (isSignedIn) {
                     return (
                         <>
-                            <NavDropdown title="displayname"
+                            <NavDropdown title={displayName}
                                          id="basic-nav-dropdown"
                                          data-toggle={"collapse"}
                                          alignRight>
