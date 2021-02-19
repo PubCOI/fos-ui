@@ -32,7 +32,8 @@
     "react-scripts": "4.0.2",
     "react-timeago": "^5.2.0",
     "typescript": "^4.1.5",
-    "web-vitals": "^1.1.0"
+    "web-vitals": "^1.1.0",
+    "react-toast-notifications": "latest"
   },
   "scripts": {
     "start": "set -x && set PORT=3300 && react-scripts start",

@@ -11,3 +11,7 @@
   content: "";
   z-index: -1;
 }
+
+.fos-toast-container {
+  margin-top: 55px;
+}

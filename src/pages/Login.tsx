@@ -16,8 +16,8 @@ export const Login = () => {
                 {({isSignedIn, user, providerId}) => {
                     if (isSignedIn) {
                         axios.post("/api/ui/login", {uid: user.uid}).then(r => {
+                            history.push("/");
                         });
-                        history.push("/");
                         return <></>;
                     } else {
                         return <LoginButtons/>;
@@ -47,8 +47,7 @@ const LoginButtons = () => {
                             <Card.Text>
                                 <Button size={"lg"} className={"rounded"} block onClick={() => {
                                     const googleAuthProvider = new firebase.auth.GoogleAuthProvider();
-                                    firebase.auth().signInWithPopup(googleAuthProvider).then(r => {
-                                    });
+                                    firebase.auth().signInWithPopup(googleAuthProvider).then(r => {});
                                 }}>
                                     <div className={"d-flex justify-content-between align-items-center"}>
                                         <FontAwesome name={"google"} size={"3x"}/>
