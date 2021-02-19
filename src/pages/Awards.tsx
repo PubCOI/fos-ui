@@ -8,6 +8,7 @@ import FontAwesome from "react-fontawesome";
 
 interface Award {
     id: string,
+    noticeID: string,
     organisation: string,
     supplierName: string,
     value: number,
@@ -53,7 +54,7 @@ export const Awards = () => {
                 </thead>
                 <tbody>
                 {awards.map(award => (
-                    <tr>
+                    <tr key={award.id}>
                         <td>{award.organisation}</td>
                         <td>{award.supplierName}</td>
                         <td align={"right"}><ContractValueFormat award={award}/></td>
@@ -66,7 +67,6 @@ export const Awards = () => {
 };
 
 const ContractValueFormat = (props: { award: Award }) => {
-    console.log(props.award);
     if (0 === props.award.value && 0 === props.award.valueMin && 0 === props.award.valueMax) {
         return (<>[No data] <FontAwesome name={"warning"}/></>)
     }

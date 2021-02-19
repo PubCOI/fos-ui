@@ -4,6 +4,7 @@ import React from "react";
 import {Button, Card, Col, Row} from "react-bootstrap";
 import FontAwesome from "react-fontawesome";
 import firebase from "firebase";
+import axios from "axios";
 
 export const Login = () => {
 
@@ -14,10 +15,12 @@ export const Login = () => {
             <FirebaseAuthConsumer>
                 {({isSignedIn, user, providerId}) => {
                     if (isSignedIn) {
+                        axios.post("/api/ui/login", {uid: user.uid}).then(r => {
+                        });
                         history.push("/");
-                        // return <Alert variant={"info"}>Already logged in, redirecting ...</Alert>
+                        return <></>;
                     } else {
-                        return <LoginButtons/>
+                        return <LoginButtons/>;
                     }
                 }}
             </FirebaseAuthConsumer>
@@ -31,7 +34,8 @@ const LoginButtons = () => {
             <Row>
                 <Col className={"offset-md-2"} md={6}>
                     <h3>Log in with either provider below</h3>
-                    <p>We use your email address to allow notifications to be sent to you when any content changes / is updated</p>
+                    <p>We use your email address to allow notifications to be sent to you when any content changes / is
+                        updated</p>
                 </Col>
             </Row>
             <Row>
@@ -43,7 +47,8 @@ const LoginButtons = () => {
                             <Card.Text>
                                 <Button size={"lg"} className={"rounded"} block onClick={() => {
                                     const googleAuthProvider = new firebase.auth.GoogleAuthProvider();
-                                    firebase.auth().signInWithPopup(googleAuthProvider);
+                                    firebase.auth().signInWithPopup(googleAuthProvider).then(r => {
+                                    });
                                 }}>
                                     <div className={"d-flex justify-content-between align-items-center"}>
                                         <FontAwesome name={"google"} size={"3x"}/>
@@ -54,18 +59,26 @@ const LoginButtons = () => {
                         </Card.Body>
                     </Card>
                 </Col>
-                <Col md={4}>
+                <Col md={4} className={"mt-3 mt-md-0"}>
                     <Card>
-                        <Card.Header>Github Login</Card.Header>
+                        <Card.Header>Email &amp; Password</Card.Header>
                         <Card.Body>
-                            <Card.Title>Sign in with Github</Card.Title>
+                            <Card.Title>Sign in with email address</Card.Title>
                             <Card.Text>
                                 <Button size={"lg"} className={"rounded"} block variant={"success"} onClick={() => {
-                                    const githubProvider = new firebase.auth.GithubAuthProvider();
-                                    firebase.auth().signInWithPopup(githubProvider);
+                                    const provider = new firebase.auth.OAuthProvider('microsoft.com');
+                                    provider.setCustomParameters({
+                                        // Force re-consent.
+                                        prompt: 'consent',
+                                    });
+                                    provider.addScope('email');
+
+                                    firebase.auth().signInWithPopup(provider).then(r => {
+                                        console.log(r);
+                                    });
                                 }}>
                                     <div className={"d-flex justify-content-between align-items-center"}>
-                                        <FontAwesome name={"github"} size={"3x"}/>
+                                        <FontAwesome name={"envelope-o"} size={"3x"}/>
                                         <h3>Sign in</h3>
                                     </div>
                                 </Button>

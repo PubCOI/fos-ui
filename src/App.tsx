@@ -3,7 +3,7 @@ import './App.css';
 import firebase from "firebase/app";
 import "firebase/auth";
 import {FirebaseAuthProvider} from "@react-firebase/auth";
-import {BrowserRouter as Router, Route, Switch} from 'react-router-dom';
+import {Route, Switch, withRouter} from 'react-router-dom';
 import "bootswatch/dist/cosmo/bootstrap.min.css";
 import {Header} from "./components/Header";
 import {Login} from "./pages/Login";
@@ -29,7 +29,7 @@ function App() {
   return (
       <FirebaseAuthProvider firebase={firebase} {...config}>
         {
-          <Router>
+          <>
             <Header/>
             <Container fluid className={"mb-5"}>
               <main role={"main"}>
@@ -43,10 +43,10 @@ function App() {
               </main>
             </Container>
             <Footer/>
-          </Router>
+          </>
         }
       </FirebaseAuthProvider>
   );
 }
 
-export default App;
+export default withRouter(App);

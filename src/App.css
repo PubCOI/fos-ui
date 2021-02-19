@@ -9,4 +9,5 @@
   background-size: 140% auto;
   opacity: 0.08;
   content: "";
+  z-index: -1;
 }
