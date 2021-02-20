@@ -15,6 +15,7 @@ import {Footer} from "./components/Footer";
 import {Profile} from "./pages/Profile";
 import AppContext from "./components/AppContext";
 import {ContextPopulator} from "./components/ContextPopulator";
+import {Upload} from "./pages/Upload";
 
 function App() {
 
@@ -38,6 +39,7 @@ function App() {
                             <Route exact path={"/about"} component={About}/>
                             <Route exact path={"/tasks"} component={Tasks}/>
                             <Route exact path={"/profile"} component={Profile}/>
+                            <Route exact path={"/data/upload"} component={Upload}/>
                         </Switch>
                     </main>
                 </Container>

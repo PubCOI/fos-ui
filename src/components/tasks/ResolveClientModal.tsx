@@ -55,7 +55,7 @@ export const ResolveClientModal = (props: { id: string, taskID: string, removeTa
 
     useEffect(() => {
         // short-circuit if param is empty
-        if (client.clientName === "") return;
+        if (client.clientName === "" || client?.canonical) return;
         axios.get<ClientSearchResponse[]>("/api/ui/graphs/clients", {
             params: {
                 query: encodeURIComponent(client.clientName),
@@ -130,11 +130,11 @@ export const ResolveClientModal = (props: { id: string, taskID: string, removeTa
                     </tbody>
                 </table>
 
-                <Alert variant={"success"} hidden={searchResponseSize < 1} className={"mb-0"}>
+                <Alert variant={"success"} hidden={client?.canonical || searchResponseSize < 1} className={"mb-0"}>
                     <FontAwesome name={"arrow-down"}/> Some possible related entries were found
                 </Alert>
 
-                <ListGroup>
+                <ListGroup className={client?.canonical ? "d-none" : ""}>
                     {clientSearchResponse.map(searchResponse => (
                         <ListGroup.Item key={`fts_result_${searchResponse.id}`}
                                         className={"d-flex justify-content-between align-items-center"}>

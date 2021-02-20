@@ -4,8 +4,14 @@ import {FirebaseAuthConsumer} from "@react-firebase/auth";
 import React, {useContext, useEffect, useState} from "react";
 import firebase from "firebase";
 import AppContext from "./AppContext";
+import FontAwesome from "react-fontawesome";
 
 export const Header = () => {
+
+    const [authenticated, setAuthenticated] = useState(false);
+    useEffect(() => {
+        setAuthenticated(null !== firebase.auth().currentUser);
+    }, [firebase.auth().currentUser]);
 
     let pathname = window.location.pathname;
     useEffect(() => {
@@ -28,14 +34,21 @@ export const Header = () => {
                                 Awards</NavDropdown.Item>
                             <NavDropdown.Item as={NavLink} to={"/data/clients"}
                                               activeClassName={"active"}
+                                              disabled
                                               data-toggle={"collapse"}>Clients /
                                 Commissioners</NavDropdown.Item>
                             <NavDropdown.Item as={NavLink} to={"/data/companies"}
                                               activeClassName={"active"}
+                                              disabled
                                               data-toggle={"collapse"}>Companies</NavDropdown.Item>
                             <NavDropdown.Item as={NavLink} to={"/data/officers"}
                                               activeClassName={"active"}
+                                              disabled
                                               data-toggle={"collapse"}>Officers</NavDropdown.Item>
+                            <NavDropdown.Divider className={authenticated ? "" : "d-none"}/>
+                            <NavDropdown.Item as={NavLink} to={"/data/upload"} className={authenticated ? "" : "d-none"}
+                                              activeClassName={"active"}
+                                              data-toggle={"collapse"}><FontAwesome name={"upload"} className={"mr-1"}/> Upload data</NavDropdown.Item>
                         </NavDropdown>
                         <Nav.Link as={NavLink} to={"/graph"} data-toggle={"collapse"}
                                   activeClassName={"active"}
