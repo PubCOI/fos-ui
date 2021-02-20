@@ -21,7 +21,7 @@ function App() {
     const [displayName, setDisplayName] = useState("");
     const userSettings = {
         displayName: displayName,
-        setDisplayName
+        setDisplayName,
     };
 
     return (

@@ -4,7 +4,7 @@ import React from "react";
 
 const AppContext = React.createContext({
     displayName: "",
-    setDisplayName: (name: string) => {}
+    setDisplayName: (name: string) => {},
 });
 
 export default AppContext;

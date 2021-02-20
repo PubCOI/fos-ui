@@ -4,7 +4,7 @@ import axios from "axios";
 import React, {useEffect, useState} from "react";
 import {LoadingWrapper} from "../LoadingWrapper";
 import {hide} from "react-functional-modal";
-import {toNormalised} from "postcode";
+import {isValid, toNormalised} from "postcode";
 import FontAwesome from "react-fontawesome";
 import firebase from "firebase";
 import {ToastProvider, useToasts} from "react-toast-notifications";
@@ -24,7 +24,8 @@ interface ClientSearchResponse {
     score: number
 }
 
-export const ResolveClientModal = (props: { id: string }) => {
+export const ResolveClientModal = (props: { id: string, taskID: string, removeTaskCallback: (taskID: string) => void}) => {
+    const [authenticated] = useState(null !== firebase.auth().currentUser);
     const {addToast} = useToasts();
     const [client, setClient] = useState<ClientDetailsDAO>({
         id: "",
@@ -53,8 +54,9 @@ export const ResolveClientModal = (props: { id: string }) => {
     }, []);
 
     useEffect(() => {
+        // short-circuit if param is empty
         if (client.clientName === "") return;
-        axios.get<ClientSearchResponse[]>("/api/ui/graphs/clients/", {
+        axios.get<ClientSearchResponse[]>("/api/ui/graphs/clients", {
             params: {
                 query: encodeURIComponent(client.clientName),
                 currentNode: client.id
@@ -92,11 +94,11 @@ export const ResolveClientModal = (props: { id: string }) => {
 
     return (
         <Modal backdrop={"static"} show centered size={"xl"}>
-            <Modal.Header closeButton onClick={() => hide("key#" + props.id)}>
+            <Modal.Header closeButton onClick={() => hide("key#" + props.taskID)}>
                 <Modal.Title>Task: Resolve client</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <table cellPadding={5}>
+                <table cellPadding={5} className={"mb-2"}>
                     <tbody>
                     <tr>
                         <td>Node&nbsp;ID</td>
@@ -108,9 +110,11 @@ export const ResolveClientModal = (props: { id: string }) => {
                     </tr>
                     <tr>
                         <td>Location</td>
-                        <td>{toNormalised(client?.postCode as string)} &mdash; open in <a href={"#"}
-                                                                                          onClick={() => openLink(`https://google.co.uk/maps?q=${client?.postCode}`)}>Google
-                            Maps <FontAwesome name={"external-link"}/></a></td>
+                        <td>{isValid(client?.postCode) ?
+                            toNormalised(client?.postCode as string) : client?.postCode} &mdash; open
+                            in <a href={"#"} onClick={
+                                () => openLink(`https://google.co.uk/maps?q=${client?.postCode}`)
+                            }>Google Maps <FontAwesome name={"external-link"}/></a></td>
                     </tr>
                     <tr>
                         <td>Canonical</td>
@@ -132,20 +136,22 @@ export const ResolveClientModal = (props: { id: string }) => {
 
                 <ListGroup>
                     {clientSearchResponse.map(searchResponse => (
-                        <ListGroup.Item className={"d-flex justify-content-between align-items-center"}>
+                        <ListGroup.Item key={`fts_result_${searchResponse.id}`}
+                                        className={"d-flex justify-content-between align-items-center"}>
                             <span><FontAwesome name={"building-o"}
                                                className={"mr-2"}/> {searchResponse.clientName}</span>
-                            <Button size={"sm"} variant={"success"}><FontAwesome name={"link"}/> Link records</Button>
+                            <Button size={"sm"} variant={"success"} disabled={!authenticated}><FontAwesome
+                                name={"link"}/> Link records</Button>
                         </ListGroup.Item>
                     ))}
                 </ListGroup>
 
                 <ToastProvider components={{ToastContainer: FOSToastContainer}}>
-                    <ActionsButtons details={client}/>
+                    <ActionsButtons details={client} taskID={props.taskID} removeTaskCallback={props.removeTaskCallback}/>
                 </ToastProvider>
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="primary" onClick={() => hide("key#" + props.id)}>
+                <Button variant="primary" onClick={() => hide("key#" + props.taskID)}>
                     OK
                 </Button>
             </Modal.Footer>
@@ -157,7 +163,11 @@ interface SetAsCanonicalResponse {
     response: string
 }
 
-const ActionsButtons = (props: { details: ClientDetailsDAO }) => {
+enum FOSTasks {
+    canonical_client = "mark_canonical_clientNode"
+}
+
+const ActionsButtons = (props: { details: ClientDetailsDAO, taskID: string, removeTaskCallback: (taskID: string) => void }) => {
     const {addToast} = useToasts();
 
     if (undefined === props.details.id || null === firebase || null === firebase.auth()) {
@@ -168,17 +178,20 @@ const ActionsButtons = (props: { details: ClientDetailsDAO }) => {
         return <></>
     }
 
-    function setAsCanonical(id: string | undefined, idToken: string) {
-        axios.put<SetAsCanonicalResponse>(`/api/ui/tasks/mark_canonical_clientNode/${id}?canonical=true`, {
-            authToken: idToken
+    function setAsCanonical(entityID: string | undefined, authToken: string, taskID: string, removeTaskCallback: (taskID: string) => void) {
+        axios.put<SetAsCanonicalResponse>(`/api/ui/tasks/${FOSTasks.canonical_client}`, {
+            authToken: authToken,
+            target: entityID,
+            taskID: taskID
         })
             .then(value => {
+                removeTaskCallback(taskID);
                 addToast(value.data.response, {
                     appearance: "success",
                     autoDismiss: true,
-                    id: id,
+                    id: entityID,
                     onDismiss: () => {
-                        hide("key#" + id)
+                        hide("key#" + taskID)
                     }
                 });
             })
@@ -199,7 +212,7 @@ const ActionsButtons = (props: { details: ClientDetailsDAO }) => {
                         className={"text-dark"} size={"sm"} block
                         onClick={() => {
                             currentUser.getIdToken(/* forceRefresh */ true).then(function (idToken) {
-                                setAsCanonical(props.details.id, idToken);
+                                setAsCanonical(props.details.id, idToken, props.taskID, props.removeTaskCallback);
                             }).catch(function (error) {
                                 addToast(error.toString(), {
                                     appearance: "error",

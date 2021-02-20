@@ -32,6 +32,11 @@ export const Tasks = () => {
             .catch(() => setError(true));
     }, []);
 
+    function removeTask(taskID: string) {
+        const newList = openTasks.filter((item) => item.taskID !== taskID);
+        setOpenTasks(newList);
+    }
+
     if (error) {
         return <AlertWrapper text={"Unable to load tasks data"}/>
     }
@@ -40,11 +45,11 @@ export const Tasks = () => {
         return <LoadingWrapper/>
     }
 
-    function openResolveModal(taskType: string, entity: string) {
+    function openResolveModal(taskType: string, taskID: string, entity: string, removeTaskCallback: (taskID: string) => void) {
         show(
             <ToastProvider components={{ToastContainer: FOSToastContainer}}>
-                <ResolveClientModal id={entity}/>
-            </ToastProvider>, {key: "key#" + entity}
+                <ResolveClientModal id={entity} taskID={taskID} removeTaskCallback={removeTaskCallback}/>
+            </ToastProvider>, {key: "key#" + taskID}
         )
     }
 
@@ -59,7 +64,7 @@ export const Tasks = () => {
                     openTasks.length > 0 ?
                         openTasks.map(task => (
                             <ListGroup.Item action key={task.taskID}
-                                            onClick={() => openResolveModal(task.taskType, task.entity)}>
+                                            onClick={() => openResolveModal(task.taskType, task.taskID, task.entity, removeTask)}>
                                 <div className={"d-flex"}>
                                     <div className={"mr-3"}>
                                         <Badge variant={"info"}>{task.taskType}</Badge>
