@@ -24,7 +24,7 @@ interface ClientSearchResponse {
     score: number
 }
 
-export const ResolveClientModal = (props: { id: string, taskID: string, removeTaskCallback: (taskID: string) => void}) => {
+export const ResolveClientModal = (props: { id: string, taskID: string, removeTaskCallback: (taskID: string) => void }) => {
     const [authenticated] = useState(null !== firebase.auth().currentUser);
     const {addToast} = useToasts();
     const [client, setClient] = useState<ClientDetailsDAO>({
@@ -140,14 +140,19 @@ export const ResolveClientModal = (props: { id: string, taskID: string, removeTa
                                         className={"d-flex justify-content-between align-items-center"}>
                             <span><FontAwesome name={"building-o"}
                                                className={"mr-2"}/> {searchResponse.clientName}</span>
-                            <Button size={"sm"} variant={"success"} disabled={!authenticated}><FontAwesome
+                            <Button size={"sm"} variant={"success"}
+                                    onClick={() => {
+
+                                    }}
+                                    disabled={!authenticated}><FontAwesome
                                 name={"link"}/> Link records</Button>
                         </ListGroup.Item>
                     ))}
                 </ListGroup>
 
                 <ToastProvider components={{ToastContainer: FOSToastContainer}}>
-                    <ActionsButtons details={client} taskID={props.taskID} removeTaskCallback={props.removeTaskCallback}/>
+                    <ActionsButtons details={client} taskID={props.taskID}
+                                    removeTaskCallback={props.removeTaskCallback}/>
                 </ToastProvider>
             </Modal.Body>
             <Modal.Footer>

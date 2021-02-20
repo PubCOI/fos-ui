@@ -24,6 +24,7 @@
     "react-bootstrap": "^1.4.3",
     "react-chartjs-2": "^2.11.1",
     "react-dom": "^17.0.1",
+    "react-dropzone": "^11.3.1",
     "react-fontawesome": "^1.7.1",
     "react-functional-modal": "latest",
     "react-number-format": "^4.4.4",
@@ -31,9 +32,9 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.2",
     "react-timeago": "^5.2.0",
+    "react-toast-notifications": "latest",
     "typescript": "^4.1.5",
-    "web-vitals": "^1.1.0",
-    "react-toast-notifications": "latest"
+    "web-vitals": "^1.1.0"
   },
   "scripts": {
     "start": "set -x && set PORT=3300 && react-scripts start",
