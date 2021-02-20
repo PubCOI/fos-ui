@@ -4,12 +4,15 @@ import {StatusValue} from "react-dropzone-uploader/dist/Dropzone";
 import {useToasts} from "react-toast-notifications";
 import firebase from "firebase";
 import {LoadingWrapper} from "./LoadingWrapper";
+import {Alert} from "react-bootstrap";
+import FontAwesome from "react-fontawesome";
 
 export const FOSDropZone = () => {
     const {addToast} = useToasts();
 
     const [authToken, setAuthToken] = useState("");
     const [loaded, setLoaded] = useState(false);
+    const [success, setSuccess] = useState(false);
 
     useEffect(() => {
         firebase.auth().currentUser?.getIdToken(/* forceRefresh */ true).then(function (idToken) {
@@ -59,6 +62,7 @@ export const FOSDropZone = () => {
             case "headers_received":
                 break;
             case "done":
+                setSuccess(true);
                 addToast('Uploaded: note processing can take some time', {
                     autoDismiss: true,
                     appearance: "success"
@@ -68,7 +72,6 @@ export const FOSDropZone = () => {
     };
 
     const handleSubmit = (files: IFileWithMeta[], allFiles: IFileWithMeta[]) => {
-        console.log(files.map(f => f.meta));
         allFiles.forEach(f => f.remove());
     };
 
@@ -77,6 +80,7 @@ export const FOSDropZone = () => {
     }
 
     return (
+        <>
         <Dropzone
             getUploadParams={getUploadParams}
             onChangeStatus={handleChangeStatus}
@@ -88,6 +92,7 @@ export const FOSDropZone = () => {
             addClassNames={{
                 dropzone: "form-group p-2 px-3 block",
                 input: "form-control-file",
+                submitButtonContainer: "d-none"
             }}
             canRemove={true}
             styles={{
@@ -96,5 +101,12 @@ export const FOSDropZone = () => {
                 dropzoneReject: { borderColor: "red", backgroundColor: "#DAA" },
             }}
         />
+        <Alert variant={"success"} show={success}>
+            <div className={"lead"}><FontAwesome name={"check-circle"} className={"mr-1"}/> Uploaded</div>
+            <div>
+                Records will start appearing over the next few hours
+            </div>
+        </Alert>
+        </>
     )
 }
