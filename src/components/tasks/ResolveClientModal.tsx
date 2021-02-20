@@ -1,8 +1,7 @@
-import {Button, Modal} from "react-bootstrap";
+import {Alert, Button, ListGroup, Modal} from "react-bootstrap";
 import {AlertWrapper} from "../AlertWrapper";
 import axios from "axios";
 import React, {useEffect, useState} from "react";
-import {useHistory} from "react-router";
 import {LoadingWrapper} from "../LoadingWrapper";
 import {hide} from "react-functional-modal";
 import {toNormalised} from "postcode";
@@ -14,13 +13,32 @@ import {FOSToastContainer} from "../FOSToastContainer";
 interface ClientDetailsDAO {
     id: string,
     clientName: string,
-    isCanonical: boolean,
+    canonical: boolean,
     canonicalID: string,
     postCode: string,
 }
 
+interface ClientSearchResponse {
+    id: string,
+    clientName: string,
+    score: number
+}
+
 export const ResolveClientModal = (props: { id: string }) => {
-    const [client, setClient] = useState<ClientDetailsDAO>();
+    const {addToast} = useToasts();
+    const [client, setClient] = useState<ClientDetailsDAO>({
+        id: "",
+        clientName: "",
+        canonical: false,
+        canonicalID: "",
+        postCode: ""
+    });
+    const [clientSearchResponse, setClientSearchResponse] = useState<ClientSearchResponse[]>([{
+        id: "",
+        clientName: "",
+        score: 0.0
+    }]);
+    const [searchResponseSize, setSearchResponseSize] = useState(0);
     const [loaded, setLoaded] = useState(false);
     const [error, setError] = useState(false);
 
@@ -28,12 +46,37 @@ export const ResolveClientModal = (props: { id: string }) => {
 
     useEffect(() => {
         axios.get<ClientDetailsDAO>(statusURL).then(response => {
-            setClient(response.data)
+            setClient(response.data);
         })
             .then(() => setLoaded(true))
             .catch(() => setError(true));
     }, []);
 
+    useEffect(() => {
+        if (client.clientName === "") return;
+        axios.get<ClientSearchResponse[]>("/api/ui/graphs/clients/", {
+            params: {
+                query: encodeURIComponent(client.clientName),
+                currentNode: client.id
+            }
+        })
+            .then(response => {
+                setClientSearchResponse(response.data)
+            })
+            .catch(error => {
+                addToast(
+                    error.toString(),
+                    {
+                        appearance: "error",
+                        autoDismiss: true,
+                    }
+                )
+            })
+    }, [client]);
+
+    useEffect(() => {
+        setSearchResponseSize(clientSearchResponse.length);
+    }, [clientSearchResponse]);
 
     if (error) {
         return <AlertWrapper text={`Unable to load task ID ${props.id}`}/>
@@ -71,7 +114,7 @@ export const ResolveClientModal = (props: { id: string }) => {
                     </tr>
                     <tr>
                         <td>Canonical</td>
-                        <td>{client?.isCanonical ? "Yes" : "No"}</td>
+                        <td>{client?.canonical ? "Yes" : "No"}</td>
                     </tr>
                     {(null !== client?.canonicalID) ?
                         <tr>
@@ -80,16 +123,26 @@ export const ResolveClientModal = (props: { id: string }) => {
                         </tr>
                         : <></>
                     }
-                    <tr>
-                        <td>&nbsp;</td>
-                        <td>
-                            <ToastProvider components={{ToastContainer: FOSToastContainer}}>
-                                <ActionsButtons clientID={client?.id}/>
-                            </ToastProvider>
-                        </td>
-                    </tr>
                     </tbody>
                 </table>
+
+                <Alert variant={"success"} hidden={searchResponseSize < 1} className={"mb-0"}>
+                    <FontAwesome name={"arrow-down"}/> Some possible related entries were found
+                </Alert>
+
+                <ListGroup>
+                    {clientSearchResponse.map(searchResponse => (
+                        <ListGroup.Item className={"d-flex justify-content-between align-items-center"}>
+                            <span><FontAwesome name={"building-o"}
+                                               className={"mr-2"}/> {searchResponse.clientName}</span>
+                            <Button size={"sm"} variant={"success"}><FontAwesome name={"link"}/> Link records</Button>
+                        </ListGroup.Item>
+                    ))}
+                </ListGroup>
+
+                <ToastProvider components={{ToastContainer: FOSToastContainer}}>
+                    <ActionsButtons details={client}/>
+                </ToastProvider>
             </Modal.Body>
             <Modal.Footer>
                 <Button variant="primary" onClick={() => hide("key#" + props.id)}>
@@ -104,11 +157,10 @@ interface SetAsCanonicalResponse {
     response: string
 }
 
-const ActionsButtons = (props: { clientID: string | undefined }) => {
-
+const ActionsButtons = (props: { details: ClientDetailsDAO }) => {
     const {addToast} = useToasts();
 
-    if (undefined === props.clientID || null === firebase || null === firebase.auth()) {
+    if (undefined === props.details.id || null === firebase || null === firebase.auth()) {
         return <></>
     }
     const currentUser = firebase.auth().currentUser;
@@ -117,16 +169,17 @@ const ActionsButtons = (props: { clientID: string | undefined }) => {
     }
 
     function setAsCanonical(id: string | undefined, idToken: string) {
-        axios.put<SetAsCanonicalResponse>(`/api/ui/tasks/resolve_client/${id}?canonical=true`, {
+        axios.put<SetAsCanonicalResponse>(`/api/ui/tasks/mark_canonical_clientNode/${id}?canonical=true`, {
             authToken: idToken
         })
             .then(value => {
-
                 addToast(value.data.response, {
                     appearance: "success",
                     autoDismiss: true,
                     id: id,
-                    onDismiss: () => {hide("key#" + id)}
+                    onDismiss: () => {
+                        hide("key#" + id)
+                    }
                 });
             })
             .catch(reason => {
@@ -139,17 +192,21 @@ const ActionsButtons = (props: { clientID: string | undefined }) => {
 
     return (
         <>
-            <div>
-                <Button variant={"danger"} className={"text-dark"} size={"sm"} onClick={() => {
-                    currentUser.getIdToken(/* forceRefresh */ true).then(function (idToken) {
-                        setAsCanonical(props.clientID, idToken);
-                    }).catch(function (error) {
-                        addToast(error.toString(), {
-                            appearance: "error",
-                            autoDismiss: true,
-                        });
-                    });
-                }}>
+            <div hidden={props.details.canonical}>
+                <hr/>
+                <h5><FontAwesome name={"warning"} className={"mx-1"}/> Node actions</h5>
+                <Button variant={"danger"}
+                        className={"text-dark"} size={"sm"} block
+                        onClick={() => {
+                            currentUser.getIdToken(/* forceRefresh */ true).then(function (idToken) {
+                                setAsCanonical(props.details.id, idToken);
+                            }).catch(function (error) {
+                                addToast(error.toString(), {
+                                    appearance: "error",
+                                    autoDismiss: true,
+                                });
+                            });
+                        }}>
                     Designate as canonical entity
                 </Button>
             </div>

@@ -7,6 +7,8 @@ import {AlertWrapper} from "../components/AlertWrapper";
 import {LoadingWrapper} from "../components/LoadingWrapper";
 import {ResolveClientModal} from "../components/tasks/ResolveClientModal";
 import {show} from "react-functional-modal";
+import {FOSToastContainer} from "../components/FOSToastContainer";
+import {ToastProvider} from "react-toast-notifications";
 
 interface Task {
     taskID: string,
@@ -40,7 +42,9 @@ export const Tasks = () => {
 
     function openResolveModal(taskType: string, entity: string) {
         show(
-            <ResolveClientModal id={entity}/>, {key: "key#" + entity}
+            <ToastProvider components={{ToastContainer: FOSToastContainer}}>
+                <ResolveClientModal id={entity}/>
+            </ToastProvider>, {key: "key#" + entity}
         )
     }
 
