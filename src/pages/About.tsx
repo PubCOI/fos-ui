@@ -1,9 +1,10 @@
 import React from "react";
+import {PageTitle} from "../components/PageTitle";
 
 export const About = () => {
     return (
         <>
-            <h1>About</h1>
+            <PageTitle title={"About"}/>
             <p>
                 This application is part of a suite of tools that are being developed under the banner of PubCOI.org.
             </p>

@@ -20,7 +20,7 @@ export const Header = () => {
 
     return (
         <>
-            <Navbar bg="dark" variant="dark" className={"shadow mb-3"} sticky={"top"} expand={"sm"}
+            <Navbar bg="dark" variant="dark" className={"shadow"} sticky={"top"} expand={"sm"}
                     collapseOnSelect>
                 <Navbar.Brand as={NavLink} to={"/"} activeClassName={"active"}>pubcoi/fos</Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav"/>

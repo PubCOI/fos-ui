@@ -4,6 +4,7 @@ import cytoscape, {
     EdgeDataDefinition,
     NodeDataDefinition,
 } from "cytoscape";
+let coseBilkent = require('cytoscape-cose-bilkent');
 
 export const Graph = () => {
     const driver = neo4j_driver("bolt://localhost", auth.basic("neo4j", "password"));
@@ -11,6 +12,8 @@ export const Graph = () => {
     const cyRef = useRef<HTMLDivElement | null>(null);
     const [refVisible, setRefVisible] = useState(false);
     const [cy, setCy] = useState(cytoscape.prototype);
+
+    cytoscape.use( coseBilkent );
 
     useEffect(() => {
         if (!refVisible) {
@@ -25,8 +28,8 @@ export const Graph = () => {
                 {
                     selector: 'node',
                     style: {
-                        'background-color': '#666',
-                        // 'label': 'data(id)'
+                        'background-color': '#aaa',
+                        'label': 'data(clientName)'
                     }
                 },
                 {
@@ -45,7 +48,7 @@ export const Graph = () => {
     useEffect(() => {
         console.log("useEffect() running visualise all");
         visualizeAll();
-    }, [cy]);
+    },[cy]);
 
     function visualizeAll() {
         if (!refVisible) {
@@ -134,15 +137,15 @@ export const Graph = () => {
 
     function reDraw() {
         console.debug("Redrawing ...");
-        cy.resize();
         const layoutOptions = {
-            equidistant: true,
-            minNodeSpacing: 10,
-            name: "concentric",
-            startAngle: 90,
-            animation: false,
+            name: "cose-bilkent",
+            animate: 'end',
+            animationDuration: 1000,
+            tilingPaddingHorizontal: 20,
+            gravityRangeCompound: 9,
             fit: true,
         };
+        cy.resize();
         cy.elements().layout(layoutOptions).run();
         console.debug("Finished redraw");
     }
@@ -150,7 +153,7 @@ export const Graph = () => {
     return (
         <>
 
-            <div id={"cy"}
+            <div id={"cy"} className={"mt-0"}
                  ref={instance => {
                      cyRef.current = instance;
                      setRefVisible(!!instance);

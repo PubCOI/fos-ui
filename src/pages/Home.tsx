@@ -1,11 +1,12 @@
 import React from "react";
 import FontAwesome from "react-fontawesome";
 import {Link} from "react-router-dom";
+import {PageTitle} from "../components/PageTitle";
 
 export const Home = () => {
     return (
         <>
-            <h1>What is <em>Fos</em></h1>
+            <PageTitle title={"What is Fos?"}/>
             <p>
                 Fos is a semi-automated, crowdsourced database of HMG contract data, focusing on (but not limited to)
                 healthcare contracts.

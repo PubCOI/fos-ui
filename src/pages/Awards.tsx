@@ -5,6 +5,7 @@ import {AlertWrapper} from "../components/AlertWrapper";
 import axios from "axios";
 import NumberFormat from 'react-number-format';
 import FontAwesome from "react-fontawesome";
+import {PageTitle} from "../components/PageTitle";
 
 interface Award {
     id: string,
@@ -41,7 +42,7 @@ export const Awards = () => {
 
     return (
         <>
-            <h2>Contracts Finder: Raw Data</h2>
+            <PageTitle title={"Contracts Finder: Raw Data"}/>
 
             <Alert variant={"info"}>
                 These records have been pulled from the HMG Contracts Finder
