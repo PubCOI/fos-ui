@@ -16,3 +16,9 @@
   margin-top: 55px;
   z-index: 1050 !important;
 }
+
+#cy {
+  height: 100vh !important;
+  padding-top: 80px;
+  margin-bottom: 50px;
+}

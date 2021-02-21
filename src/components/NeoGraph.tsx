@@ -2,7 +2,6 @@ import React, {useEffect, useRef, useState} from "react";
 import useResizeAware from "react-resize-aware";
 import PropTypes from "prop-types";
 import Neovis from "neovis.js";
-import ILabelConfig from "neovis.js";
 
 const credentials = {
     username: "neo4j",
@@ -35,7 +34,7 @@ const NeoGraph = (props: any) => {
                 size: "40",
             },
             "Tender": {
-                caption: "id",
+                caption: undefined,
                 size: "20"
             }
         },

@@ -18,8 +18,11 @@
     "axios": "^0.21.1",
     "bootswatch": "^4.6.0",
     "chart.js": "^2.9.4",
+    "cytoscape": "^3.18.0",
     "firebase": "^8.2.7",
+    "neo4j": "^2.0.0-RC2",
     "neovis.js": "^1.6.0",
+    "popoto": "^2.0.18",
     "postcode": "^5.0.0",
     "react": "^17.0.1",
     "react-bootstrap": "^1.4.3",
@@ -64,5 +67,9 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "http://127.0.0.1:8084"
+  "proxy": "http://127.0.0.1:8084",
+  "devDependencies": {
+    "@types/cytoscape": "^3.14.12",
+    "@types/neo4j": "^2.0.2"
+  }
 }
