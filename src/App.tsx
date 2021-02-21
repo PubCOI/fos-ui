@@ -16,6 +16,7 @@ import {Profile} from "./pages/Profile";
 import AppContext from "./components/AppContext";
 import {ContextPopulator} from "./components/ContextPopulator";
 import {Upload} from "./pages/Upload";
+import {Graph} from "./pages/Graph";
 
 function App() {
 
@@ -40,6 +41,7 @@ function App() {
                             <Route exact path={"/tasks"} component={Tasks}/>
                             <Route exact path={"/profile"} component={Profile}/>
                             <Route exact path={"/data/upload"} component={Upload}/>
+                            <Route exact path={"/graph"} component={Graph}/>
                         </Switch>
                     </main>
                 </Container>
