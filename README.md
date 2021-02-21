@@ -11,4 +11,4 @@ npm install && npm start
 ```
 
 **Note** this package is designed to be distributed with the
-main [Fos Spring Boot service](/PubCOI/fos).
+main [Fos Spring Boot service](https://github.com/PubCOI/fos).
