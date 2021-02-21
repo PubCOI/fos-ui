@@ -41,8 +41,11 @@ export const Awards = () => {
 
     return (
         <>
-            <h2>Contracts Finder Awards Data</h2>
-            <Alert variant={"info"}>Awards that have been granted will appear on this page</Alert>
+            <h2>Contracts Finder: Raw Data</h2>
+
+            <Alert variant={"info"}>
+                These records have been pulled from the HMG Contracts Finder
+            </Alert>
 
             <Table striped bordered hover>
                 <thead>

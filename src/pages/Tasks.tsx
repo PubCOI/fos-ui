@@ -17,6 +17,8 @@ interface Task {
     entity: string,
 }
 
+export const TASK_MODAL_ID_PREFIX = "modal_task_key#";
+
 export const Tasks = () => {
 
     let url = "/api/ui/tasks?completed=false";
@@ -48,8 +50,8 @@ export const Tasks = () => {
     function openResolveModal(taskType: string, taskID: string, entity: string, removeTaskCallback: (taskID: string) => void) {
         show(
             <ToastProvider components={{ToastContainer: FOSToastContainer}}>
-                <ResolveClientModal id={entity} taskID={taskID} removeTaskCallback={removeTaskCallback}/>
-            </ToastProvider>, {key: "key#" + taskID}
+                <ResolveClientModal id={entity} taskID={taskID} removeTaskCB={removeTaskCallback}/>
+            </ToastProvider>, {key: TASK_MODAL_ID_PREFIX + taskID}
         )
     }
 
@@ -77,7 +79,7 @@ export const Tasks = () => {
                 }
             </ListGroup>
 
-            <h2 className={"mt-3"}>Recently completed by others</h2>
+            <h2 className={"mt-3"}>Recently completed tasks</h2>
         </>
     )
 };
