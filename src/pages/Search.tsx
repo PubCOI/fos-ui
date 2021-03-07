@@ -1,5 +1,4 @@
 import React, {FormEvent, useEffect, useState} from "react";
-import {Button, Col, Form, Jumbotron, Row} from "react-bootstrap";
 import {SearchInfoBlock} from "../components/search/SearchInfoBlock";
 import axios from "axios";
 import {SearchBar} from "../components/search/SearchBar";
@@ -19,6 +18,8 @@ export const Search = () => {
     // store whether we've done any search at all ... if not just return generic info
     const [initialSearch, setInitialSearch] = useState(false);
 
+    const [aggregated, setAggregated] = useState(true);
+
     let url = "/api/ui/search";
 
     useEffect(() => {
@@ -26,28 +27,32 @@ export const Search = () => {
         if (!initialSearch) setInitialSearch(true);
 
         axios.post<SearchResultWrapper>(url, {
-            q: searchParams
+            q: searchParams,
+            groupResults: aggregated
         })
             .then(response => {
-            setResults(response.data)
-        })
+                setResults(response.data)
+            })
             .then(() => setLoaded(true))
             .catch(() => setError(true));
-    }, [searchParams]);
+    }, [searchParams, aggregated]);
 
     function submitHandler(e: FormEvent<HTMLFormElement>) {
         e.preventDefault();
         setInitialSearch(true);
     }
 
-    let searchResults = (undefined !== results && results?.results.length > 0) ? <SearchResultsBlock data={results}/> : <NoResultsBlock/>;
+    let searchResults = (undefined !== results && results?.results > 0) ? <SearchResultsBlock data={results} aggregated={aggregated}/> :
+        <NoResultsBlock/>;
+
     let searchResultBlock = (initialSearch ? searchResults : <SearchInfoBlock/>);
 
     return (
         <>
-            <SearchBar className={"my-3"}
-                       doSubmitCallback={submitHandler}
-                       setParamsCallback={setSearchParams}/>
+            <SearchBar
+                setGroupBy={setAggregated}
+                doSubmitCallback={submitHandler}
+                setParamsCallback={setSearchParams}/>
             {searchResultBlock}
         </>
     )
