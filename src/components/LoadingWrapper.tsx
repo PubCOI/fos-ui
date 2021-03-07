@@ -4,6 +4,6 @@ import React from "react";
 
 export const LoadingWrapper = () => {
     return (
-        <Alert variant={"light"}><h4><FontAwesome name={"spinner"} spin/> Loading ...</h4></Alert>
+        <Alert><h4><FontAwesome name={"spinner"} spin/> Loading ...</h4></Alert>
     )
 };

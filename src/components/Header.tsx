@@ -22,7 +22,7 @@ export const Header = () => {
         <>
             <Navbar bg="dark" variant="dark" className={"shadow"} sticky={"top"} expand={"sm"}
                     collapseOnSelect>
-                <Navbar.Brand as={NavLink} to={"/"} activeClassName={"active"}>pubcoi/fos</Navbar.Brand>
+                <Navbar.Brand as={NavLink} to={"/"} activeClassName={"active"}>Fos@PubCOI</Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav"/>
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="mr-auto">
@@ -58,6 +58,10 @@ export const Header = () => {
                                   activeClassName={"active"}
                                   active={pathname.includes("/tasks")}
                                   eventKey={5}>Tasks</Nav.Link>
+                        <Nav.Link as={NavLink} to={"/search"} data-toggle={"collapse"}
+                                  activeClassName={"active"}
+                                  active={pathname.includes("/search")}
+                                  eventKey={6}>Search</Nav.Link>
                     </Nav>
                     <Nav>
                         <LoginNavbar/>

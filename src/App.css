@@ -20,3 +20,11 @@
 #cy {
   height: 100vh !important;
 }
+
+.pdfViewRow {
+  background-color: rgba(74, 94, 93, 0.21);
+}
+
+.pdf-navigation {
+  background-color: rgba(254, 251, 255, 0.28);
+}

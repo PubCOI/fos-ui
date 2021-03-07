@@ -1,6 +1,6 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import './App.css';
-import firebase from "firebase/app";
+import "react-datetime/css/react-datetime.css";
 import "firebase/auth";
 import {Route, Switch, withRouter} from 'react-router-dom';
 import "bootswatch/dist/cosmo/bootstrap.min.css";
@@ -17,6 +17,8 @@ import AppContext from "./components/AppContext";
 import {ContextPopulator} from "./components/ContextPopulator";
 import {Upload} from "./pages/Upload";
 import {Graph} from "./pages/Graph";
+import {Search} from "./pages/Search";
+import {Viewer} from "./pages/Viewer";
 
 function App() {
 
@@ -42,6 +44,8 @@ function App() {
                             <Route exact path={"/profile"} component={Profile}/>
                             <Route exact path={"/data/upload"} component={Upload}/>
                             <Route exact path={"/graph"} component={Graph}/>
+                            <Route exact path={"/search"} component={Search}/>
+                            <Route path={"/view"} component={Viewer}/>
                         </Switch>
                     </main>
                 </Container>
