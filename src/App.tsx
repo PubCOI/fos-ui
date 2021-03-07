@@ -33,7 +33,7 @@ function App() {
             <AppContext.Provider value={userSettings}>
                 <ContextPopulator/>
                 <Header/>
-                <Container fluid className={"mb-5"}>
+                <Container fluid>
                     <main role={"main"}>
                         <Switch>
                             <Route exact path={"/"} component={Home}/>

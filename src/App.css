@@ -1,4 +1,4 @@
-#footer::before {
+#footer-nav::before {
   position: absolute;
   top: 0;
   right: 0;
@@ -19,10 +19,6 @@
 
 #cy {
   height: 100vh !important;
-}
-
-.pdfViewRow {
-  background-color: rgba(74, 94, 93, 0.21);
 }
 
 .pdf-navigation {

@@ -28,19 +28,19 @@ export const CFViewer = () => {
 
     return (
         <>
-            <Row noGutters className={"pdfViewRow mt-3"}>
+            <Row noGutters className={"mt-3"}>
                 <Col md={1}>
                     <div>&nbsp;</div>
                 </Col>
                 <Col md={10} className={"d-flex justify-content-center"}>
                     {!pdfDocument && <LoadingWrapper/>}
-                    <canvas ref={canvasRef} className={"pdfCanvas"}/>
+                    {pdfDocument && <canvas ref={canvasRef} className={"pdfCanvas shadow-lg"}/>}
                 </Col>
                 <Col md={1}>
                     <div>&nbsp;</div>
                 </Col>
             </Row>
-            {Boolean(pdfDocument && pdfDocument.numPages) && (
+            {Boolean(pdfDocument && pdfDocument.numPages && totalPages > 1) && (
                 <Navbar fixed={"bottom"} className={"mb-5 pdf-navigation"}>
                     <Col md={2}>
                         <Button block disabled={page === 1} onClick={() => setPage(page - 1)}>Previous</Button>
