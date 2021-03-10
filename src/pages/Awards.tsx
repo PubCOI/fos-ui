@@ -15,6 +15,7 @@ interface Award {
     value: number,
     valueMin: number,
     valueMax: number,
+    group_award: boolean,
 }
 
 export const Awards = () => {
@@ -61,7 +62,10 @@ export const Awards = () => {
                     <tr key={award.id}>
                         <td>{award.organisation}</td>
                         <td>{award.supplierName}</td>
-                        <td align={"right"}><ContractValueFormat award={award}/></td>
+                        {/*<Badge variant={"secondary"} className={`${award.group_award ? "" : "d-none"}`}>G</Badge>*/}
+                        <td align={"right"} className={"text-nowrap"}><ContractValueFormat award={award}/>
+                            <FontAwesome name={"users"} className={"ml-2"} hidden={!award.group_award} />
+                        </td>
                     </tr>
                 ))}
                 </tbody>
@@ -91,13 +95,12 @@ const ContractValueFormat = (props: { award: Award }) => {
     }
     if (props.award.valueMin === props.award.valueMax) {
         return (<><NumberFormat thousandSeparator displayType={"text"} prefix={"£"} value={props.award.valueMax}/></>)
-    }
-    else {
+    } else {
         return (
             <>
                 ({<NumberFormat thousandSeparator
-                                  displayType={"text"} prefix={"£"}
-                                  value={props.award.valueMin}/>}-{<NumberFormat
+                                displayType={"text"} prefix={"£"}
+                                value={props.award.valueMin}/>}-{<NumberFormat
                 thousandSeparator displayType={"text"} prefix={""}
                 value={props.award.valueMax}/>})
             </>

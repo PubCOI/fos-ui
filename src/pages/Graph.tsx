@@ -29,7 +29,7 @@ export const Graph = () => {
                     selector: 'node',
                     style: {
                         'background-color': '#aaa',
-                        'label': 'data(clientName)'
+                        'label': 'data(name)'
                     }
                 },
                 {
@@ -103,9 +103,9 @@ export const Graph = () => {
                 group: "nodes",
                 data: output
             });
-            console.debug("node_" + node.identity.low + " created");
+            // console.debug("node_" + node.identity.low + " created");
         } else {
-            console.debug("node_" + node.identity.low + " already exists");
+            // console.debug("node_" + node.identity.low + " already exists");
         }
     }
 
@@ -129,9 +129,9 @@ export const Graph = () => {
                 group: "edges",
                 data: output
             });
-            console.debug("edge_" + edge.identity.low + " created between node_" + edge.start.low + " and node_" + edge.end.low);
+            // console.debug("edge_" + edge.identity.low + " created between node_" + edge.start.low + " and node_" + edge.end.low);
         } else {
-            console.debug("edge_" + edge.identity.low + " already exists");
+            // console.debug("edge_" + edge.identity.low + " already exists");
         }
     }
 

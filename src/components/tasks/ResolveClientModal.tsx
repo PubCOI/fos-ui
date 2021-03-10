@@ -15,7 +15,7 @@ import {LinkRecordsButton} from "./LinkRecordsButton";
 
 interface ClientDetailsDAO {
     id: string,
-    clientName: string,
+    name: string,
     canonical: boolean,
     canonicalID: string,
     postCode: string,
@@ -23,7 +23,7 @@ interface ClientDetailsDAO {
 
 interface ClientSearchResponse {
     id: string,
-    clientName: string,
+    name: string,
     score: number
 }
 
@@ -31,14 +31,14 @@ export const ResolveClientModal = (props: { id: string, taskID: string, removeTa
     const {addToast} = useToasts();
     const [client, setClient] = useState<ClientDetailsDAO>({
         id: "",
-        clientName: "",
+        name: "",
         canonical: false,
         canonicalID: "",
         postCode: ""
     });
     const [clientSearchResponse, setClientSearchResponse] = useState<ClientSearchResponse[]>([{
         id: "",
-        clientName: "",
+        name: "",
         score: 0.0
     }]);
     const [searchResponseSize, setSearchResponseSize] = useState(0);
@@ -62,10 +62,10 @@ export const ResolveClientModal = (props: { id: string, taskID: string, removeTa
 
     useEffect(() => {
         // short-circuit if param is empty
-        if (client.clientName === "" || client?.canonical) return;
+        if (client.name === "" || client?.canonical) return;
         axios.get<ClientSearchResponse[]>("/api/ui/graphs/clients", {
             params: {
-                query: encodeURIComponent(client.clientName),
+                query: encodeURIComponent(client.name),
                 currentNode: client.id
             }
         })
@@ -114,7 +114,7 @@ export const ResolveClientModal = (props: { id: string, taskID: string, removeTa
                     </tr>
                     <tr>
                         <td>Client&nbsp;name</td>
-                        <td>{client?.clientName}</td>
+                        <td>{client?.name}</td>
                     </tr>
                     <tr>
                         <td>Location</td>
@@ -147,7 +147,7 @@ export const ResolveClientModal = (props: { id: string, taskID: string, removeTa
                         <ListGroup.Item key={`fts_result_${canonicalFTSResponse.id}`}
                                         className={"d-flex justify-content-between align-items-center"}>
                             <span><FontAwesome name={"building-o"}
-                                               className={"mr-2"}/> {canonicalFTSResponse.clientName}</span>
+                                               className={"mr-2"}/> {canonicalFTSResponse.name}</span>
                             <LinkRecordsButton taskID={props.taskID}
                                                source={client?.id}
                                                target={canonicalFTSResponse.id}
