@@ -8,7 +8,7 @@ import {LoadingWrapper} from "../components/LoadingWrapper";
 export const CFViewer = () => {
     let {attachment_id, page_number} = useParams<CFViewerRouteParams>();
 
-    const [page, setPage] = useState(Number.parseInt(page_number));
+    const [page, setPage] = useState(Number.parseInt(page_number || "1"));
     const [totalPages, setTotalPages] = useState(0);
     const canvasRef = useRef(null);
     const {pdfDocument, pdfPage} = usePdf({

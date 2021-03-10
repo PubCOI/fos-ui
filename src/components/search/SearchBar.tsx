@@ -18,7 +18,7 @@ export const SearchBar =
 
         return (
             <>
-                <Form onSubmit={props.doSubmitCallback}>
+                <Form onSubmit={props.doSubmitCallback} aria-autocomplete={"none"}>
                     <InputGroup className={"mt-3 mb-0"}>
                         <InputGroup.Prepend>
                             <Form.Control as="select">
@@ -40,6 +40,7 @@ export const SearchBar =
                     <InputGroup className={"mt-0 p-1 bg-light text-muted"} size={"sm"}>
                         <span>Options <FontAwesome className={"mr-2"} name={"caret-right"}/></span>
                         <Form.Check
+                            disabled
                             inline label="Group by attachment" checked={groupBy} onChange={(
                                 e: React.ChangeEvent<HTMLInputElement>
                         ): void => setGroupBy(e.target.checked)}

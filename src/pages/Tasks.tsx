@@ -9,6 +9,7 @@ import {ResolveClientModal} from "../components/tasks/ResolveClientModal";
 import {show} from "react-functional-modal";
 import {FOSToastContainer} from "../components/FOSToastContainer";
 import {ToastProvider} from "react-toast-notifications";
+import {PageTitle} from "../components/PageTitle";
 
 interface Task {
     taskID: string,
@@ -43,10 +44,6 @@ export const Tasks = () => {
         return <AlertWrapper text={"Unable to load tasks data"}/>
     }
 
-    if (!loaded) {
-        return <LoadingWrapper/>
-    }
-
     function openResolveModal(taskType: string, taskID: string, entity: string, removeTaskCallback: (taskID: string) => void) {
         show(
             <ToastProvider components={{ToastContainer: FOSToastContainer}}>
@@ -57,29 +54,33 @@ export const Tasks = () => {
 
     return (
         <>
-            <h2>Data reconciliation tasks</h2>
+            <PageTitle title={"Data reconciliation tasks"}/>
 
             <TasksInfobox/>
 
-            <ListGroup>
-                {
-                    openTasks.length > 0 ?
-                        openTasks.map(task => (
-                            <ListGroup.Item action key={task.taskID}
-                                            onClick={() => openResolveModal(task.taskType, task.taskID, task.entity, removeTask)}>
-                                <div className={"d-flex"}>
-                                    <div className={"mr-3"}>
-                                        <Badge variant={"info"}>{task.taskType}</Badge>
-                                    </div>
-                                    <div className={"text-left"}>{task.description}</div>
-                                </div>
-                            </ListGroup.Item>
-                        )) :
-                        <ListGroup.Item>No tasks found</ListGroup.Item>
-                }
-            </ListGroup>
 
-            <h2 className={"mt-3"}>Recently completed tasks</h2>
+            {Boolean(!loaded && <LoadingWrapper/>)}
+
+            {Boolean(loaded) && (
+                <ListGroup>
+                    {
+                        openTasks.length > 0 ?
+                            openTasks.map(task => (
+                                <ListGroup.Item action key={task.taskID}
+                                                onClick={() => openResolveModal(task.taskType, task.taskID, task.entity, removeTask)}>
+                                    <div className={"d-flex"}>
+                                        <div className={"mr-3"}>
+                                            <Badge variant={"info"}>{task.taskType}</Badge>
+                                        </div>
+                                        <div className={"text-left"}>{task.description}</div>
+                                    </div>
+                                </ListGroup.Item>
+                            )) :
+                            <ListGroup.Item>No tasks found</ListGroup.Item>
+                    }
+                </ListGroup>
+            )}
+            {/*<h2 className={"mt-3"}>Recently completed tasks</h2>*/}
         </>
     )
 };

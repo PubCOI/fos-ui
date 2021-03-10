@@ -24,3 +24,13 @@
 .pdf-navigation {
   background-color: rgba(254, 251, 255, 0.28);
 }
+
+.fa-badge {
+  position: absolute;
+  background-color: #1a6dca;
+  top: 0;
+  left: 0;
+  padding: 2px;
+  font-size: small;
+  color: #8fbdf0;
+}

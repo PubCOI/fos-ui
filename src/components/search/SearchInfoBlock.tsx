@@ -5,7 +5,7 @@ export const SearchInfoBlock = () => {
     return (
         <Row>
             <Col md={8} className={"offset-md-2"}>
-                <Jumbotron className={"rounded bg-light mt-5 m-3"}>
+                <Jumbotron className={"rounded bg-light mt-5 m-3 shadow"}>
                     <h2 className={"lead"}>Search contracts data</h2>
                     <p>Enter your term(s) in the box above</p>
                     <div className={"text-muted"}>

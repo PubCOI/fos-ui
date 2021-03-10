@@ -1,5 +1,6 @@
-import {Navbar, NavbarBrand} from "react-bootstrap";
+import {Nav, Navbar, NavbarBrand} from "react-bootstrap";
 import React from "react";
+import {Link} from "react-router-dom";
 
 export const Footer = () => {
     return (
@@ -9,9 +10,9 @@ export const Footer = () => {
                     <NavbarBrand bsPrefix={"small"} className={"text-muted mr-auto"}>
                         &copy; 2021 PubCOI.org
                     </NavbarBrand>
-                    {/*<Nav>*/}
-                    {/*    <Nav.Link as={Link} to={"/privacy"} bsPrefix={"small"} className={"text-muted"}>Privacy</Nav.Link>*/}
-                    {/*</Nav>*/}
+                    <Nav>
+                        <Nav.Link as={Link} to={"/stats"} className={"text-muted"} bsPrefix={"small"}>Stats</Nav.Link>
+                    </Nav>
                 </Navbar>
             </div>
         </>

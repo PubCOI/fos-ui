@@ -19,6 +19,7 @@ import {Upload} from "./pages/Upload";
 import {Graph} from "./pages/Graph";
 import {Search} from "./pages/Search";
 import {Viewer} from "./pages/Viewer";
+import {Stats} from "./pages/Stats";
 
 function App() {
 
@@ -45,6 +46,7 @@ function App() {
                             <Route exact path={"/data/upload"} component={Upload}/>
                             <Route exact path={"/graph"} component={Graph}/>
                             <Route exact path={"/search"} component={Search}/>
+                            <Route exact path={"/stats"} component={Stats}/>
                             <Route path={"/view"} component={Viewer}/>
                         </Switch>
                     </main>
