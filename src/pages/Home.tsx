@@ -7,9 +7,6 @@ export const Home = () => {
     return (
         <>
             <PageTitle title={"What is Fos?"}/>
-            <div className={"svgTest"}>
-                &#xf007;
-            </div>
             <p>
                 Fos is a semi-automated, crowdsourced database of HMG contract data, focusing on (but not limited to)
                 healthcare contracts.
