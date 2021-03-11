@@ -22,6 +22,7 @@
     "cytoscape": "^3.18.0",
     "cytoscape-cose-bilkent": "^4.1.0",
     "firebase": "^8.2.7",
+    "font-awesome-assets": "0.0.8",
     "neo4j": "^2.0.0-RC2",
     "neovis.js": "^1.6.0",
     "pdfjs-dist": "^2.6.347",

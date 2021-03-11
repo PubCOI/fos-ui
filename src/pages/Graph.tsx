@@ -1,8 +1,11 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {auth, driver as neo4j_driver} from "neo4j-driver";
 import cytoscape, {EdgeDataDefinition, NodeDataDefinition,} from "cytoscape";
+import {NodeMetadata} from "../components/NodeMetadata";
+import {INodeMetadata} from "../interfaces/INodeMetadata";
 
 let coseBilkent = require('cytoscape-cose-bilkent');
+
 
 export const Graph = () => {
     const driver = neo4j_driver("bolt://localhost", auth.basic("neo4j", "password"));
@@ -10,6 +13,17 @@ export const Graph = () => {
     const cyRef = useRef<HTMLDivElement | null>(null);
     const [refVisible, setRefVisible] = useState(false);
     const [cy, setCy] = useState(cytoscape.prototype);
+    const [showMetadata, setShowMetadata] = useState(false);
+    const [metadata, setMetadata] = useState<INodeMetadata>({id: "", type: ""});
+
+    function getMetadata(fos_type: string, node_id: string) {
+        setMetadata({id: node_id, type: fos_type});
+        setShowMetadata(true);
+    }
+
+    function hideMetadataCB() {
+        setShowMetadata(false);
+    }
 
     cytoscape.use(coseBilkent);
 
@@ -17,7 +31,6 @@ export const Graph = () => {
         if (!refVisible) {
             return
         }
-        console.debug("Got div ref: rendering graph");
         setCy(cytoscape({
             container: cyRef.current,
             zoomingEnabled: true,
@@ -26,38 +39,44 @@ export const Graph = () => {
                 {
                     selector: 'node',
                     style: {
-                        'label': 'data(name)',
+                        "label": 'data(name)',
+                        "shape": "polygon",
+                        "shape-polygon-points": "4",
+                        "background-fit": "cover",
+                        "background-opacity": 0,
                     },
                 },
                 {
                     selector: 'node[fos_type="client"]',
                     style: {
-                        'label': 'data(name)',
-                        "shape": "polygon",
-                        "shape-polygon-points": "4",
-                        "background-fit": "cover",
-                        "background-opacity": 0,
+                        "ghost": "yes",
+                        "ghost-offset-x": 2,
+                        "ghost-offset-y": 2,
+                        "ghost-opacity": 0.2,
                         "width": 50,
                         "height": 50,
-                        "background-image": "url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMHB4IiBoZWlnaHQ9IjIwcHgiIHZpZXdCb3g9IjAgMCAxOTIwIDE3OTIiPjxwYXRoIGZpbGw9InJnYig0NCw4NCw5NCkiIGQ9Ik01OTMgODk2cS0xNjIgNS0yNjUgMTI4aC0xMzRxLTgyIDAtMTM4LTQwLjV0LTU2LTExOC41cTAtMzUzIDEyNC0zNTMgNiAwIDQzLjUgMjF0OTcuNSA0Mi41IDExOSAyMS41cTY3IDAgMTMzLTIzLTUgMzctNSA2NiAwIDEzOSA4MSAyNTZ6TTE2NjQgMTUzM3EwIDEyMC03MyAxODkuNXQtMTk0IDY5LjVoLTg3NHEtMTIxIDAtMTk0LTY5LjV0LTczLTE4OS41cTAtNTMgMy41LTEwMy41dDE0LTEwOSAyNi41LTEwOC41IDQzLTk3LjUgNjItODEgODUuNS01My41IDExMS41LTIwcTEwIDAgNDMgMjEuNXQ3MyA0OCAxMDcgNDggMTM1IDIxLjUgMTM1LTIxLjUgMTA3LTQ4IDczLTQ4IDQzLTIxLjVxNjEgMCAxMTEuNSAyMHQ4NS41IDUzLjUgNjIgODEgNDMgOTcuNSAyNi41IDEwOC41IDE0IDEwOSAzLjUgMTAzLjV6TTY0MCAyNTZxMCAxMDYtNzUgMTgxdC0xODEgNzUtMTgxLTc1LTc1LTE4MSA3NS0xODEgMTgxLTc1IDE4MSA3NSA3NSAxODF6TTEzNDQgNjQwcTAgMTU5LTExMi41IDI3MS41dC0yNzEuNSAxMTIuNS0yNzEuNS0xMTIuNS0xMTIuNS0yNzEuNSAxMTIuNS0yNzEuNSAyNzEuNS0xMTIuNSAyNzEuNSAxMTIuNSAxMTIuNSAyNzEuNXpNMTkyMCA4NjVxMCA3OC01NiAxMTguNXQtMTM4IDQwLjVoLTEzNHEtMTAzLTEyMy0yNjUtMTI4IDgxLTExNyA4MS0yNTYgMC0yOS01LTY2IDY2IDIzIDEzMyAyMyA1OSAwIDExOS0yMS41dDk3LjUtNDIuNSA0My41LTIxcTEyNCAwIDEyNCAzNTN6TTE3OTIgMjU2cTAgMTA2LTc1IDE4MXQtMTgxIDc1LTE4MS03NS03NS0xODEgNzUtMTgxIDE4MS03NSAxODEgNzUgNzUgMTgxeiIvPjwvc3ZnPg==)"
+                        "background-image": "url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMHB4IiBoZWlnaHQ9IjIwcHgiIHZpZXdCb3g9IjAgMCAxOTIwIDE3OTIiPjxwYXRoIGZpbGw9InJnYig1OSwxMDksMTI3KSIgZD0iTTU5MyA4OTZxLTE2MiA1LTI2NSAxMjhoLTEzNHEtODIgMC0xMzgtNDAuNXQtNTYtMTE4LjVxMC0zNTMgMTI0LTM1MyA2IDAgNDMuNSAyMXQ5Ny41IDQyLjUgMTE5IDIxLjVxNjcgMCAxMzMtMjMtNSAzNy01IDY2IDAgMTM5IDgxIDI1NnpNMTY2NCAxNTMzcTAgMTIwLTczIDE4OS41dC0xOTQgNjkuNWgtODc0cS0xMjEgMC0xOTQtNjkuNXQtNzMtMTg5LjVxMC01MyAzLjUtMTAzLjV0MTQtMTA5IDI2LjUtMTA4LjUgNDMtOTcuNSA2Mi04MSA4NS41LTUzLjUgMTExLjUtMjBxMTAgMCA0MyAyMS41dDczIDQ4IDEwNyA0OCAxMzUgMjEuNSAxMzUtMjEuNSAxMDctNDggNzMtNDggNDMtMjEuNXE2MSAwIDExMS41IDIwdDg1LjUgNTMuNSA2MiA4MSA0MyA5Ny41IDI2LjUgMTA4LjUgMTQgMTA5IDMuNSAxMDMuNXpNNjQwIDI1NnEwIDEwNi03NSAxODF0LTE4MSA3NS0xODEtNzUtNzUtMTgxIDc1LTE4MSAxODEtNzUgMTgxIDc1IDc1IDE4MXpNMTM0NCA2NDBxMCAxNTktMTEyLjUgMjcxLjV0LTI3MS41IDExMi41LTI3MS41LTExMi41LTExMi41LTI3MS41IDExMi41LTI3MS41IDI3MS41LTExMi41IDI3MS41IDExMi41IDExMi41IDI3MS41ek0xOTIwIDg2NXEwIDc4LTU2IDExOC41dC0xMzggNDAuNWgtMTM0cS0xMDMtMTIzLTI2NS0xMjggODEtMTE3IDgxLTI1NiAwLTI5LTUtNjYgNjYgMjMgMTMzIDIzIDU5IDAgMTE5LTIxLjV0OTcuNS00Mi41IDQzLjUtMjFxMTI0IDAgMTI0IDM1M3pNMTc5MiAyNTZxMCAxMDYtNzUgMTgxdC0xODEgNzUtMTgxLTc1LTc1LTE4MSA3NS0xODEgMTgxLTc1IDE4MSA3NSA3NSAxODF6Ii8+PC9zdmc+)"
                     },
                 },
                 {
                     selector: 'node[fos_type="tender"]',
                     style: {
-                        'background-color': '#2c545e',
-                        'label': 'data(name)',
-                        'background-blacken': -0.5,
-                        'background-opacity': 0.6
+                        "background-image": "url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMHB4IiBoZWlnaHQ9IjIwcHgiIHZpZXdCb3g9IjAgMCAxNTM2IDE3OTIiPjxwYXRoIGZpbGw9InJnYigxMjcsNTksNzUpIiBkPSJNMTQ2OCAzODBxMjggMjggNDggNzZ0MjAgODh2MTE1MnEwIDQwLTI4IDY4dC02OCAyOGgtMTM0NHEtNDAgMC02OC0yOHQtMjgtNjh2LTE2MDBxMC00MCAyOC02OHQ2OC0yOGg4OTZxNDAgMCA4OCAyMHQ3NiA0OHpNMTAyNCAxMzZ2Mzc2aDM3NnEtMTAtMjktMjItNDFsLTMxMy0zMTNxLTEyLTEyLTQxLTIyek0xNDA4IDE2NjR2LTEwMjRoLTQxNnEtNDAgMC02OC0yOHQtMjgtNjh2LTQxNmgtNzY4djE1MzZoMTI4MHpNMzg0IDgwMHEwLTE0IDktMjN0MjMtOWg3MDRxMTQgMCAyMyA5dDkgMjN2NjRxMCAxNC05IDIzdC0yMyA5aC03MDRxLTE0IDAtMjMtOXQtOS0yM3YtNjR6TTExMjAgMTAyNHExNCAwIDIzIDl0OSAyM3Y2NHEwIDE0LTkgMjN0LTIzIDloLTcwNHEtMTQgMC0yMy05dC05LTIzdi02NHEwLTE0IDktMjN0MjMtOWg3MDR6TTExMjAgMTI4MHExNCAwIDIzIDl0OSAyM3Y2NHEwIDE0LTkgMjN0LTIzIDloLTcwNHEtMTQgMC0yMy05dC05LTIzdi02NHEwLTE0IDktMjN0MjMtOWg3MDR6Ii8+PC9zdmc+)"
                     },
                 },
                 {
                     selector: 'edge',
                     style: {
-                        'width': 3,
-                        'line-color': '#ccc',
-                        'target-arrow-color': '#ccc',
-                        'target-arrow-shape': 'triangle'
+                        "width": "1",
+                        "line-style": "dotted",
+                        "curve-style": "haystack"
+                    },
+                },
+                {
+                    selector: ".multiline-auto",
+                    style: {
+                        "text-wrap": "wrap",
+                        "text-max-width": "140",
                     }
                 }
             ],
@@ -65,13 +84,11 @@ export const Graph = () => {
     }, [refVisible]);
 
     useEffect(() => {
-        console.log("useEffect() running visualise all");
         visualizeAll();
     }, [cy]);
 
     function visualizeAll() {
         if (!refVisible) {
-            console.debug("cyRef not yet visible");
             return;
         }
 
@@ -101,13 +118,13 @@ export const Graph = () => {
     }
 
     function addNode(node: NodeDataDefinition, type: string) {
-        const found = cy.$id("node_" + node.identity.low);
-        if (found["length"] === 0) {
+        const count = cy.$id("node_" + node.identity.low);
+        if (count["length"] === 0) {
             let output: { [key: string]: any } = {
                 id: "node_" + node.identity.low,
                 neo4j_id: node.identity.low,
                 neo4j_label: node.labels.join(),
-                fos_type: type
+                fos_type: type,
             };
 
             Object.keys(node.properties).forEach(key => {
@@ -120,11 +137,9 @@ export const Graph = () => {
 
             cy.add({
                 group: "nodes",
-                data: output
+                data: output,
+                classes: "multiline-auto" // todo make configurable .. currently everything wraps
             });
-            // console.debug("node_" + node.identity.low + " created");
-        } else {
-            // console.debug("node_" + node.identity.low + " already exists");
         }
     }
 
@@ -166,19 +181,26 @@ export const Graph = () => {
         };
         cy.resize();
         cy.elements().layout(layoutOptions).run();
+        cy.on('tap', 'node', function (evt: React.MouseEvent & {
+            target: {
+                data: () => { node_id: string, fos_type: string }
+            }
+        }) {
+            console.log("Getting info for", evt.target.data().fos_type, evt.target.data().node_id);
+            getMetadata(evt.target.data().fos_type, evt.target.data().node_id);
+        });
         console.debug("Finished redraw");
     }
 
     return (
         <>
-
+            <NodeMetadata hidden={!showMetadata} hideCB={hideMetadataCB} data={metadata}/>
             <div id={"cy"} className={"mt-0"}
                  ref={instance => {
                      cyRef.current = instance;
                      setRefVisible(!!instance);
                  }}>
             </div>
-
         </>
     )
 

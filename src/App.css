@@ -35,14 +35,19 @@
   color: #8fbdf0;
 }
 
-.svgTest {
-  font-family: FontAwesome
-}
-
 path {
   fill: none;
   stroke: #000;
   stroke-width: 3px;
   stroke-linejoin: round;
   stroke-linecap: round;
+}
+
+.metadata-parent {
+  padding: 20px;
+  background-color: rgba(188, 188, 188, 0.78);
+  position: absolute;
+  margin-top: 20px;
+  right: 20px;
+  z-index: 9999;
 }
