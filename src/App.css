@@ -34,3 +34,15 @@
   font-size: small;
   color: #8fbdf0;
 }
+
+.svgTest {
+  font-family: FontAwesome
+}
+
+path {
+  fill: none;
+  stroke: #000;
+  stroke-width: 3px;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
