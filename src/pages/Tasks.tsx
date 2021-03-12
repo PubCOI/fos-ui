@@ -12,7 +12,7 @@ import {ToastProvider} from "react-toast-notifications";
 import {PageTitle} from "../components/PageTitle";
 
 interface Task {
-    taskID: string,
+    taskId: string,
     taskType: string,
     description: string,
     entity: string,
@@ -36,7 +36,7 @@ export const Tasks = () => {
     }, []);
 
     function removeTask(taskID: string) {
-        const newList = openTasks.filter((item) => item.taskID !== taskID);
+        const newList = openTasks.filter((item) => item.taskId !== taskID);
         setOpenTasks(newList);
     }
 
@@ -47,7 +47,7 @@ export const Tasks = () => {
     function openResolveModal(taskType: string, taskID: string, entity: string, removeTaskCallback: (taskID: string) => void) {
         show(
             <ToastProvider components={{ToastContainer: FOSToastContainer}}>
-                <ResolveClientModal id={entity} taskID={taskID} removeTaskCB={removeTaskCallback}/>
+                <ResolveClientModal id={entity} taskId={taskID} removeTaskCB={removeTaskCallback}/>
             </ToastProvider>, {key: TASK_MODAL_ID_PREFIX + taskID}
         )
     }
@@ -58,7 +58,6 @@ export const Tasks = () => {
 
             <TasksInfobox/>
 
-
             {Boolean(!loaded && <LoadingWrapper/>)}
 
             {Boolean(loaded) && (
@@ -66,8 +65,8 @@ export const Tasks = () => {
                     {
                         openTasks.length > 0 ?
                             openTasks.map(task => (
-                                <ListGroup.Item action key={task.taskID}
-                                                onClick={() => openResolveModal(task.taskType, task.taskID, task.entity, removeTask)}>
+                                <ListGroup.Item action key={task.taskId}
+                                                onClick={() => openResolveModal(task.taskType, task.taskId, task.entity, removeTask)}>
                                     <div className={"d-flex"}>
                                         <div className={"mr-3"}>
                                             <Badge variant={"info"}>{task.taskType}</Badge>

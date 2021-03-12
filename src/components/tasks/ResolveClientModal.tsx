@@ -17,7 +17,7 @@ interface ClientDetailsDAO {
     id: string,
     name: string,
     canonical: boolean,
-    canonicalID: string,
+    canonicalId: string,
     postCode: string,
 }
 
@@ -27,13 +27,13 @@ interface ClientSearchResponse {
     score: number
 }
 
-export const ResolveClientModal = (props: { id: string, taskID: string, removeTaskCB: (taskID: string) => void }) => {
+export const ResolveClientModal = (props: { id: string, taskId: string, removeTaskCB: (taskId: string) => void }) => {
     const {addToast} = useToasts();
     const [client, setClient] = useState<ClientDetailsDAO>({
         id: "",
         name: "",
         canonical: false,
-        canonicalID: "",
+        canonicalId: "",
         postCode: ""
     });
     const [clientSearchResponse, setClientSearchResponse] = useState<ClientSearchResponse[]>([{
@@ -89,7 +89,7 @@ export const ResolveClientModal = (props: { id: string, taskID: string, removeTa
     }, [clientSearchResponse]);
 
     if (error) {
-        return <AlertWrapper text={`Unable to load task ID ${props.id}`}/>
+        return <AlertWrapper text={`Unable to load task ${props.id}`}/>
     }
 
     if (!loaded) {
@@ -102,14 +102,14 @@ export const ResolveClientModal = (props: { id: string, taskID: string, removeTa
 
     return (
         <Modal backdrop={"static"} show centered size={"xl"}>
-            <Modal.Header closeButton onClick={() => hide(TASK_MODAL_ID_PREFIX + props.taskID)}>
+            <Modal.Header closeButton onClick={() => hide(TASK_MODAL_ID_PREFIX + props.taskId)}>
                 <Modal.Title>Task: Resolve client</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <table cellPadding={5} className={"mb-2"}>
                     <tbody>
                     <tr>
-                        <td>Node&nbsp;ID</td>
+                        <td>Node</td>
                         <td className={"text-monospace bg-light"}>{client?.id}</td>
                     </tr>
                     <tr>
@@ -128,10 +128,10 @@ export const ResolveClientModal = (props: { id: string, taskID: string, removeTa
                         <td>Canonical</td>
                         <td>{client?.canonical ? "Yes" : "No"}</td>
                     </tr>
-                    {(null !== client?.canonicalID) ?
+                    {(null !== client?.canonicalId) ?
                         <tr>
                             <td>Canonical ID</td>
-                            <td>{client?.canonicalID}</td>
+                            <td>{client?.canonicalId}</td>
                         </tr>
                         : <></>
                     }
@@ -148,7 +148,7 @@ export const ResolveClientModal = (props: { id: string, taskID: string, removeTa
                                         className={"d-flex justify-content-between align-items-center"}>
                             <span><FontAwesome name={"building-o"}
                                                className={"mr-2"}/> {canonicalFTSResponse.name}</span>
-                            <LinkRecordsButton taskID={props.taskID}
+                            <LinkRecordsButton taskId={props.taskId}
                                                source={client?.id}
                                                target={canonicalFTSResponse.id}
                                                removeTaskCB={props.removeTaskCB} currentUser={currentUser}/>
@@ -157,12 +157,12 @@ export const ResolveClientModal = (props: { id: string, taskID: string, removeTa
                 </ListGroup>
 
                 <ToastProvider components={{ToastContainer: FOSToastContainer}}>
-                    <ActionsButtons details={client} taskID={props.taskID}
+                    <ActionsButtons details={client} taskId={props.taskId}
                                     removeTaskCallback={props.removeTaskCB}/>
                 </ToastProvider>
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="primary" onClick={() => hide(TASK_MODAL_ID_PREFIX + props.taskID)}>
+                <Button variant="primary" onClick={() => hide(TASK_MODAL_ID_PREFIX + props.taskId)}>
                     OK
                 </Button>
             </Modal.Footer>
@@ -179,7 +179,7 @@ enum FOSTasks {
     link_client_parent = "link_clientNode_to_parentClientNode"
 }
 
-const ActionsButtons = (props: { details: ClientDetailsDAO, taskID: string, removeTaskCallback: (taskID: string) => void }) => {
+const ActionsButtons = (props: { details: ClientDetailsDAO, taskId: string, removeTaskCallback: (taskId: string) => void }) => {
     const {addToast} = useToasts();
 
     if (undefined === props.details.id || null === firebase || null === firebase.auth()) {
@@ -190,20 +190,20 @@ const ActionsButtons = (props: { details: ClientDetailsDAO, taskID: string, remo
         return <></>
     }
 
-    function setAsCanonical(entityID: string | undefined, authToken: string, taskID: string, removeTaskCallback: (taskID: string) => void) {
+    function setAsCanonical(entityId: string | undefined, authToken: string, taskId: string, removeTaskCallback: (taskId: string) => void) {
         axios.put<SetAsCanonicalResponse>(`/api/ui/tasks/${FOSTasks.canonical_client}`, {
             authToken: authToken,
-            target: entityID,
-            taskID: taskID
+            target: entityId,
+            taskId: taskId
         })
             .then(value => {
-                removeTaskCallback(taskID);
+                removeTaskCallback(taskId);
                 addToast(value.data.response, {
                     appearance: "success",
                     autoDismiss: true,
-                    id: entityID,
+                    id: entityId,
                     onDismiss: () => {
-                        hide(TASK_MODAL_ID_PREFIX + taskID)
+                        hide(TASK_MODAL_ID_PREFIX + taskId)
                     }
                 });
             })
@@ -224,7 +224,7 @@ const ActionsButtons = (props: { details: ClientDetailsDAO, taskID: string, remo
                         className={"text-dark"} size={"sm"} block
                         onClick={() => {
                             currentUser.getIdToken(/* forceRefresh */ true).then(function (idToken) {
-                                setAsCanonical(props.details.id, idToken, props.taskID, props.removeTaskCallback);
+                                setAsCanonical(props.details.id, idToken, props.taskId, props.removeTaskCallback);
                             }).catch(function (error) {
                                 addToast(error.toString(), {
                                     appearance: "error",
@@ -239,7 +239,7 @@ const ActionsButtons = (props: { details: ClientDetailsDAO, taskID: string, remo
     )
 };
 
-export function linkToParent(taskID: string, authToken: string, source: string, target: string, removeTaskCB: (taskID: string) => void,
+export function linkToParent(taskId: string, authToken: string, source: string, target: string, removeTaskCB: (taskId: string) => void,
                              addToast: (content: React.ReactNode, options?: Options, callback?: (id: string) => void) => void,
                              setButtonIcon: (icon: string) => void
 ) {
@@ -247,17 +247,17 @@ export function linkToParent(taskID: string, authToken: string, source: string, 
         authToken: authToken,
         source: source,
         target: target,
-        taskID: taskID
+        taskId: taskId
     })
         .then(value => {
-            removeTaskCB(taskID);
+            removeTaskCB(taskId);
             setButtonIcon("check");
             addToast(value.data.response, {
                 appearance: "success",
                 autoDismiss: true,
-                id: taskID,
+                id: taskId,
                 onDismiss: () => {
-                    hide(TASK_MODAL_ID_PREFIX + taskID)
+                    hide(TASK_MODAL_ID_PREFIX + taskId)
                 }
             });
         })

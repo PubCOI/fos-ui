@@ -35,7 +35,7 @@
   color: #8fbdf0;
 }
 
-path {
+canvas > path {
   fill: none;
   stroke: #000;
   stroke-width: 3px;
@@ -45,9 +45,14 @@ path {
 
 .metadata-parent {
   padding: 20px;
-  background-color: rgba(188, 188, 188, 0.78);
+  background-color: rgba(255,255,255,0.8);
   position: absolute;
   margin-top: 20px;
   right: 20px;
-  z-index: 9999;
+  z-index: 1000;
+}
+
+.metadata-text-block {
+  text-wrap: normal;
+  max-width: 250px;
 }

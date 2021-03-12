@@ -7,7 +7,7 @@ import {useToasts} from "react-toast-notifications";
 
 // this is absolutely disgusting
 
-export const LinkRecordsButton = (props: { currentUser: firebase.User | null, taskID: string, source: string, target: string, removeTaskCB: (taskID: string) => void }) => {
+export const LinkRecordsButton = (props: { currentUser: firebase.User | null, taskId: string, source: string, target: string, removeTaskCB: (taskId: string) => void }) => {
 
     const {addToast} = useToasts();
     const [disabled, setDisabled] = useState(false);
@@ -22,7 +22,7 @@ export const LinkRecordsButton = (props: { currentUser: firebase.User | null, ta
                     setButtonIcon("spinner");
                     props.currentUser.getIdToken(/* forceRefresh */ true).then(function (idToken) {
                         console.debug(`linking ${props.source} to ${props.target}`);
-                        linkToParent(props.taskID, idToken, props.source, props.target, props.removeTaskCB, addToast, setButtonIcon);
+                        linkToParent(props.taskId, idToken, props.source, props.target, props.removeTaskCB, addToast, setButtonIcon);
                     }).catch(function (error) {
                         addToast(error.toString(), {
                             appearance: "error",

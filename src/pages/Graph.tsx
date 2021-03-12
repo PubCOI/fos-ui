@@ -2,7 +2,7 @@ import React, {useEffect, useRef, useState} from 'react';
 import {auth, driver as neo4j_driver} from "neo4j-driver";
 import cytoscape, {EdgeDataDefinition, NodeDataDefinition,} from "cytoscape";
 import {NodeMetadata} from "../components/NodeMetadata";
-import {INodeMetadata} from "../interfaces/INodeMetadata";
+import {INodeMetadata, NodeMetadataType} from "../components/graphs/INodeMetadata";
 
 let coseBilkent = require('cytoscape-cose-bilkent');
 
@@ -14,14 +14,15 @@ export const Graph = () => {
     const [refVisible, setRefVisible] = useState(false);
     const [cy, setCy] = useState(cytoscape.prototype);
     const [showMetadata, setShowMetadata] = useState(false);
-    const [metadata, setMetadata] = useState<INodeMetadata>({id: "", type: ""});
+    const [metadata, setMetadata] = useState<INodeMetadata>({type: NodeMetadataType.client, id: ""});
 
-    function getMetadata(fos_type: string, node_id: string) {
-        setMetadata({id: node_id, type: fos_type});
-        setShowMetadata(true);
-    }
+    useEffect(() => {
+        if (undefined !== metadata.type && undefined !== metadata.id && metadata.id !== "") {
+            setShowMetadata(true);
+        }
+    }, [metadata]);
 
-    function hideMetadataCB() {
+    function hideMetadata() {
         setShowMetadata(false);
     }
 
@@ -39,7 +40,7 @@ export const Graph = () => {
                 {
                     selector: 'node',
                     style: {
-                        "label": 'data(name)',
+                        "label": "",
                         "shape": "polygon",
                         "shape-polygon-points": "4",
                         "background-fit": "cover",
@@ -49,6 +50,7 @@ export const Graph = () => {
                 {
                     selector: 'node[fos_type="client"]',
                     style: {
+                        "label": "data(name)",
                         "ghost": "yes",
                         "ghost-offset-x": 2,
                         "ghost-offset-y": 2,
@@ -59,8 +61,9 @@ export const Graph = () => {
                     },
                 },
                 {
-                    selector: 'node[fos_type="tender"]',
+                    selector: 'node[fos_type="notice"]',
                     style: {
+                        "label": "Notice",
                         "background-image": "url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMHB4IiBoZWlnaHQ9IjIwcHgiIHZpZXdCb3g9IjAgMCAxNTM2IDE3OTIiPjxwYXRoIGZpbGw9InJnYigxMjcsNTksNzUpIiBkPSJNMTQ2OCAzODBxMjggMjggNDggNzZ0MjAgODh2MTE1MnEwIDQwLTI4IDY4dC02OCAyOGgtMTM0NHEtNDAgMC02OC0yOHQtMjgtNjh2LTE2MDBxMC00MCAyOC02OHQ2OC0yOGg4OTZxNDAgMCA4OCAyMHQ3NiA0OHpNMTAyNCAxMzZ2Mzc2aDM3NnEtMTAtMjktMjItNDFsLTMxMy0zMTNxLTEyLTEyLTQxLTIyek0xNDA4IDE2NjR2LTEwMjRoLTQxNnEtNDAgMC02OC0yOHQtMjgtNjh2LTQxNmgtNzY4djE1MzZoMTI4MHpNMzg0IDgwMHEwLTE0IDktMjN0MjMtOWg3MDRxMTQgMCAyMyA5dDkgMjN2NjRxMCAxNC05IDIzdC0yMyA5aC03MDRxLTE0IDAtMjMtOXQtOS0yM3YtNjR6TTExMjAgMTAyNHExNCAwIDIzIDl0OSAyM3Y2NHEwIDE0LTkgMjN0LTIzIDloLTcwNHEtMTQgMC0yMy05dC05LTIzdi02NHEwLTE0IDktMjN0MjMtOWg3MDR6TTExMjAgMTI4MHExNCAwIDIzIDl0OSAyM3Y2NHEwIDE0LTkgMjN0LTIzIDloLTcwNHEtMTQgMC0yMy05dC05LTIzdi02NHEwLTE0IDktMjN0MjMtOWg3MDR6Ii8+PC9zdmc+)"
                     },
                 },
@@ -97,9 +100,9 @@ export const Graph = () => {
 
         const session = driver.session();
 
-        const cypher = "MATCH(c:Client)-[ref:PUBLISHED]-(t:Tender) " +
-            "WHERE c.hidden=false AND ref.hidden=false AND t.hidden=false " +
-            "RETURN c, ref, t LIMIT 50";
+        const cypher = "MATCH(c:Client)-[ref:PUBLISHED]-(n:Notice) " +
+            "WHERE c.hidden=false AND ref.hidden=false AND n.hidden=false " +
+            "RETURN c, ref, n LIMIT 50";
         const params = {};
 
         return session.run(cypher, params)
@@ -107,7 +110,7 @@ export const Graph = () => {
                 session.close();
                 result.records.forEach(res => {
                     addNode(res.get("c"), 'client');
-                    addNode(res.get("t"), 'tender');
+                    addNode(res.get("n"), 'notice');
                     addEdge(res.get("ref"));
                 });
                 reDraw();
@@ -183,18 +186,21 @@ export const Graph = () => {
         cy.elements().layout(layoutOptions).run();
         cy.on('tap', 'node', function (evt: React.MouseEvent & {
             target: {
-                data: () => { node_id: string, fos_type: string }
+                data: () => { node_id: string, fos_type: NodeMetadataType }
             }
         }) {
-            console.log("Getting info for", evt.target.data().fos_type, evt.target.data().node_id);
-            getMetadata(evt.target.data().fos_type, evt.target.data().node_id);
+            setMetadata({
+                    type: evt.target.data().fos_type,
+                    id: evt.target.data().node_id
+                }
+            );
         });
-        console.debug("Finished redraw");
+        console.debug("Completed redraw");
     }
 
     return (
         <>
-            <NodeMetadata hidden={!showMetadata} hideCB={hideMetadataCB} data={metadata}/>
+            <NodeMetadata hidden={!showMetadata} hideCallback={hideMetadata} metadata={metadata}/>
             <div id={"cy"} className={"mt-0"}
                  ref={instance => {
                      cyRef.current = instance;
