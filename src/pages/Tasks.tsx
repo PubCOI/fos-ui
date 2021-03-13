@@ -7,7 +7,7 @@ import {AlertWrapper} from "../components/AlertWrapper";
 import {LoadingWrapper} from "../components/LoadingWrapper";
 import {ResolveClientModal} from "../components/tasks/ResolveClientModal";
 import {show} from "react-functional-modal";
-import {FOSToastContainer} from "../components/FOSToastContainer";
+import {FosToastContainer} from "../components/FosToastContainer";
 import {ToastProvider} from "react-toast-notifications";
 import {PageTitle} from "../components/PageTitle";
 
@@ -46,7 +46,7 @@ export const Tasks = () => {
 
     function openResolveModal(taskType: string, taskID: string, entity: string, removeTaskCallback: (taskID: string) => void) {
         show(
-            <ToastProvider components={{ToastContainer: FOSToastContainer}}>
+            <ToastProvider components={{ToastContainer: FosToastContainer}}>
                 <ResolveClientModal id={entity} taskId={taskID} removeTaskCB={removeTaskCallback}/>
             </ToastProvider>, {key: TASK_MODAL_ID_PREFIX + taskID}
         )

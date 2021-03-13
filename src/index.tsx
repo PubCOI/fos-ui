@@ -8,7 +8,7 @@ import {ToastProvider} from "react-toast-notifications";
 import firebase from "firebase/app";
 import "firebase/auth";
 import {FirebaseAuthProvider} from "@react-firebase/auth";
-import {FOSToastContainer} from "./components/FOSToastContainer";
+import {FosToastContainer} from "./components/FosToastContainer";
 
 const firebaseConfig = {
     apiKey: "AIzaSyBa1sFm8_wRGIv8y0-iaK5h48bwlJZMqX8",
@@ -24,7 +24,7 @@ ReactDOM.render(
     <React.StrictMode>
         <FirebaseAuthProvider firebase={firebase} {...firebaseConfig}>
             <BrowserRouter>
-                <ToastProvider components={{ToastContainer: FOSToastContainer}}>
+                <ToastProvider components={{ToastContainer: FosToastContainer}}>
                     <App/>
                 </ToastProvider>
             </BrowserRouter>

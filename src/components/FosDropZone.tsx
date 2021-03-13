@@ -7,7 +7,7 @@ import {LoadingWrapper} from "./LoadingWrapper";
 import {Alert} from "react-bootstrap";
 import FontAwesome from "react-fontawesome";
 
-export const FOSDropZone = () => {
+export const FosDropZone = () => {
     const {addToast} = useToasts();
 
     const [authToken, setAuthToken] = useState("");

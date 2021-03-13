@@ -1,7 +1,7 @@
 import {Col, Row} from "react-bootstrap";
 import React from "react";
 import FontAwesome from "react-fontawesome";
-import {FOSDropZone} from "../components/FOSDropZone";
+import {FosDropZone} from "../components/FosDropZone";
 
 export const Upload = () => {
     return (
@@ -42,7 +42,7 @@ export const Upload = () => {
             </Row>
             <Row>
                 <Col md={8} className={"offset-md-2"}>
-                    <FOSDropZone/>
+                    <FosDropZone/>
                 </Col>
             </Row>
         </>

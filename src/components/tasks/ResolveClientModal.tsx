@@ -8,10 +8,10 @@ import {isValid, toNormalised} from "postcode";
 import FontAwesome from "react-fontawesome";
 import firebase from "firebase";
 import {Options, ToastProvider, useToasts} from "react-toast-notifications";
-import {FOSToastContainer} from "../FOSToastContainer";
 import {TASK_MODAL_ID_PREFIX} from "../../pages/Tasks";
 import {LinkToParentResponse} from "../../interfaces/LinkToParentResponse";
 import {LinkRecordsButton} from "./LinkRecordsButton";
+import {FosToastContainer} from "../FosToastContainer";
 
 interface ClientDetailsDAO {
     id: string,
@@ -156,7 +156,7 @@ export const ResolveClientModal = (props: { id: string, taskId: string, removeTa
                     ))}
                 </ListGroup>
 
-                <ToastProvider components={{ToastContainer: FOSToastContainer}}>
+                <ToastProvider components={{ToastContainer: FosToastContainer}}>
                     <ActionsButtons details={client} taskId={props.taskId}
                                     removeTaskCallback={props.removeTaskCB}/>
                 </ToastProvider>
@@ -174,7 +174,7 @@ interface SetAsCanonicalResponse {
     response: string
 }
 
-enum FOSTasks {
+enum FosTasks {
     canonical_client = "mark_canonical_clientNode",
     link_client_parent = "link_clientNode_to_parentClientNode"
 }
@@ -191,7 +191,7 @@ const ActionsButtons = (props: { details: ClientDetailsDAO, taskId: string, remo
     }
 
     function setAsCanonical(entityId: string | undefined, authToken: string, taskId: string, removeTaskCallback: (taskId: string) => void) {
-        axios.put<SetAsCanonicalResponse>(`/api/ui/tasks/${FOSTasks.canonical_client}`, {
+        axios.put<SetAsCanonicalResponse>(`/api/ui/tasks/${FosTasks.canonical_client}`, {
             authToken: authToken,
             target: entityId,
             taskId: taskId
@@ -243,7 +243,7 @@ export function linkToParent(taskId: string, authToken: string, source: string, 
                              addToast: (content: React.ReactNode, options?: Options, callback?: (id: string) => void) => void,
                              setButtonIcon: (icon: string) => void
 ) {
-    axios.put<LinkToParentResponse>(`/api/ui/tasks/${FOSTasks.link_client_parent}`, {
+    axios.put<LinkToParentResponse>(`/api/ui/tasks/${FosTasks.link_client_parent}`, {
         authToken: authToken,
         source: source,
         target: target,
