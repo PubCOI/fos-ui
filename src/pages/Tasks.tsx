@@ -44,11 +44,12 @@ export const Tasks = () => {
         return <AlertWrapper text={"Unable to load tasks data"}/>
     }
 
-    function openResolveModal(taskType: string, taskID: string, entity: string, removeTaskCallback: (taskID: string) => void) {
+    function openResolveModal(taskType: string, taskId: string, entity: string, removeTaskCallback: (taskID: string) => void) {
+        console.debug(`Opening ${taskType} task ${taskId}`);
         show(
             <ToastProvider components={{ToastContainer: FosToastContainer}}>
-                <ResolveClientModal id={entity} taskId={taskID} removeTaskCB={removeTaskCallback}/>
-            </ToastProvider>, {key: TASK_MODAL_ID_PREFIX + taskID}
+                <ResolveClientModal id={entity} taskId={taskId} removeTaskCB={removeTaskCallback}/>
+            </ToastProvider>, {key: TASK_MODAL_ID_PREFIX + taskId}
         )
     }
 

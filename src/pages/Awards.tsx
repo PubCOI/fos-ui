@@ -6,6 +6,7 @@ import axios from "axios";
 import NumberFormat from 'react-number-format';
 import FontAwesome from "react-fontawesome";
 import {PageTitle} from "../components/PageTitle";
+import {MinMaxValueFormat} from "../components/MinMaxValueFormat";
 
 interface Award {
     id: string,
@@ -83,27 +84,5 @@ const ContractValueFormat = (props: { award: Award }) => {
             <NumberFormat thousandSeparator displayType={"text"} prefix={"£"} value={props.award.value}/>
         )
     }
-    if (0 === props.award.valueMin) {
-        return (<>[Up to <NumberFormat thousandSeparator
-                                       displayType={"text"} prefix={"£"}
-                                       value={props.award.valueMax}/>]</>)
-    }
-    if (0 === props.award.valueMax) {
-        return (<>[At least <NumberFormat thousandSeparator
-                                          displayType={"text"} prefix={"£"}
-                                          value={props.award.valueMin}/>]</>)
-    }
-    if (props.award.valueMin === props.award.valueMax) {
-        return (<><NumberFormat thousandSeparator displayType={"text"} prefix={"£"} value={props.award.valueMax}/></>)
-    } else {
-        return (
-            <>
-                ({<NumberFormat thousandSeparator
-                                displayType={"text"} prefix={"£"}
-                                value={props.award.valueMin}/>}-{<NumberFormat
-                thousandSeparator displayType={"text"} prefix={""}
-                value={props.award.valueMax}/>})
-            </>
-        )
-    }
+    return <MinMaxValueFormat min={props.award.valueMin} max={props.award.valueMax}/>
 };

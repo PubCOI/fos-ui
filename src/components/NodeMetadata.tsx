@@ -1,30 +1,37 @@
 import React, {useEffect, useState} from "react";
-import {INodeMetadata, NodeMetadataType} from "./graphs/INodeMetadata";
+import {INodeMetadata, NodeMetadataType} from "../interfaces/INodeMetadata";
 import FontAwesome from "react-fontawesome";
-import axios from "axios";
-import {isValid, toNormalised} from "postcode";
-import {useToasts} from "react-toast-notifications";
-import {ClientResponseDAO} from "./graphs/ClientResponseDAO";
 import {RenderNoticeMetadata} from "./graphs/RenderNoticeMetadata";
 import {RenderClientMetadata} from "./graphs/RenderClientMetadata";
 import {Button} from "react-bootstrap";
 
 
-export const NodeMetadata = (props: { hideCallback: () => void, hidden: boolean, metadata: INodeMetadata }) => {
+export const NodeMetadata = (
+    props: {
+        hideCallback: () => void,
+        hidden: boolean,
+        metadata: INodeMetadata,
+        setMetadataCallback: (metadata: INodeMetadata) => void
+    }
+) => {
 
     const [output, setOutput] = useState(<></>);
     const [icon, setIcon] = useState(<></>);
 
+    function resetAndClose() {
+        setIcon(<></>);
+        setOutput(<></>);
+        props.hideCallback();
+    }
+
     useEffect(() => {
         if (undefined === props.metadata || undefined === props.metadata.type || undefined === props.metadata.id || props.metadata.id === "") {
-            setIcon(<></>);
-            setOutput(<></>);
-            props.hideCallback();
+            resetAndClose();
             return;
         }
         if (props.metadata.type === NodeMetadataType.client) {
             setIcon(<FontAwesome name={"users"}/>);
-            setOutput(<RenderClientMetadata id={props.metadata.id}/>);
+            setOutput(<RenderClientMetadata id={props.metadata.id} setMetadataCallback={props.setMetadataCallback}/>);
             return;
         }
         if (props.metadata.type === NodeMetadataType.notice) {
@@ -46,8 +53,8 @@ export const NodeMetadata = (props: { hideCallback: () => void, hidden: boolean,
                 {output}
 
                 <div className={"d-flex justify-content-end"}>
-                <Button size={"sm"} className={"mt-3"} variant={"outline-primary"}
-                        onClick={() => props.hideCallback()}>Hide</Button>
+                    <Button size={"sm"} className={"mt-3"} variant={"outline-primary"}
+                            onClick={() => resetAndClose()}>Hide</Button>
                 </div>
             </div>
         </>

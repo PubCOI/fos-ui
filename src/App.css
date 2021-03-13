@@ -50,9 +50,15 @@ canvas > path {
   margin-top: 20px;
   right: 20px;
   z-index: 1000;
+  max-height: 85vh;
+}
+
+.y-scroll {
+  overflow-y: scroll;
+  max-height: 50vh;
 }
 
 .metadata-text-block {
   text-wrap: normal;
-  max-width: 250px;
+  max-width: 40%;
 }

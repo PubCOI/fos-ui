@@ -1,8 +1,14 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {auth, driver as neo4j_driver} from "neo4j-driver";
-import cytoscape, {EdgeDataDefinition, NodeDataDefinition,} from "cytoscape";
+import cytoscape, {
+    EdgeDataDefinition,
+    ElementDefinition,
+    EventHandler,
+    NodeDataDefinition,
+    NodeSingular,
+} from "cytoscape";
 import {NodeMetadata} from "../components/NodeMetadata";
-import {INodeMetadata, NodeMetadataType} from "../components/graphs/INodeMetadata";
+import {INodeMetadata, NodeMetadataType} from "../interfaces/INodeMetadata";
 
 let coseBilkent = require('cytoscape-cose-bilkent');
 
@@ -12,7 +18,7 @@ export const Graph = () => {
 
     const cyRef = useRef<HTMLDivElement | null>(null);
     const [refVisible, setRefVisible] = useState(false);
-    const [cy, setCy] = useState(cytoscape.prototype);
+    const [cy, setCy] = useState({} as cytoscape.Core);
     const [showMetadata, setShowMetadata] = useState(false);
     const [metadata, setMetadata] = useState<INodeMetadata>({type: NodeMetadataType.client, id: ""});
 
@@ -21,6 +27,13 @@ export const Graph = () => {
             setShowMetadata(true);
         }
     }, [metadata]);
+
+    function setMetadataViaCallback(data: INodeMetadata) {
+        let ele = `node[fos_id="${data.id}"]`;
+        console.debug("Updating node", ele);
+        cy.elements(ele).flashClass("highlight", 1500);
+        setMetadata(data);
+    }
 
     function hideMetadata() {
         setShowMetadata(false);
@@ -42,7 +55,6 @@ export const Graph = () => {
                     style: {
                         "label": "",
                         "shape": "polygon",
-                        "shape-polygon-points": "4",
                         "background-fit": "cover",
                         "background-opacity": 0,
                     },
@@ -52,8 +64,8 @@ export const Graph = () => {
                     style: {
                         "label": "data(name)",
                         "ghost": "yes",
-                        "ghost-offset-x": 2,
-                        "ghost-offset-y": 2,
+                        "ghost-offset-x": 3,
+                        "ghost-offset-y": 3,
                         "ghost-opacity": 0.2,
                         "width": 50,
                         "height": 50,
@@ -66,6 +78,15 @@ export const Graph = () => {
                         "label": "Notice",
                         "background-image": "url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMHB4IiBoZWlnaHQ9IjIwcHgiIHZpZXdCb3g9IjAgMCAxNTM2IDE3OTIiPjxwYXRoIGZpbGw9InJnYigxMjcsNTksNzUpIiBkPSJNMTQ2OCAzODBxMjggMjggNDggNzZ0MjAgODh2MTE1MnEwIDQwLTI4IDY4dC02OCAyOGgtMTM0NHEtNDAgMC02OC0yOHQtMjgtNjh2LTE2MDBxMC00MCAyOC02OHQ2OC0yOGg4OTZxNDAgMCA4OCAyMHQ3NiA0OHpNMTAyNCAxMzZ2Mzc2aDM3NnEtMTAtMjktMjItNDFsLTMxMy0zMTNxLTEyLTEyLTQxLTIyek0xNDA4IDE2NjR2LTEwMjRoLTQxNnEtNDAgMC02OC0yOHQtMjgtNjh2LTQxNmgtNzY4djE1MzZoMTI4MHpNMzg0IDgwMHEwLTE0IDktMjN0MjMtOWg3MDRxMTQgMCAyMyA5dDkgMjN2NjRxMCAxNC05IDIzdC0yMyA5aC03MDRxLTE0IDAtMjMtOXQtOS0yM3YtNjR6TTExMjAgMTAyNHExNCAwIDIzIDl0OSAyM3Y2NHEwIDE0LTkgMjN0LTIzIDloLTcwNHEtMTQgMC0yMy05dC05LTIzdi02NHEwLTE0IDktMjN0MjMtOWg3MDR6TTExMjAgMTI4MHExNCAwIDIzIDl0OSAyM3Y2NHEwIDE0LTkgMjN0LTIzIDloLTcwNHEtMTQgMC0yMy05dC05LTIzdi02NHEwLTE0IDktMjN0MjMtOWg3MDR6Ii8+PC9zdmc+)"
                     },
+                },
+                {
+                    selector: '.highlight',
+                    style: {
+                        "border-color": "#fff000",
+                        "border-width": 10,
+                        "border-opacity": 0.7,
+                        "border-style": "dotted",
+                    }
                 },
                 {
                     selector: 'edge',
@@ -95,7 +116,7 @@ export const Graph = () => {
             return;
         }
 
-        console.log("Removing all elements");
+        // console.log("Removing all elements");
         cy.remove(cy.$("*"));
 
         const session = driver.session();
@@ -132,21 +153,23 @@ export const Graph = () => {
 
             Object.keys(node.properties).forEach(key => {
                 if (key === "id") {
-                    output["node_id"] = node.properties[key];
+                    output["fos_id"] = node.properties[key];
                 } else {
                     output[key] = node.properties[key];
                 }
             });
 
-            cy.add({
+            let ele: ElementDefinition = {
                 group: "nodes",
                 data: output,
                 classes: "multiline-auto" // todo make configurable .. currently everything wraps
-            });
+            };
+            // console.debug("Adding element", ele);
+            cy.add(ele);
         }
     }
 
-//verify if edge exists, add it if it doesn't
+    //verify if edge exists, add it if it doesn't
     function addEdge(edge: EdgeDataDefinition) {
         const found = cy.$id("edge_" + edge.identity.low);
         if (found["length"] === 0) {
@@ -173,34 +196,28 @@ export const Graph = () => {
     }
 
     function reDraw() {
-        console.debug("Redrawing ...");
         const layoutOptions = {
             name: "cose-bilkent",
-            animate: 'end',
-            animationDuration: 1000,
-            tilingPaddingHorizontal: 20,
-            gravityRangeCompound: 9,
-            fit: true,
+            fit: false,
         };
         cy.resize();
         cy.elements().layout(layoutOptions).run();
-        cy.on('tap', 'node', function (evt: React.MouseEvent & {
+        cy.on('tap', 'node', function (evt: {
             target: {
-                data: () => { node_id: string, fos_type: NodeMetadataType }
+                data: () => { fos_id: string, fos_type: NodeMetadataType }
             }
         }) {
             setMetadata({
                     type: evt.target.data().fos_type,
-                    id: evt.target.data().node_id
+                    id: evt.target.data().fos_id
                 }
             );
         });
-        console.debug("Completed redraw");
     }
 
     return (
         <>
-            <NodeMetadata hidden={!showMetadata} hideCallback={hideMetadata} metadata={metadata}/>
+            <NodeMetadata hidden={!showMetadata} hideCallback={hideMetadata} metadata={metadata} setMetadataCallback={setMetadataViaCallback}/>
             <div id={"cy"} className={"mt-0"}
                  ref={instance => {
                      cyRef.current = instance;

@@ -1,7 +1,10 @@
+import {NoticeResponseDAO} from "./NoticeResponseDAO";
+
 export interface ClientResponseDAO {
     id: string,
     name: string,
     postCode: string,
-    tenderCount: number,
+    noticeCount: number,
     normalisedPostCode: string,
+    notices: NoticeResponseDAO[]
 }
