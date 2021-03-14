@@ -1,6 +1,7 @@
 export enum NodeMetadataType {
     client = "client",
-    notice = "notice"
+    notice = "notice",
+    award = "award",
 }
 
 export interface INodeMetadata {

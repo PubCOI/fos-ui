@@ -3,31 +3,69 @@ import React, {useEffect, useState} from "react";
 import {LoadingWrapper} from "../components/LoadingWrapper";
 import {AlertWrapper} from "../components/AlertWrapper";
 import axios from "axios";
-import NumberFormat from 'react-number-format';
 import FontAwesome from "react-fontawesome";
 import {PageTitle} from "../components/PageTitle";
-import {MinMaxValueFormat} from "../components/MinMaxValueFormat";
-
-interface Award {
-    id: string,
-    noticeID: string,
-    organisation: string,
-    supplierName: string,
-    value: number,
-    valueMin: number,
-    valueMax: number,
-    group_award: boolean,
-}
+import {AwardDAO} from "../interfaces/AwardDAO";
+import Datatable from 'react-bs-datatable';
+import {ContractValueFormat} from "../components/ContractValueFormat";
+import {css} from "@emotion/css";
+import {show} from "react-functional-modal";
+import {AwardDetailsModal} from "../components/graphs/AwardDetailsModal";
 
 export const Awards = () => {
 
     let url = "/api/ui/awards";
-    const [awards, setAwardsList] = useState<Award[]>([]);
+    const [awards, setAwardsList] = useState<AwardDAO[]>([]);
     const [loaded, setLoaded] = useState(false);
     const [error, setError] = useState(false);
 
+    function getHeader() {
+        return [
+            {
+                title: 'Organisation',
+                prop: 'organisation',
+                sortable: true,
+                filterable: true,
+            },
+            {
+                title: 'Supplier',
+                prop: 'supplierName',
+                sortable: true,
+                filterable: true,
+            },
+            {
+                title: '',
+                prop: '',
+                cell: (row: AwardDAO) => <FontAwesome name={"users"} className={"ml-2"} hidden={!row.group_award} />
+            },
+            {
+                title: 'Value',
+                prop: 'value',
+                sortable: true,
+                cell: (row: AwardDAO) => <ContractValueFormat award={row}/>
+            }
+        ];
+    }
+
+    function openModal(id: string) {
+        show(
+            <AwardDetailsModal id={id}/>, {key: id}
+        )
+    }
+
+    const tableClasses = {
+        table: `table-striped table-hover mt-3`,
+        paginationOptsFormText: css`
+        &:first-of-type {
+          margin-right: 8px;
+        }
+        &:last-of-type {
+          margin-left: 8px;
+        }`
+    };
+
     useEffect(() => {
-        axios.get<Award[]>(url).then(response => {
+        axios.get<AwardDAO[]>(url).then(response => {
             setAwardsList(response.data)
         })
             .then(() => setLoaded(true))
@@ -44,45 +82,38 @@ export const Awards = () => {
 
     return (
         <>
-            <PageTitle title={"Contracts Finder: Raw Data"}/>
+            <PageTitle title={"Contracts Finder: raw data"}/>
 
-            <Alert variant={"info"}>
-                These records have been pulled from the HMG Contracts Finder
+            <Alert variant={"info"} className={"text-muted"}>
+                These records have been pulled from the HMG Contracts Finder; note that these names are not 'corrected'
+                as on the graph(s)
             </Alert>
 
-            <Table striped bordered hover>
-                <thead>
-                <tr>
-                    <th>Org / Dept</th>
-                    <th>Company</th>
-                    <th>Value</th>
-                </tr>
-                </thead>
-                <tbody>
-                {awards.map(award => (
-                    <tr key={award.id}>
-                        <td>{award.organisation}</td>
-                        <td>{award.supplierName}</td>
-                        {/*<Badge variant={"secondary"} className={`${award.group_award ? "" : "d-none"}`}>G</Badge>*/}
-                        <td align={"right"} className={"text-nowrap"}><ContractValueFormat award={award}/>
-                            <FontAwesome name={"users"} className={"ml-2"} hidden={!award.group_award} />
-                        </td>
-                    </tr>
-                ))}
-                </tbody>
-            </Table>
+            <Datatable tableHeaders={getHeader()}
+                       tableBody={awards}
+                       initialSort={{prop: 'created', isAscending: false}}
+                       // onSort={onSort}
+                       classes={tableClasses}
+                       rowsPerPage={10}
+                       rowsPerPageOption={[5, 10, 25, 50]}
+                       onRowClick={(o) => openModal(o.id)}
+            />
+
+            {/*<Table striped bordered hover>*/}
+            {/*
+            {/*    <tbody>*/}
+            {/*    {awards.map(award => (*/}
+            {/*        <tr key={award.id}>*/}
+            {/*            <td>{award.organisation}</td>*/}
+            {/*            <td>{award.supplierName}</td>*/}
+            {/*            /!*<Badge variant={"secondary"} className={`${award.group_award ? "" : "d-none"}`}>G</Badge>*!/*/}
+            {/*            <td align={"right"} className={"text-nowrap"}><ContractValueFormat award={award}/>*/}
+            {/*                <FontAwesome name={"users"} className={"ml-2"} hidden={!award.group_award} />*/}
+            {/*            </td>*/}
+            {/*        </tr>*/}
+            {/*    ))}*/}
+            {/*    </tbody>*/}
+            {/*</Table>*/}
         </>
     )
-};
-
-const ContractValueFormat = (props: { award: Award }) => {
-    if (0 === props.award.value && 0 === props.award.valueMin && 0 === props.award.valueMax) {
-        return (<>[No data] <FontAwesome name={"warning"}/></>)
-    }
-    if (0 !== props.award.value) {
-        return (
-            <NumberFormat thousandSeparator displayType={"text"} prefix={"£"} value={props.award.value}/>
-        )
-    }
-    return <MinMaxValueFormat min={props.award.valueMin} max={props.award.valueMax}/>
 };

@@ -11,7 +11,8 @@ export const NodeMetadata = (
         hideCallback: () => void,
         hidden: boolean,
         metadata: INodeMetadata,
-        setMetadataCallback: (metadata: INodeMetadata) => void
+        setMetadataCallback: (metadata: INodeMetadata) => void,
+        showAwardDetailsCB: (id: string) => void
     }
 ) => {
 
@@ -36,10 +37,10 @@ export const NodeMetadata = (
         }
         if (props.metadata.type === NodeMetadataType.notice) {
             setIcon(<FontAwesome name={"file-text-o"}/>);
-            setOutput(<RenderNoticeMetadata id={props.metadata.id}/>);
+            setOutput(<RenderNoticeMetadata id={props.metadata.id} awardDetailsCB={props.showAwardDetailsCB}/>);
             return;
         }
-        throw new DOMException("Unable to determine node type");
+        console.debug("Did not match any of the popup types");
     }, [props.metadata]);
 
     return (

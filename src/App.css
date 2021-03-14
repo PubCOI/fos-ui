@@ -62,3 +62,9 @@ canvas > path {
   text-wrap: normal;
   max-width: 40%;
 }
+
+.truncate-ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

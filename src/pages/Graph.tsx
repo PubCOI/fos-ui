@@ -1,14 +1,10 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {auth, driver as neo4j_driver} from "neo4j-driver";
-import cytoscape, {
-    EdgeDataDefinition,
-    ElementDefinition,
-    EventHandler,
-    NodeDataDefinition,
-    NodeSingular,
-} from "cytoscape";
+import cytoscape, {EdgeDataDefinition, ElementDefinition, NodeDataDefinition,} from "cytoscape";
 import {NodeMetadata} from "../components/NodeMetadata";
 import {INodeMetadata, NodeMetadataType} from "../interfaces/INodeMetadata";
+import {show} from "react-functional-modal";
+import {AwardDetailsModal} from "../components/graphs/AwardDetailsModal";
 
 let coseBilkent = require('cytoscape-cose-bilkent');
 
@@ -25,6 +21,12 @@ export const Graph = () => {
     useEffect(() => {
         if (undefined !== metadata.type && undefined !== metadata.id && metadata.id !== "") {
             setShowMetadata(true);
+            if (metadata.type === NodeMetadataType.notice) {
+                getChildNodes(metadata.id);
+            }
+            if (metadata.type === NodeMetadataType.award) {
+                showAwardDetails(metadata.id);
+            }
         }
     }, [metadata]);
 
@@ -37,6 +39,33 @@ export const Graph = () => {
 
     function hideMetadata() {
         setShowMetadata(false);
+    }
+
+    function showAwardDetails(id: string) {
+        console.log("Getting award details for", id);
+        show(<AwardDetailsModal id={id}/>, {key: id});
+    }
+
+    function getChildNodes(id: string) {
+        console.debug("Requesting children of", id);
+        const cypher = `MATCH (a:Award)-[ref]-(n:Notice) WHERE n.hidden=false AND n.id="${id}" RETURN a, ref, n LIMIT 50`;
+        console.debug("Running query:", cypher);
+        const params = {};
+        const session = driver.session();
+        return session.run(cypher, params)
+            .then(result => {
+                console.debug("result", result);
+                session.close();
+                result.records.forEach(res => {
+                    addNode(res.get("a"), 'award');
+                    addNode(res.get("n"), 'notice');
+                    addEdge(res.get("ref"));
+                });
+                reDraw();
+            })
+            .catch(error => {
+                session.close();
+            });
     }
 
     cytoscape.use(coseBilkent);
@@ -78,6 +107,13 @@ export const Graph = () => {
                         "label": "Notice",
                         "background-image": "url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMHB4IiBoZWlnaHQ9IjIwcHgiIHZpZXdCb3g9IjAgMCAxNTM2IDE3OTIiPjxwYXRoIGZpbGw9InJnYigxMjcsNTksNzUpIiBkPSJNMTQ2OCAzODBxMjggMjggNDggNzZ0MjAgODh2MTE1MnEwIDQwLTI4IDY4dC02OCAyOGgtMTM0NHEtNDAgMC02OC0yOHQtMjgtNjh2LTE2MDBxMC00MCAyOC02OHQ2OC0yOGg4OTZxNDAgMCA4OCAyMHQ3NiA0OHpNMTAyNCAxMzZ2Mzc2aDM3NnEtMTAtMjktMjItNDFsLTMxMy0zMTNxLTEyLTEyLTQxLTIyek0xNDA4IDE2NjR2LTEwMjRoLTQxNnEtNDAgMC02OC0yOHQtMjgtNjh2LTQxNmgtNzY4djE1MzZoMTI4MHpNMzg0IDgwMHEwLTE0IDktMjN0MjMtOWg3MDRxMTQgMCAyMyA5dDkgMjN2NjRxMCAxNC05IDIzdC0yMyA5aC03MDRxLTE0IDAtMjMtOXQtOS0yM3YtNjR6TTExMjAgMTAyNHExNCAwIDIzIDl0OSAyM3Y2NHEwIDE0LTkgMjN0LTIzIDloLTcwNHEtMTQgMC0yMy05dC05LTIzdi02NHEwLTE0IDktMjN0MjMtOWg3MDR6TTExMjAgMTI4MHExNCAwIDIzIDl0OSAyM3Y2NHEwIDE0LTkgMjN0LTIzIDloLTcwNHEtMTQgMC0yMy05dC05LTIzdi02NHEwLTE0IDktMjN0MjMtOWg3MDR6Ii8+PC9zdmc+)"
                     },
+                },
+                {
+                    selector: 'node[fos_type="award"]',
+                    style: {
+                        "label": "Award",
+                        "background-image": "url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMHB4IiBoZWlnaHQ9IjIwcHgiIHZpZXdCb3g9IjAgMCAyMzA0IDE3OTIiPjxwYXRoIGZpbGw9InJnYigxMTEsNTksMTI3KSIgZD0iTTE5MiAxMTUycTQwIDAgNTYtMzJ0MC02NC01Ni0zMi01NiAzMiAwIDY0IDU2IDMyek0xNjY1IDEwOTRxLTEwLTEzLTM4LjUtNTB0LTQxLjUtNTQtMzgtNDktNDIuNS01My00MC41LTQ3LTQ1LTQ5bC0xMjUgMTQwcS04MyA5NC0yMDguNSA5MnQtMjA1LjUtOThxLTU3LTY5LTU2LjUtMTU4dDU4LjUtMTU3bDE3Ny0yMDZxLTIyLTExLTUxLTE2LjV0LTQ3LjUtNi01Ni41IDAuNS00OSAxcS05MiAwLTE1OCA2NmwtMTU4IDE1OGgtMTU1djU0NHE1IDAgMjEtMC41dDIyIDAgMTkuNSAyIDIwLjUgNC41IDE3LjUgOC41IDE4LjUgMTMuNWwyOTcgMjkycTExNSAxMTEgMjI3IDExMSA3OCAwIDEyNS00NyA1NyAyMCAxMTIuNS04dDcyLjUtODVxNzQgNiAxMjctNDQgMjAtMTggMzYtNDUuNXQxNC01MC41cTEwIDEwIDQzIDEwIDQzIDAgNzctMjF0NDkuNS01MyAxMi03MS41LTMwLjUtNzMuNXpNMTgyNCAxMTUyaDk2di01MTJoLTkzbC0xNTctMTgwcS02Ni03Ni0xNjktNzZoLTE2N3EtODkgMC0xNDYgNjdsLTIwOSAyNDNxLTI4IDMzLTI4IDc1dDI3IDc1cTQzIDUxIDExMCA1MnQxMTEtNDlsMTkzLTIxOHEyNS0yMyA1My41LTIxLjV0NDcgMjcgOC41IDU2LjVxMTYgMTkgNTYgNjN0NjAgNjhxMjkgMzYgODIuNSAxMDUuNXQ2NC41IDg0LjVxNTIgNjYgNjAgMTQwek0yMTEyIDExNTJxNDAgMCA1Ni0zMnQwLTY0LTU2LTMyLTU2IDMyIDAgNjQgNTYgMzJ6TTIzMDQgNTc2djY0MHEwIDI2LTE5IDQ1dC00NSAxOWgtNDM0cS0yNyA2NS04MiAxMDYuNXQtMTI1IDUxLjVxLTMzIDQ4LTgwLjUgODEuNXQtMTAyLjUgNDUuNXEtNDIgNTMtMTA0LjUgODEuNXQtMTI4LjUgMjQuNXEtNjAgMzQtMTI2IDM5LjV0LTEyNy41LTE0LTExNy01My41LTEwMy41LTgxbC0yODctMjgyaC0zNThxLTI2IDAtNDUtMTl0LTE5LTQ1di02NzJxMC0yNiAxOS00NXQ0NS0xOWg0MjFxMTQtMTQgNDctNDh0NDcuNS00OCA0NC00MCA1MC41LTM3LjUgNTEtMjUuNSA2Mi0xOS41IDY4LTUuNWgxMTdxOTkgMCAxODEgNTYgODItNTYgMTgxLTU2aDE2N3EzNSAwIDY3IDZ0NTYuNSAxNC41IDUxLjUgMjYuNSA0NC41IDMxIDQzIDM5LjUgMzkgNDIgNDEgNDggNDEuNSA0OC41aDM1NXEyNiAwIDQ1IDE5dDE5IDQ1eiIvPjwvc3ZnPg==)",
+                    }
                 },
                 {
                     selector: '.highlight',
@@ -164,7 +200,7 @@ export const Graph = () => {
                 data: output,
                 classes: "multiline-auto" // todo make configurable .. currently everything wraps
             };
-            // console.debug("Adding element", ele);
+            console.debug(`Adding node ${output.id}:`, ele);
             cy.add(ele);
         }
     }
@@ -185,13 +221,15 @@ export const Graph = () => {
                 output[key] = edge.properties[key];
             });
 
-            cy.add({
+            let ele: ElementDefinition = {
                 group: "edges",
-                data: output
-            });
-            // console.debug("edge_" + edge.identity.low + " created between node_" + edge.start.low + " and node_" + edge.end.low);
+                data: output,
+            };
+            console.debug("Adding edge:", ele);
+            cy.add(ele);
+            console.debug(`edge_${edge.identity.low} created between node_${edge.start.low} and node_${edge.end.low}`);
         } else {
-            // console.debug("edge_" + edge.identity.low + " already exists");
+            console.debug(`edge_${edge.identity.low} already exists`);
         }
     }
 
@@ -202,7 +240,11 @@ export const Graph = () => {
         };
         cy.resize();
         cy.elements().layout(layoutOptions).run();
-        cy.on('tap', 'node', function (evt: {
+
+        // add listener
+        let nodes = cy.elements("node[!hasListener]");
+        // console.log(`${nodes.size()} nodes match [!hasListener]`);
+        nodes.on('tap', function (evt: {
             target: {
                 data: () => { fos_id: string, fos_type: NodeMetadataType }
             }
@@ -213,11 +255,15 @@ export const Graph = () => {
                 }
             );
         });
+        // mark added so that we don't add twice
+        nodes.data("hasListener", "tap");
+        // console.debug(`${cy.elements("node[!hasListener]").size()} match`)
     }
 
     return (
         <>
-            <NodeMetadata hidden={!showMetadata} hideCallback={hideMetadata} metadata={metadata} setMetadataCallback={setMetadataViaCallback}/>
+            <NodeMetadata hidden={!showMetadata} hideCallback={hideMetadata} metadata={metadata}
+                          setMetadataCallback={setMetadataViaCallback} showAwardDetailsCB={showAwardDetails}/>
             <div id={"cy"} className={"mt-0"}
                  ref={instance => {
                      cyRef.current = instance;
