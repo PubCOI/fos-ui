@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from "react";
+import React, {useContext} from "react";
 import AppContext from "./core/AppContext";
 import SlidingPane from "react-sliding-pane";
 import FontAwesome from "react-fontawesome";
@@ -9,17 +9,16 @@ export const PaneContainer = () => {
     const {paneContents, paneTitle, paneSubtitle, closePane} = useContext(PaneContext);
 
     return (
-
-            <SlidingPane
-                overlayClassName="pane-overlay"
-                isOpen={showRightPane}
-                closeIcon={<FontAwesome name={"caret-right"} size={"2x"}/>}
-                title={paneTitle}
-                subtitle={paneSubtitle}
-                onRequestClose={() => {
-                    closePane()
-                }}>
-                <div>{paneContents}</div>
-            </SlidingPane>
+        <SlidingPane
+            overlayClassName="pane-overlay"
+            isOpen={showRightPane}
+            closeIcon={<FontAwesome name={"caret-right"} size={"2x"}/>}
+            title={paneTitle}
+            subtitle={paneSubtitle}
+            onRequestClose={() => {
+                closePane()
+            }}>
+            <div>{paneContents}</div>
+        </SlidingPane>
     )
 }

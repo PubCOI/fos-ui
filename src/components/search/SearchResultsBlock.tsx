@@ -1,19 +1,30 @@
 import {SearchResultWrapper} from "./SearchInterfaces";
 import {Badge, Button, ListGroup, Media} from "react-bootstrap";
-import React from "react";
+import React, {useContext} from "react";
 import Moment from "react-moment";
 import FontAwesome from "react-fontawesome";
 import {Link} from "react-router-dom";
+import PaneContext from "../core/PaneContext";
+import {strict} from "assert";
+import {CFViewer} from "../viewer/CFViewer";
 
 export const SearchResultsBlock = (props: { data: SearchResultWrapper, aggregated: boolean }) => {
+
+    const {setPaneTitle, setPaneSubtitle, setPaneContents, openPane} = useContext(PaneContext);
+
+    function openPDFPane(attachment_id: string, page_number: string) {
+        setPaneTitle("PDF: attachment " + attachment_id);
+        setPaneContents(<CFViewer attachment_id={attachment_id} page_number={page_number}/>);
+        openPane();
+        //  as={Link} to={`/view/cf/${item.attachmentId}/page/1`}
+    }
 
     return (
         <>
             {Boolean(props.aggregated) && (
                 <ListGroup variant={"flush"}>
                     {props.data.aggregated.map(item => (
-                        <ListGroup.Item key={`fts_result_${item.key}`} action as={Link}
-                                        to={`/view/cf/${item.attachmentId}/page/1`}>
+                        <ListGroup.Item key={`fts_result_${item.key}`} action onClick={() => openPDFPane(item.attachmentId, "1")}>
 
                             <Media className={"py-3"}>
                                 <FontAwesome name={"file-pdf-o"} size={"2x"} className={"pr-4"}/>

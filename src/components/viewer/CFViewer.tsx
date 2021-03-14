@@ -1,18 +1,15 @@
-import React, {useEffect, useRef, useState} from 'react';
-import {useParams} from "react-router-dom";
-import {CFViewerRouteParams} from "../interfaces/CFViewerRouteParams";
+import React, {useEffect, useRef, useState} from "react";
 import {usePdf} from "@mikecousins/react-pdf";
 import {Button, Col, Navbar, Row} from "react-bootstrap";
-import {LoadingWrapper} from "../components/LoadingWrapper";
+import {LoadingWrapper} from "../LoadingWrapper";
 
-export const CFViewer = () => {
-    let {attachment_id, page_number} = useParams<CFViewerRouteParams>();
+export const CFViewer = (props: {attachment_id: string, page_number: string}) => {
 
-    const [page, setPage] = useState(Number.parseInt(page_number || "1"));
+    const [page, setPage] = useState(Number.parseInt(props.page_number || "1"));
     const [totalPages, setTotalPages] = useState(0);
     const canvasRef = useRef(null);
     const {pdfDocument, pdfPage} = usePdf({
-        file: `/api/ui/view?attachment_id=${attachment_id}`,
+        file: `/api/ui/view?attachment_id=${props.attachment_id}`,
         page,
         canvasRef
     });
@@ -63,5 +60,6 @@ export const CFViewer = () => {
                 </Navbar>
             )}
         </>
+
     )
 };

@@ -43,11 +43,12 @@ function App() {
     const [paneSubtitle, setPaneSubtitle] = useState("");
     const [paneContents, setPaneContents] = useState(<></>);
     function openPane() {
-        console.debug("Calling open pane");
         setShowRightPane(true);
     }
     function closePane() {
-        console.debug("Calling close pane");
+        setPaneTitle("");
+        setPaneSubtitle("");
+        setPaneContents(<>[null]</>)
         setShowRightPane(false);
     }
     const paneSettings = {
