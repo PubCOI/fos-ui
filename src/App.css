@@ -68,3 +68,7 @@ canvas > path {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.pane-overlay {
+  z-index: 1200;
+}

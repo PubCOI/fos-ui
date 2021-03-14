@@ -1,11 +1,12 @@
-import React, {useEffect, useState} from 'react';
+import React, {Context, useEffect, useState} from 'react';
 import {Modal} from "react-bootstrap";
 import {hide} from "react-functional-modal";
 import axios from "axios";
 import {AwardDAO} from "../../interfaces/AwardDAO";
 import {AwardDetailsModalBody} from "./AwardDetailsModalBody";
+import {DataTypeEnum, FixDataIssueWidget} from "./FixDataIssueWidget";
 
-export const AwardDetailsModal = (props: { id: string }) => {
+export const AwardDetailsModal = (props: { id: string}) => {
 
     const [loaded, setLoaded] = useState(false);
     const [award, setAward] = useState<AwardDAO>();
@@ -30,6 +31,7 @@ export const AwardDetailsModal = (props: { id: string }) => {
                     <Modal.Title>Award Details</Modal.Title>
                 </Modal.Header>
                 {body}
+                <FixDataIssueWidget type={DataTypeEnum.award} id={props.id}/>
             </Modal>
         </>
     )

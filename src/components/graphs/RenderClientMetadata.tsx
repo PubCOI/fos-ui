@@ -56,7 +56,7 @@ export const RenderClientMetadata = (
                 rel={"noreferrer"}>view on map</a>)
             </div>
 
-            <div className={"mb-2"}>{client.noticeCount} tender{(client.noticeCount > 1 ? "s" : "")} granted</div>
+            <div className={"mb-2"}>{client.noticeCount} contract{(client.noticeCount > 1 ? "s" : "")} published</div>
 
             <ListGroup className={"y-scroll"}>
 

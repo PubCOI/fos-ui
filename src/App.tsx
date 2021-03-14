@@ -13,45 +13,81 @@ import {Tasks} from "./pages/Tasks";
 import {Home} from "./pages/Home";
 import {Footer} from "./components/Footer";
 import {Profile} from "./pages/Profile";
-import AppContext from "./components/AppContext";
+import AppContext from "./components/core/AppContext";
 import {ContextPopulator} from "./components/ContextPopulator";
 import {Upload} from "./pages/Upload";
 import {Graph} from "./pages/Graph";
 import {Search} from "./pages/Search";
 import {Viewer} from "./pages/Viewer";
 import {Stats} from "./pages/Stats";
+import "react-sliding-pane/dist/react-sliding-pane.css";
+import {PaneContainer} from "./components/PaneContainer";
+import PaneContext from "./components/core/PaneContext";
 
 function App() {
 
+    // ***** application ******
     const [displayName, setDisplayName] = useState("");
-    const userSettings = {
+    const [showRightPane, setShowRightPane] = useState(false);
+
+    const applicationSettings = {
         displayName: displayName,
-        setDisplayName,
+        setDisplayName: setDisplayName,
+        showRightPane: showRightPane,
+        setShowRightPane: setShowRightPane
     };
+    // &&&&& end application settings
+
+    // ***** pane settings *****
+    const [paneTitle, setPaneTitle] = useState("");
+    const [paneSubtitle, setPaneSubtitle] = useState("");
+    const [paneContents, setPaneContents] = useState(<></>);
+    function openPane() {
+        console.debug("Calling open pane");
+        setShowRightPane(true);
+    }
+    function closePane() {
+        console.debug("Calling close pane");
+        setShowRightPane(false);
+    }
+    const paneSettings = {
+        paneTitle: paneTitle,
+        setPaneTitle,
+        paneSubtitle: paneSubtitle,
+        setPaneSubtitle,
+        paneContents: paneContents,
+        setPaneContents,
+        openPane,
+        closePane
+    };
+    // ***** end pane settings
 
     return (
         <>
-            <AppContext.Provider value={userSettings}>
-                <ContextPopulator/>
-                <Header/>
-                <Container fluid>
-                    <main role={"main"}>
-                        <Switch>
-                            <Route exact path={"/"} component={Home}/>
-                            <Route exact path={"/login"} component={Login}/>
-                            <Route exact path={"/data/awards"} component={Awards}/>
-                            <Route exact path={"/about"} component={About}/>
-                            <Route exact path={"/tasks"} component={Tasks}/>
-                            <Route exact path={"/profile"} component={Profile}/>
-                            <Route exact path={"/data/upload"} component={Upload}/>
-                            <Route exact path={"/graph"} component={Graph}/>
-                            <Route exact path={"/search"} component={Search}/>
-                            <Route exact path={"/stats"} component={Stats}/>
-                            <Route path={"/view"} component={Viewer}/>
-                        </Switch>
-                    </main>
-                </Container>
-                <Footer/>
+            <AppContext.Provider value={applicationSettings}>
+                <PaneContext.Provider value={paneSettings}>
+                    <ContextPopulator/>
+                    <PaneContainer/>
+                    <Header/>
+                    <Container fluid>
+                        <main role={"main"}>
+                            <Switch>
+                                <Route exact path={"/"} component={Home}/>
+                                <Route exact path={"/login"} component={Login}/>
+                                <Route exact path={"/data/awards"} component={Awards}/>
+                                <Route exact path={"/about"} component={About}/>
+                                <Route exact path={"/tasks"} component={Tasks}/>
+                                <Route exact path={"/profile"} component={Profile}/>
+                                <Route exact path={"/data/upload"} component={Upload}/>
+                                <Route exact path={"/graph"} component={Graph}/>
+                                <Route exact path={"/search"} component={Search}/>
+                                <Route exact path={"/stats"} component={Stats}/>
+                                <Route path={"/view"} component={Viewer}/>
+                            </Switch>
+                        </main>
+                    </Container>
+                    <Footer/>
+                </PaneContext.Provider>
             </AppContext.Provider>
         </>
     );

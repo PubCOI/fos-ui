@@ -2,7 +2,7 @@ import {useContext, useEffect, useState} from "react";
 import firebase from "firebase";
 import axios from "axios";
 import {FosUserInfo} from "../interfaces/FosUserInfo";
-import AppContext from "./AppContext";
+import AppContext from "./core/AppContext";
 import {useToasts} from "react-toast-notifications";
 
 export const ContextPopulator = () => {
@@ -49,4 +49,4 @@ export const ContextPopulator = () => {
         <>
         </>
     )
-}
+};

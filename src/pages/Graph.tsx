@@ -1,17 +1,18 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import {auth, driver as neo4j_driver} from "neo4j-driver";
 import cytoscape, {EdgeDataDefinition, ElementDefinition, NodeDataDefinition,} from "cytoscape";
 import {NodeMetadata} from "../components/NodeMetadata";
 import {INodeMetadata, NodeMetadataType} from "../interfaces/INodeMetadata";
 import {show} from "react-functional-modal";
 import {AwardDetailsModal} from "../components/graphs/AwardDetailsModal";
+import PaneContext from "../components/core/PaneContext";
 
 let coseBilkent = require('cytoscape-cose-bilkent');
 
-
-export const Graph = () => {
+export const Graph = (props: { location: Location }) => {
     const driver = neo4j_driver("bolt://localhost", auth.basic("neo4j", "password"));
 
+    const paneContext = useContext(PaneContext);
     const cyRef = useRef<HTMLDivElement | null>(null);
     const [refVisible, setRefVisible] = useState(false);
     const [cy, setCy] = useState({} as cytoscape.Core);
@@ -24,9 +25,9 @@ export const Graph = () => {
             if (metadata.type === NodeMetadataType.notice) {
                 getChildNodes(metadata.id);
             }
-            if (metadata.type === NodeMetadataType.award) {
-                showAwardDetails(metadata.id);
-            }
+            // if (metadata.type === NodeMetadataType.award) {
+            //     showAwardDetails(metadata.id);
+            // }
         }
     }, [metadata]);
 
@@ -43,7 +44,10 @@ export const Graph = () => {
 
     function showAwardDetails(id: string) {
         console.log("Getting award details for", id);
-        show(<AwardDetailsModal id={id}/>, {key: id});
+        show(
+            <PaneContext.Provider value={paneContext}>
+                <AwardDetailsModal id={id}/>
+            </PaneContext.Provider>, {key: id});
     }
 
     function getChildNodes(id: string) {

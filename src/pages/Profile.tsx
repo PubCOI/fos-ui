@@ -1,6 +1,6 @@
 import {Button, Col, Form, Row} from "react-bootstrap";
 import React, {FormEvent, useContext, useState} from "react";
-import AppContext from "../components/AppContext";
+import AppContext from "../components/core/AppContext";
 import {useToasts} from "react-toast-notifications";
 import axios from "axios";
 
@@ -34,6 +34,7 @@ export const Profile = () => {
                     appearance: "error",
                     autoDismiss: true,
                 });
+                setIsSubmitted(false);
             })
     };
 

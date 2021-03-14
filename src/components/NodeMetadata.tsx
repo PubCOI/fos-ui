@@ -4,6 +4,7 @@ import FontAwesome from "react-fontawesome";
 import {RenderNoticeMetadata} from "./graphs/RenderNoticeMetadata";
 import {RenderClientMetadata} from "./graphs/RenderClientMetadata";
 import {Button} from "react-bootstrap";
+import {RenderAwardMetadata} from "./graphs/RenderAwardMetadata";
 
 
 export const NodeMetadata = (
@@ -40,7 +41,12 @@ export const NodeMetadata = (
             setOutput(<RenderNoticeMetadata id={props.metadata.id} awardDetailsCB={props.showAwardDetailsCB}/>);
             return;
         }
-        console.debug("Did not match any of the popup types");
+        if (props.metadata.type === NodeMetadataType.award) {
+            setIcon(<FontAwesome name={"handshake-o"}/>);
+            setOutput(<RenderAwardMetadata id={props.metadata.id}/>);
+            return;
+        }
+        console.debug("Did not match client or notice type");
     }, [props.metadata]);
 
     return (
@@ -48,15 +54,22 @@ export const NodeMetadata = (
             <div className={"metadata-parent shadow-lg metadata-text-block"} hidden={props.hidden}>
                 <div className={"d-flex justify-content-between align-items-center"}>
                     <div><h5 className={"mr-3 mt-2"}>Node: {props.metadata.type}</h5></div>
-                    <div><span className={"mr-2"}>{icon}</span></div>
+                    <div>
+                        <button type={"button"} className={"close"} onClick={() => resetAndClose()}>
+                            <span aria-hidden={"true"}>×</span>
+                        </button>
+
+                        {/*<button type="button" className="close"><span aria-hidden="true">×</span><span*/}
+                        {/*    className="sr-only">Close</span></button>*/}
+                    </div>
                 </div>
 
                 {output}
 
-                <div className={"d-flex justify-content-end"}>
-                    <Button size={"sm"} className={"mt-3"} variant={"outline-primary"}
-                            onClick={() => resetAndClose()}>Hide</Button>
-                </div>
+                {/*<div className={"d-flex justify-content-end"}>*/}
+                {/*    <Button size={"sm"} className={"mt-3"} variant={"outline-primary"}*/}
+                {/*            onClick={() => resetAndClose()}>Hide</Button>*/}
+                {/*</div>*/}
             </div>
         </>
     )

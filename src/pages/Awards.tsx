@@ -1,5 +1,5 @@
-import {Alert, Table} from "react-bootstrap";
-import React, {useEffect, useState} from "react";
+import {Alert} from "react-bootstrap";
+import React, {useContext, useEffect, useState} from "react";
 import {LoadingWrapper} from "../components/LoadingWrapper";
 import {AlertWrapper} from "../components/AlertWrapper";
 import axios from "axios";
@@ -11,6 +11,7 @@ import {ContractValueFormat} from "../components/ContractValueFormat";
 import {css} from "@emotion/css";
 import {show} from "react-functional-modal";
 import {AwardDetailsModal} from "../components/graphs/AwardDetailsModal";
+import PaneContext from "../components/core/PaneContext";
 
 export const Awards = () => {
 
@@ -18,6 +19,7 @@ export const Awards = () => {
     const [awards, setAwardsList] = useState<AwardDAO[]>([]);
     const [loaded, setLoaded] = useState(false);
     const [error, setError] = useState(false);
+    const paneContext = useContext(PaneContext);
 
     function getHeader() {
         return [
@@ -36,7 +38,7 @@ export const Awards = () => {
             {
                 title: '',
                 prop: '',
-                cell: (row: AwardDAO) => <FontAwesome name={"users"} className={"ml-2"} hidden={!row.group_award} />
+                cell: (row: AwardDAO) => <FontAwesome name={"users"} className={"ml-2"} hidden={!row.group_award}/>
             },
             {
                 title: 'Value',
@@ -49,7 +51,9 @@ export const Awards = () => {
 
     function openModal(id: string) {
         show(
-            <AwardDetailsModal id={id}/>, {key: id}
+            <PaneContext.Provider value={paneContext}>
+                <AwardDetailsModal id={id}/>
+            </PaneContext.Provider>, {key: id}
         )
     }
 
@@ -92,7 +96,7 @@ export const Awards = () => {
             <Datatable tableHeaders={getHeader()}
                        tableBody={awards}
                        initialSort={{prop: 'created', isAscending: false}}
-                       // onSort={onSort}
+                // onSort={onSort}
                        classes={tableClasses}
                        rowsPerPage={10}
                        rowsPerPageOption={[5, 10, 25, 50]}

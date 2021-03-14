@@ -4,7 +4,9 @@ import React from "react";
 
 const AppContext = React.createContext({
     displayName: "",
-    setDisplayName: (name: string) => {},
+    setDisplayName: (name: string) => {console.error("not implemented")},
+    showRightPane: false,
+    setShowRightPane: (show: boolean) => {console.error("not implemented")},
 });
 
 export default AppContext;

@@ -3,7 +3,7 @@ import {Nav, Navbar, NavDropdown} from "react-bootstrap";
 import {FirebaseAuthConsumer} from "@react-firebase/auth";
 import React, {useContext, useEffect, useState} from "react";
 import firebase from "firebase";
-import AppContext from "./AppContext";
+import AppContext from "./core/AppContext";
 import FontAwesome from "react-fontawesome";
 
 export const Header = () => {
