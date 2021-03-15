@@ -1,4 +1,4 @@
-import {Col, Row} from "react-bootstrap";
+import {Alert, Col, Row} from "react-bootstrap";
 import React from "react";
 import FontAwesome from "react-fontawesome";
 import {FosDropZone} from "../components/FosDropZone";
@@ -36,6 +36,10 @@ export const Upload = () => {
                 </Col>
             </Row>
             <Row>
+                <Alert variant={"danger"}>
+                    <h5>Please note</h5>
+                    <div>Uploading new data is currently disabled as I'm still working through some schema changes</div>
+                </Alert>
                 <Col md={8} className={"offset-md-2"}>
                     <FosDropZone/>
                 </Col>

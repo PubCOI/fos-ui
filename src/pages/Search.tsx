@@ -53,7 +53,10 @@ export const Search = () => {
                 setGroupBy={setAggregated}
                 doSubmitCallback={submitHandler}
                 setParamsCallback={setSearchParams}/>
-            {searchResultBlock}
+
+                {searchResultBlock}
+
+            <div className={"my-5"}>&nbsp;</div>
         </>
     )
 };
