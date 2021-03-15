@@ -1,20 +1,17 @@
 import React, {useContext, useEffect, useRef, useState} from 'react';
-import {auth, driver as neo4j_driver} from "neo4j-driver";
-import cytoscape, {EdgeDataDefinition, ElementDefinition, NodeDataDefinition,} from "cytoscape";
+import cytoscape, {ElementDefinition} from "cytoscape";
 import {NodeMetadata} from "../components/NodeMetadata";
 import {INodeMetadata, NodeMetadataType} from "../interfaces/INodeMetadata";
 import {AwardDetailsModal} from "../components/graphs/AwardDetailsModal";
-import PaneContext from "../components/core/PaneContext";
 import AppContext from "../components/core/AppContext";
+import axios, {AxiosResponse} from "axios";
+import {INode, IRef} from "../interfaces/DAO/GraphDAO";
 
 let coseBilkent = require('cytoscape-cose-bilkent');
 
 export const Graph = (props: { location: Location }) => {
-    const driver = neo4j_driver("bolt://localhost", auth.basic("neo4j", "password"));
 
-    const appContext = useContext(AppContext);
-    const paneContext = useContext(PaneContext);
-    const {showRightPane, setModalBody} = useContext(AppContext);
+    const {setModalBody} = useContext(AppContext);
 
     const cyRef = useRef<HTMLDivElement | null>(null);
     const [refVisible, setRefVisible] = useState(false);
@@ -52,24 +49,25 @@ export const Graph = (props: { location: Location }) => {
 
     function getChildNodes(id: string) {
         console.debug("Requesting children of", id);
-        const cypher = `MATCH (a:Award)-[ref]-(n:Notice) WHERE n.hidden=false AND n.id="${id}" RETURN a, ref, n LIMIT 50`;
-        console.debug("Running query:", cypher);
-        const params = {};
-        const session = driver.session();
-        return session.run(cypher, params)
-            .then(result => {
-                console.debug("result", result);
-                session.close();
-                result.records.forEach(res => {
-                    addNode(res.get("a"), 'award');
-                    addNode(res.get("n"), 'notice');
-                    addEdge(res.get("ref"));
-                });
-                reDraw();
-            })
-            .catch(error => {
-                session.close();
+        return axios.get<string, AxiosResponse<{
+            a: INode,
+            n: INode,
+            ref: IRef,
+        }[]>>(
+            `/api/ui/queries/notices/${id}/children`,
+            {
+                params: {
+                    max: 25
+                }
+            }
+        ).then((r) => {
+            r.data.forEach(res => {
+                addNode(res.a, 'award');
+                addNode(res.n, 'notice');
+                addEdge(res.ref);
             });
+            reDraw();
+        });
     }
 
     cytoscape.use(coseBilkent);
@@ -159,34 +157,33 @@ export const Graph = (props: { location: Location }) => {
         // console.log("Removing all elements");
         cy.remove(cy.$("*"));
 
-        const session = driver.session();
-
-        const cypher = "MATCH(c:Client)-[ref:PUBLISHED]-(n:Notice) " +
-            "WHERE c.hidden=false AND ref.hidden=false AND n.hidden=false " +
-            "RETURN c, ref, n LIMIT 50";
-        const params = {};
-
-        return session.run(cypher, params)
-            .then(result => {
-                session.close();
-                result.records.forEach(res => {
-                    addNode(res.get("c"), 'client');
-                    addNode(res.get("n"), 'notice');
-                    addEdge(res.get("ref"));
-                });
-                reDraw();
-            })
-            .catch(error => {
-                session.close();
+        return axios.get<string, AxiosResponse<{
+            c: INode,
+            n: INode,
+            ref: IRef,
+        }[]>>(
+            "/api/ui/queries/initial",
+            {
+                params: {
+                    max: 50
+                }
+            }
+        ).then((r) => {
+            r.data.forEach(res => {
+                addNode(res.c, 'client');
+                addNode(res.n, 'notice');
+                addEdge(res.ref);
             });
+            reDraw();
+        });
     }
 
-    function addNode(node: NodeDataDefinition, type: string) {
-        const count = cy.$id("node_" + node.identity.low);
+    function addNode(node: INode, type: string) {
+        const count = cy.$id("node_" + node.neo4j_id);
         if (count["length"] === 0) {
             let output: { [key: string]: any } = {
-                id: "node_" + node.identity.low,
-                neo4j_id: node.identity.low,
+                id: "node_" + node.neo4j_id,
+                neo4j_id: node.neo4j_id,
                 neo4j_label: node.labels.join(),
                 fos_type: type,
             };
@@ -210,15 +207,15 @@ export const Graph = (props: { location: Location }) => {
     }
 
     //verify if edge exists, add it if it doesn't
-    function addEdge(edge: EdgeDataDefinition) {
-        const found = cy.$id("edge_" + edge.identity.low);
+    function addEdge(edge: IRef) {
+        const found = cy.$id("edge_" + edge.neo4j_id);
         if (found["length"] === 0) {
             let output: { [key: string]: any } = {
-                id: "edge_" + edge.identity.low,
-                neo4j_id: edge.identity.low,
+                id: "edge_" + edge.neo4j_id,
+                neo4j_id: edge.neo4j_id,
                 neo4j_type: edge.type,
-                source: "node_" + edge.start.low,
-                target: "node_" + edge.end.low
+                source: "node_" + edge.start,
+                target: "node_" + edge.end
             };
 
             Object.keys(edge.properties).forEach(key => {
@@ -231,9 +228,9 @@ export const Graph = (props: { location: Location }) => {
             };
             console.debug("Adding edge:", ele);
             cy.add(ele);
-            console.debug(`edge_${edge.identity.low} created between node_${edge.start.low} and node_${edge.end.low}`);
+            console.debug(`edge_${edge.neo4j_id} created between node_${edge.start} and node_${edge.end}`);
         } else {
-            console.debug(`edge_${edge.identity.low} already exists`);
+            console.debug(`edge_${edge.neo4j_id} already exists`);
         }
     }
 
