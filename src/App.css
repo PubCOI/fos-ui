@@ -13,7 +13,7 @@
 }
 
 .fos-toast-container {
-  margin-top: 55px;
+  position: absolute;
   z-index: 1250 !important;
 }
 

@@ -6,28 +6,31 @@ import {AwardDetailsModal} from "../components/graphs/AwardDetailsModal";
 import AppContext from "../components/core/AppContext";
 import axios, {AxiosResponse} from "axios";
 import {INode, IRef} from "../interfaces/DAO/GraphDAO";
+import {useToasts} from "react-toast-notifications";
 
 let coseBilkent = require('cytoscape-cose-bilkent');
 
 export const Graph = (props: { location: Location }) => {
+    cytoscape.use(coseBilkent);
 
     const {setModalBody} = useContext(AppContext);
 
+    const {addToast} = useToasts();
     const cyRef = useRef<HTMLDivElement | null>(null);
     const [refVisible, setRefVisible] = useState(false);
     const [cy, setCy] = useState({} as cytoscape.Core);
     const [showMetadata, setShowMetadata] = useState(false);
-    const [metadata, setMetadata] = useState<INodeMetadata>({type: NodeMetadataType.client, id: ""});
+    const [metadata, setMetadata] = useState<INodeMetadata>({type: NodeMetadataType.client, id: "", neo4j_id: ""});
 
     useEffect(() => {
         if (undefined !== metadata.type && undefined !== metadata.id && metadata.id !== "") {
             setShowMetadata(true);
             if (metadata.type === NodeMetadataType.notice) {
-                getChildNodes(metadata.id);
+                getNoticeChildren(metadata);
             }
-            // if (metadata.type === NodeMetadataType.award) {
-            //     showAwardDetails(metadata.id);
-            // }
+            if (metadata.type === NodeMetadataType.award) {
+                getAwardChildren(metadata);
+            }
         }
     }, [metadata]);
 
@@ -47,30 +50,67 @@ export const Graph = (props: { location: Location }) => {
         setModalBody(<AwardDetailsModal id={id}/>);
     }
 
-    function getChildNodes(id: string) {
-        console.debug("Requesting children of", id);
+    function getNoticeChildren(metadata: INodeMetadata) {
+        console.debug("Requesting children of", metadata.id);
         return axios.get<string, AxiosResponse<{
             a: INode,
             n: INode,
             ref: IRef,
         }[]>>(
-            `/api/ui/queries/notices/${id}/children`,
+            `/api/ui/queries/notices/${metadata.id}/children`,
             {
                 params: {
                     max: 25
                 }
             }
         ).then((r) => {
-            r.data.forEach(res => {
-                addNode(res.a, 'award');
-                addNode(res.n, 'notice');
-                addEdge(res.ref);
-            });
-            reDraw();
+            if (r.data.length > 0) {
+                r.data.forEach(res => {
+                    addNode(res.a, 'award');
+                    addNode(res.n, 'notice');
+                    addEdge(res.ref);
+                });
+                reDraw(`node[neo4j_id=${metadata.neo4j_id}]`);
+            }
+            else {
+                addToast(`No awards found on notice ${metadata.id}`, {
+                    appearance: "warning",
+                    autoDismiss: true,
+                })
+            }
         });
     }
 
-    cytoscape.use(coseBilkent);
+    function getAwardChildren(metadata: INodeMetadata) {
+        console.debug("Requesting children of", metadata.id);
+        return axios.get<string, AxiosResponse<{
+            a: INode,
+            o: INode,
+            ref: IRef,
+        }[]>>(
+            `/api/ui/queries/awards/${metadata.id}/children`,
+            {
+                params: {
+                    max: 25
+                }
+            }
+        ).then((r) => {
+            if (r.data.length > 0) {
+                r.data.forEach(res => {
+                    addNode(res.a, 'award');
+                    addNode(res.o, 'organisation');
+                    addEdge(res.ref);
+                });
+                reDraw(`node[neo4j_id=${metadata.neo4j_id}]`);
+            }
+            else {
+                addToast(`No org data found on notice ${metadata.id}`, {
+                    appearance: "warning",
+                    autoDismiss: true,
+                })
+            }
+        });
+    }
 
     useEffect(() => {
         if (!refVisible) {
@@ -118,6 +158,13 @@ export const Graph = (props: { location: Location }) => {
                     }
                 },
                 {
+                    selector: 'node[fos_type="organisation"]',
+                    style: {
+                        "label": "data(name)",
+                        "background-image": "url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMHB4IiBoZWlnaHQ9IjIwcHgiIHZpZXdCb3g9IjAgMCAxNDA4IDE3OTIiPjxwYXRoIGZpbGw9InJnYig2MSw3OSwxMjUpIiBkPSJNMzg0IDEzMTJ2NjRxMCAxMy05LjUgMjIuNXQtMjIuNSA5LjVoLTY0cS0xMyAwLTIyLjUtOS41dC05LjUtMjIuNXYtNjRxMC0xMyA5LjUtMjIuNXQyMi41LTkuNWg2NHExMyAwIDIyLjUgOS41dDkuNSAyMi41ek0zODQgMTA1NnY2NHEwIDEzLTkuNSAyMi41dC0yMi41IDkuNWgtNjRxLTEzIDAtMjIuNS05LjV0LTkuNS0yMi41di02NHEwLTEzIDkuNS0yMi41dDIyLjUtOS41aDY0cTEzIDAgMjIuNSA5LjV0OS41IDIyLjV6TTY0MCAxMDU2djY0cTAgMTMtOS41IDIyLjV0LTIyLjUgOS41aC02NHEtMTMgMC0yMi41LTkuNXQtOS41LTIyLjV2LTY0cTAtMTMgOS41LTIyLjV0MjIuNS05LjVoNjRxMTMgMCAyMi41IDkuNXQ5LjUgMjIuNXpNMzg0IDgwMHY2NHEwIDEzLTkuNSAyMi41dC0yMi41IDkuNWgtNjRxLTEzIDAtMjIuNS05LjV0LTkuNS0yMi41di02NHEwLTEzIDkuNS0yMi41dDIyLjUtOS41aDY0cTEzIDAgMjIuNSA5LjV0OS41IDIyLjV6TTExNTIgMTMxMnY2NHEwIDEzLTkuNSAyMi41dC0yMi41IDkuNWgtNjRxLTEzIDAtMjIuNS05LjV0LTkuNS0yMi41di02NHEwLTEzIDkuNS0yMi41dDIyLjUtOS41aDY0cTEzIDAgMjIuNSA5LjV0OS41IDIyLjV6TTg5NiAxMDU2djY0cTAgMTMtOS41IDIyLjV0LTIyLjUgOS41aC02NHEtMTMgMC0yMi41LTkuNXQtOS41LTIyLjV2LTY0cTAtMTMgOS41LTIyLjV0MjIuNS05LjVoNjRxMTMgMCAyMi41IDkuNXQ5LjUgMjIuNXpNNjQwIDgwMHY2NHEwIDEzLTkuNSAyMi41dC0yMi41IDkuNWgtNjRxLTEzIDAtMjIuNS05LjV0LTkuNS0yMi41di02NHEwLTEzIDkuNS0yMi41dDIyLjUtOS41aDY0cTEzIDAgMjIuNSA5LjV0OS41IDIyLjV6TTM4NCA1NDR2NjRxMCAxMy05LjUgMjIuNXQtMjIuNSA5LjVoLTY0cS0xMyAwLTIyLjUtOS41dC05LjUtMjIuNXYtNjRxMC0xMyA5LjUtMjIuNXQyMi41LTkuNWg2NHExMyAwIDIyLjUgOS41dDkuNSAyMi41ek0xMTUyIDEwNTZ2NjRxMCAxMy05LjUgMjIuNXQtMjIuNSA5LjVoLTY0cS0xMyAwLTIyLjUtOS41dC05LjUtMjIuNXYtNjRxMC0xMyA5LjUtMjIuNXQyMi41LTkuNWg2NHExMyAwIDIyLjUgOS41dDkuNSAyMi41ek04OTYgODAwdjY0cTAgMTMtOS41IDIyLjV0LTIyLjUgOS41aC02NHEtMTMgMC0yMi41LTkuNXQtOS41LTIyLjV2LTY0cTAtMTMgOS41LTIyLjV0MjIuNS05LjVoNjRxMTMgMCAyMi41IDkuNXQ5LjUgMjIuNXpNNjQwIDU0NHY2NHEwIDEzLTkuNSAyMi41dC0yMi41IDkuNWgtNjRxLTEzIDAtMjIuNS05LjV0LTkuNS0yMi41di02NHEwLTEzIDkuNS0yMi41dDIyLjUtOS41aDY0cTEzIDAgMjIuNSA5LjV0OS41IDIyLjV6TTM4NCAyODh2NjRxMCAxMy05LjUgMjIuNXQtMjIuNSA5LjVoLTY0cS0xMyAwLTIyLjUtOS41dC05LjUtMjIuNXYtNjRxMC0xMyA5LjUtMjIuNXQyMi41LTkuNWg2NHExMyAwIDIyLjUgOS41dDkuNSAyMi41ek0xMTUyIDgwMHY2NHEwIDEzLTkuNSAyMi41dC0yMi41IDkuNWgtNjRxLTEzIDAtMjIuNS05LjV0LTkuNS0yMi41di02NHEwLTEzIDkuNS0yMi41dDIyLjUtOS41aDY0cTEzIDAgMjIuNSA5LjV0OS41IDIyLjV6TTg5NiA1NDR2NjRxMCAxMy05LjUgMjIuNXQtMjIuNSA5LjVoLTY0cS0xMyAwLTIyLjUtOS41dC05LjUtMjIuNXYtNjRxMC0xMyA5LjUtMjIuNXQyMi41LTkuNWg2NHExMyAwIDIyLjUgOS41dDkuNSAyMi41ek02NDAgMjg4djY0cTAgMTMtOS41IDIyLjV0LTIyLjUgOS41aC02NHEtMTMgMC0yMi41LTkuNXQtOS41LTIyLjV2LTY0cTAtMTMgOS41LTIyLjV0MjIuNS05LjVoNjRxMTMgMCAyMi41IDkuNXQ5LjUgMjIuNXpNMTE1MiA1NDR2NjRxMCAxMy05LjUgMjIuNXQtMjIuNSA5LjVoLTY0cS0xMyAwLTIyLjUtOS41dC05LjUtMjIuNXYtNjRxMC0xMyA5LjUtMjIuNXQyMi41LTkuNWg2NHExMyAwIDIyLjUgOS41dDkuNSAyMi41ek04OTYgMjg4djY0cTAgMTMtOS41IDIyLjV0LTIyLjUgOS41aC02NHEtMTMgMC0yMi41LTkuNXQtOS41LTIyLjV2LTY0cTAtMTMgOS41LTIyLjV0MjIuNS05LjVoNjRxMTMgMCAyMi41IDkuNXQ5LjUgMjIuNXpNMTE1MiAyODh2NjRxMCAxMy05LjUgMjIuNXQtMjIuNSA5LjVoLTY0cS0xMyAwLTIyLjUtOS41dC05LjUtMjIuNXYtNjRxMC0xMyA5LjUtMjIuNXQyMi41LTkuNWg2NHExMyAwIDIyLjUgOS41dDkuNSAyMi41ek04OTYgMTY2NGgzODR2LTE1MzZoLTExNTJ2MTUzNmgzODR2LTIyNHEwLTEzIDkuNS0yMi41dDIyLjUtOS41aDMyMHExMyAwIDIyLjUgOS41dDkuNSAyMi41djIyNHpNMTQwOCA2NHYxNjY0cTAgMjYtMTkgNDV0LTQ1IDE5aC0xMjgwcS0yNiAwLTQ1LTE5dC0xOS00NXYtMTY2NHEwLTI2IDE5LTQ1dDQ1LTE5aDEyODBxMjYgMCA0NSAxOXQxOSA0NXoiLz48L3N2Zz4=)",
+                    }
+                },
+                {
                     selector: '.highlight',
                     style: {
                         "border-color": "#fff000",
@@ -132,6 +179,7 @@ export const Graph = (props: { location: Location }) => {
                         "width": "1",
                         "line-style": "dotted",
                         "curve-style": "haystack"
+                        // "curve-style": "unbundled-bezier"
                     },
                 },
                 {
@@ -169,12 +217,14 @@ export const Graph = (props: { location: Location }) => {
                 }
             }
         ).then((r) => {
-            r.data.forEach(res => {
-                addNode(res.c, 'client');
-                addNode(res.n, 'notice');
-                addEdge(res.ref);
-            });
-            reDraw();
+            if (r.data.length > 0) {
+                r.data.forEach(res => {
+                    addNode(res.c, 'client');
+                    addNode(res.n, 'notice');
+                    addEdge(res.ref);
+                });
+                reDraw();
+            }
         });
     }
 
@@ -234,31 +284,61 @@ export const Graph = (props: { location: Location }) => {
         }
     }
 
-    function reDraw() {
+    function reDraw(center?: string) {
         const layoutOptions = {
             name: "cose-bilkent",
+            // name: "cose",
             fit: false,
         };
         cy.resize();
-        cy.elements().layout(layoutOptions).run();
+        var layout = cy.elements().layout(layoutOptions);
+        layout.promiseOn('layoutstop').then(function (event) {
+            console.debug("finished layout");
+            if (center) {
+                const eles = cy.elements(center);
+                if (eles.first()) {
+                    let ele = eles.nodes('node').first();
+                    // ele.lock();
+                    // console.debug("panning to ", ele.renderedPosition());
+                    // ele.unlock();
+                    // cy.animate({
+                    //     zoom: {
+                    //         level: 1,
+                    //         position: {
+                    //             x: (ele.position().x - 300),
+                    //             // y: (cy.height() / 2)
+                    //             y: (ele.position().y)
+                    //         }
+                    //     },
+                    //    // center: {eles: ele},
+                    //     duration: 800
+                    // });
+                    cy.animate({zoom: 1, easing: "ease-in-out-sine", duration: 700, center: {eles: ele}});
+                    ele.flashClass("highlight");
+                    // ele.unlock();
+                }
+            }
+        });
+        layout.run();
 
         // add listener
         let nodes = cy.elements("node[!hasListener]");
         // console.log(`${nodes.size()} nodes match [!hasListener]`);
         nodes.on('tap', function (evt: {
             target: {
-                data: () => { fos_id: string, fos_type: NodeMetadataType }
+                data: () => { fos_id: string, fos_type: NodeMetadataType, neo4j_id: string }
             }
         }) {
             setMetadata({
                     type: evt.target.data().fos_type,
-                    id: evt.target.data().fos_id
+                    id: evt.target.data().fos_id,
+                    neo4j_id: evt.target.data().neo4j_id
                 }
             );
         });
+        // todo add cytoscape.js-popper
         // mark added so that we don't add twice
         nodes.data("hasListener", "tap");
-        // console.debug(`${cy.elements("node[!hasListener]").size()} match`)
     }
 
     return (

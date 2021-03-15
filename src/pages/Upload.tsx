@@ -7,7 +7,7 @@ export const Upload = () => {
     return (
         <>
             <Row>
-                <Col md={8} className={"offset-md-2"}>
+                <Col md={8} className={"offset-md-2 mt-3"}>
                     <h2>Contracts Finder: data upload</h2>
                     <p>
                         Right now, we're just allowing you to upload XML data from the <a
@@ -33,11 +33,6 @@ export const Upload = () => {
                             some minutes.
                         </dd>
                     </dl>
-                    <p>
-                        Please note this site is still under development. If errors occur, please email <a
-                        href={"mailto:info@pubcoi.org"}>info@pubcoi.org</a> with details of what you were doing etc at
-                        the time; it's much appreciated.
-                    </p>
                 </Col>
             </Row>
             <Row>

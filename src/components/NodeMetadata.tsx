@@ -3,7 +3,6 @@ import {INodeMetadata, NodeMetadataType} from "../interfaces/INodeMetadata";
 import FontAwesome from "react-fontawesome";
 import {RenderNoticeMetadata} from "./graphs/RenderNoticeMetadata";
 import {RenderClientMetadata} from "./graphs/RenderClientMetadata";
-import {Button} from "react-bootstrap";
 import {RenderAwardMetadata} from "./graphs/RenderAwardMetadata";
 
 
@@ -33,7 +32,7 @@ export const NodeMetadata = (
         }
         if (props.metadata.type === NodeMetadataType.client) {
             setIcon(<FontAwesome name={"users"}/>);
-            setOutput(<RenderClientMetadata id={props.metadata.id} setMetadataCallback={props.setMetadataCallback}/>);
+            setOutput(<RenderClientMetadata metadata={props.metadata} setMetadataCallback={props.setMetadataCallback}/>);
             return;
         }
         if (props.metadata.type === NodeMetadataType.notice) {
@@ -46,6 +45,12 @@ export const NodeMetadata = (
             setOutput(<RenderAwardMetadata id={props.metadata.id}/>);
             return;
         }
+        if (props.metadata.type === NodeMetadataType.organisation) {
+            setIcon(<FontAwesome name={"building-o"}/>);
+            //setOutput(<>{props.metadata.neo4j_id}</>);
+            setOutput(<></>);
+            return;
+        }
         console.debug("Did not match client or notice type");
     }, [props.metadata]);
 
@@ -53,7 +58,7 @@ export const NodeMetadata = (
         <>
             <div className={"metadata-parent shadow-lg metadata-text-block"} hidden={props.hidden}>
                 <div className={"d-flex justify-content-between align-items-center"}>
-                    <div><h5 className={"mr-3 mt-2"}>Node: {props.metadata.type}</h5></div>
+                    <div><h5 className={"mr-3 mt-2"}><span className={"mr-2"}>{icon}</span> Node: {props.metadata.type}</h5></div>
                     <div>
                         <button type={"button"} className={"close"} onClick={() => resetAndClose()}>
                             <span aria-hidden={"true"}>×</span>

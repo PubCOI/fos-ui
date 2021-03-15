@@ -9,11 +9,11 @@ import {INodeMetadata, NodeMetadataType} from "../../interfaces/INodeMetadata";
 
 export const RenderClientMetadata = (
     props: {
-        id: string;
+        metadata: INodeMetadata,
         setMetadataCallback: (metadata: INodeMetadata) => void
     }
 ) => {
-    let baseURL = `/api/ui/graphs/clients/${props.id}`;
+    let baseURL = `/api/ui/graphs/clients/${props.metadata.id}`;
     const [client, setClient] = useState<ClientNodeResponseDAO>({
         id: "",
         name: "",
@@ -39,7 +39,7 @@ export const RenderClientMetadata = (
                 });
             });
 
-    }, [props.id]);
+    }, [props.metadata.id]);
 
     // function processResponse(data: ClientResponseDAO) {
     //     return {
@@ -64,7 +64,7 @@ export const RenderClientMetadata = (
                     <ListGroup.Item action
                         onClick={() => props.setMetadataCallback({
                             id: notice.id,
-                            type: NodeMetadataType.notice
+                            type: NodeMetadataType.notice,
                         })}
                         key={`notice_metadata_${notice.id}`}>
                         <div>{notice.description} (value <MinMaxValueFormat
