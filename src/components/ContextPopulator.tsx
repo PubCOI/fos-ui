@@ -46,7 +46,6 @@ export const ContextPopulator = () => {
     }, [globalIsSignedIn]);
 
     useEffect(() => {
-        console.log("setting name to", fosUserInfo.displayName);
         appContext.setDisplayName(fosUserInfo.displayName);
     }, [fosUserInfo]);
 

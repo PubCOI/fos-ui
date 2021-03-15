@@ -3,15 +3,10 @@ import AppContext from "../core/AppContext";
 import PaneContext from "../core/PaneContext";
 import FontAwesome from "react-fontawesome";
 import {ReactSlidingPane} from "react-sliding-pane";
-import {Form} from "react-bootstrap";
 
 export const PaneContainer = () => {
     const {showRightPane} = useContext(AppContext);
     const {paneContents, paneTitle, paneSubtitle, closePane} = useContext(PaneContext);
-
-    useEffect(() => {
-        console.log("re-rendered");
-    }, []);
 
     return (
         <>

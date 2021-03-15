@@ -163,7 +163,7 @@ export const FixDataPaneContents = (props: { type: DataTypeEnum, id: string }) =
                                   }}>
                         {options.map(option => (
                             <option value={option.value} data-help={option.help}
-                                    data-can-help={option.canHelp}>{option.text}</option>
+                                    data-can-help={option.canHelp} key={`opt_${option.value}`}>{option.text}</option>
                         ))}
                     </Form.Control>
                     <Alert variant={"success"} hidden={optionHelp === ""}>

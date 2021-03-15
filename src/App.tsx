@@ -76,7 +76,6 @@ function App() {
     // ***** end pane settings
 
     useEffect(() => {
-        console.debug("Modal body changed", modalBody);
         if (undefined !== modalBody && modalBody !== MODAL_EMPTY) {
             setShowModal(true);
         }

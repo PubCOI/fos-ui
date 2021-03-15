@@ -34,10 +34,6 @@ export const Graph = (props: { location: Location }) => {
         }
     }, [metadata]);
 
-    useEffect(() => {
-        console.debug("updated context", appContext)
-    }, [appContext]);
-
     function setMetadataViaCallback(data: INodeMetadata) {
         let ele = `node[fos_id="${data.id}"]`;
         console.debug("Updating node", ele);
