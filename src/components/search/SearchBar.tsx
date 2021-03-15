@@ -40,7 +40,6 @@ export const SearchBar =
                     <InputGroup className={"mt-0 p-1 bg-light text-muted"} size={"sm"}>
                         <span>Options <FontAwesome className={"mr-2"} name={"caret-right"}/></span>
                         <Form.Check
-                            disabled
                             inline label="Group by attachment" checked={groupBy} onChange={(
                                 e: React.ChangeEvent<HTMLInputElement>
                         ): void => setGroupBy(e.target.checked)}

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import {Alert, Badge, ListGroup} from "react-bootstrap";
 import {FirebaseAuthConsumer} from "@react-firebase/auth";
 import FontAwesome from "react-fontawesome";
@@ -6,10 +6,8 @@ import axios from "axios";
 import {AlertWrapper} from "../components/AlertWrapper";
 import {LoadingWrapper} from "../components/LoadingWrapper";
 import {ResolveClientModal} from "../components/tasks/ResolveClientModal";
-import {show} from "react-functional-modal";
-import {FosToastContainer} from "../components/FosToastContainer";
-import {ToastProvider} from "react-toast-notifications";
 import {PageTitle} from "../components/PageTitle";
+import AppContext from "../components/core/AppContext";
 
 interface Task {
     taskId: string,
@@ -18,14 +16,13 @@ interface Task {
     entity: string,
 }
 
-export const TASK_MODAL_ID_PREFIX = "modal_task_key#";
-
 export const Tasks = () => {
 
     let url = "/api/ui/tasks?completed=false";
     const [openTasks, setOpenTasks] = useState<Task[]>([]);
     const [loaded, setLoaded] = useState(false);
     const [error, setError] = useState(false);
+    const {setModalBody} = useContext(AppContext);
 
     useEffect(() => {
         axios.get<Task[]>(url).then(response => {
@@ -46,11 +43,7 @@ export const Tasks = () => {
 
     function openResolveModal(taskType: string, taskId: string, entity: string, removeTaskCallback: (taskID: string) => void) {
         console.debug(`Opening ${taskType} task ${taskId}`);
-        show(
-            <ToastProvider components={{ToastContainer: FosToastContainer}}>
-                <ResolveClientModal id={entity} taskId={taskId} removeTaskCB={removeTaskCallback}/>
-            </ToastProvider>, {key: TASK_MODAL_ID_PREFIX + taskId}
-        )
+        setModalBody(<ResolveClientModal id={entity} taskId={taskId} removeTaskCB={removeTaskCallback}/>)
     }
 
     return (

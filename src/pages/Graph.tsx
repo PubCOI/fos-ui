@@ -3,16 +3,19 @@ import {auth, driver as neo4j_driver} from "neo4j-driver";
 import cytoscape, {EdgeDataDefinition, ElementDefinition, NodeDataDefinition,} from "cytoscape";
 import {NodeMetadata} from "../components/NodeMetadata";
 import {INodeMetadata, NodeMetadataType} from "../interfaces/INodeMetadata";
-import {show} from "react-functional-modal";
 import {AwardDetailsModal} from "../components/graphs/AwardDetailsModal";
 import PaneContext from "../components/core/PaneContext";
+import AppContext from "../components/core/AppContext";
 
 let coseBilkent = require('cytoscape-cose-bilkent');
 
 export const Graph = (props: { location: Location }) => {
     const driver = neo4j_driver("bolt://localhost", auth.basic("neo4j", "password"));
 
+    const appContext = useContext(AppContext);
     const paneContext = useContext(PaneContext);
+    const {showRightPane, setModalBody} = useContext(AppContext);
+
     const cyRef = useRef<HTMLDivElement | null>(null);
     const [refVisible, setRefVisible] = useState(false);
     const [cy, setCy] = useState({} as cytoscape.Core);
@@ -31,6 +34,10 @@ export const Graph = (props: { location: Location }) => {
         }
     }, [metadata]);
 
+    useEffect(() => {
+        console.debug("updated context", appContext)
+    }, [appContext]);
+
     function setMetadataViaCallback(data: INodeMetadata) {
         let ele = `node[fos_id="${data.id}"]`;
         console.debug("Updating node", ele);
@@ -44,10 +51,7 @@ export const Graph = (props: { location: Location }) => {
 
     function showAwardDetails(id: string) {
         console.log("Getting award details for", id);
-        show(
-            <PaneContext.Provider value={paneContext}>
-                <AwardDetailsModal id={id}/>
-            </PaneContext.Provider>, {key: id});
+        setModalBody(<AwardDetailsModal id={id}/>);
     }
 
     function getChildNodes(id: string) {

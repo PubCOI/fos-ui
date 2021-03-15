@@ -66,13 +66,12 @@ export const SearchResultsBlock = (props: { data: SearchResultWrapper, aggregate
             {Boolean(!props.aggregated) && (
                 <ListGroup>
                     {props.data.paged.map(item => (
-                        <ListGroup.Item key={`fts_result_${item.key}`} action as={Link}
-                                        to={`/view/cf/${item.attachmentId}/page/${item.pageNumber}`}>
+                        <ListGroup.Item key={`fts_result_${item.key}`} action onClick={() => openPDFPane(item.attachmentId, item.pageNumber)}>
                             <h5 className={"d-flex justify-content-between"}>{item.organisation} <small><Badge
                                 variant={"info"} pill>pub. <Moment format={"DD MMM YY"}>{item.noticeDT}</Moment></Badge></small>
                             </h5>
                             <div>
-                                {item.fragments.map(fragment => (
+                                <Badge variant={"dark"}>Page {item.pageNumber}</Badge> {item.fragments.map(fragment => (
                                     <><span dangerouslySetInnerHTML={{
                                         __html: fragment
                                     }}/>&#8230; </>))}

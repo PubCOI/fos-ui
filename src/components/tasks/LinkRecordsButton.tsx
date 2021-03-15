@@ -1,14 +1,16 @@
 import FontAwesome from "react-fontawesome";
 import {Button} from "react-bootstrap";
-import React, {useState} from "react";
+import React, {useContext, useState} from "react";
 import firebase from "firebase";
 import {linkToParent} from "./ResolveClientModal";
 import {useToasts} from "react-toast-notifications";
+import AppContext from "../core/AppContext";
 
 // this is absolutely disgusting
 
 export const LinkRecordsButton = (props: { currentUser: firebase.User | null, taskId: string, source: string, target: string, removeTaskCB: (taskId: string) => void }) => {
 
+    const {hideModal} = useContext(AppContext);
     const {addToast} = useToasts();
     const [disabled, setDisabled] = useState(false);
     const [authenticated] = useState(null !== props.currentUser);
@@ -22,7 +24,7 @@ export const LinkRecordsButton = (props: { currentUser: firebase.User | null, ta
                     setButtonIcon("spinner");
                     props.currentUser.getIdToken(/* forceRefresh */ true).then(function (idToken) {
                         console.debug(`linking ${props.source} to ${props.target}`);
-                        linkToParent(props.taskId, idToken, props.source, props.target, props.removeTaskCB, addToast, setButtonIcon);
+                        linkToParent(props.taskId, idToken, props.source, props.target, props.removeTaskCB, addToast, setButtonIcon, hideModal);
                     }).catch(function (error) {
                         addToast(error.toString(), {
                             appearance: "error",

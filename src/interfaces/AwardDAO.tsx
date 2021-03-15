@@ -5,6 +5,7 @@ export interface AwardDAO {
     noticeId: string,
     organisation: string,
     supplierName: string,
+    supplierNumTotalAwards: number,
     value: number,
     valueMin: number,
     valueMax: number,

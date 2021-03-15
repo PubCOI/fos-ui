@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import './App.css';
 import "react-datetime/css/react-datetime.css";
 import "firebase/auth";
@@ -7,7 +7,7 @@ import "bootswatch/dist/cosmo/bootstrap.min.css";
 import {Header} from "./components/Header";
 import {Login} from "./pages/Login";
 import {Awards} from "./pages/Awards";
-import {Container} from "react-bootstrap";
+import {Container, Modal} from "react-bootstrap";
 import {About} from "./pages/About";
 import {Tasks} from "./pages/Tasks";
 import {Home} from "./pages/Home";
@@ -21,35 +21,47 @@ import {Search} from "./pages/Search";
 import {Viewer} from "./pages/Viewer";
 import {Stats} from "./pages/Stats";
 import "react-sliding-pane/dist/react-sliding-pane.css";
-import {PaneContainer} from "./components/PaneContainer";
+import {PaneContainer} from "./components/pane/PaneContainer";
 import PaneContext from "./components/core/PaneContext";
+import {ModalContainer} from "./components/ModalContainer";
 
 function App() {
+
+    const MODAL_EMPTY = <></>;
+    function hideModal() {
+        setShowModal(false);
+        setModalBody(MODAL_EMPTY);
+    }
 
     // ***** application ******
     const [displayName, setDisplayName] = useState("");
     const [showRightPane, setShowRightPane] = useState(false);
+    const [showModal, setShowModal] = useState(false);
+    const [modalBody, setModalBody] = useState(MODAL_EMPTY);
 
     const applicationSettings = {
         displayName: displayName,
         setDisplayName: setDisplayName,
         showRightPane: showRightPane,
-        setShowRightPane: setShowRightPane
+        setShowRightPane: setShowRightPane,
+        modalBody: modalBody,
+        setModalBody,
+        hideModal
     };
     // &&&&& end application settings
 
     // ***** pane settings *****
     const [paneTitle, setPaneTitle] = useState("");
     const [paneSubtitle, setPaneSubtitle] = useState("");
-    const [paneContents, setPaneContents] = useState(<></>);
+    const [paneContents, setPaneContents] = useState(<>[null]</>);
     function openPane() {
         setShowRightPane(true);
     }
     function closePane() {
+        setShowRightPane(false);
         setPaneTitle("");
         setPaneSubtitle("");
-        setPaneContents(<>[null]</>)
-        setShowRightPane(false);
+        setPaneContents(<></>);
     }
     const paneSettings = {
         paneTitle: paneTitle,
@@ -62,6 +74,13 @@ function App() {
         closePane
     };
     // ***** end pane settings
+
+    useEffect(() => {
+        console.debug("Modal body changed", modalBody);
+        if (undefined !== modalBody && modalBody !== MODAL_EMPTY) {
+            setShowModal(true);
+        }
+    }, [modalBody]);
 
     return (
         <>
@@ -88,6 +107,7 @@ function App() {
                         </main>
                     </Container>
                     <Footer/>
+                    <ModalContainer modalBody={modalBody}/>
                 </PaneContext.Provider>
             </AppContext.Provider>
         </>

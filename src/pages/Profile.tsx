@@ -48,7 +48,8 @@ export const Profile = () => {
             <Row>
                 <Col md={8} className={"offset-md-2 shadow p-3"}>
                     <Form onSubmit={handleSubmit}>
-                        <Form.Group controlId="formBasicEmail">
+
+                        <Form.Group controlId="profileForm.name">
                             <Form.Label>Display name</Form.Label>
                             <Form.Control type="text" placeholder="Display name" onChange={(
                                 e: React.ChangeEvent<HTMLInputElement>

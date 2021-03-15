@@ -1,6 +1,6 @@
 import {AwardDAO} from "../../interfaces/AwardDAO";
-import {Accordion, Badge, Button, Card, Col, Container, Modal, Row} from "react-bootstrap";
-import React, {Context, useEffect, useState} from "react";
+import {Col, Modal, Row} from "react-bootstrap";
+import React, {useEffect, useState} from "react";
 import {ContractValueFormat} from "../ContractValueFormat";
 import FontAwesome from "react-fontawesome";
 import {AttachmentsAccordion} from "./AttachmentsAccordion";
@@ -19,19 +19,25 @@ export const AwardDetailsModalBody = (props: { award: AwardDAO | undefined }) =>
         setAwardURL(`${cfBaseURL}/Award/${props.award?.noticeId}`)
     }, [props]);
 
+    let totalAwards = props.award?.supplierNumTotalAwards || -1;
+
     if (!props.award) return (<></>);
 
     return (
         <>
             <Modal.Body>
-
                 <Row>
                     <Col sm={titleRowWidth}>Award&nbsp;ID</Col>
                     <Col>{props.award.id}</Col>
                 </Row>
                 <Row>
                     <Col sm={titleRowWidth}>Awarded to</Col>
-                    <Col>{props.award.supplierName}</Col>
+                    <Col>
+                        <div>{props.award.supplierName}</div>
+                        <div hidden={totalAwards < 2} className={"text-muted"}>
+                            {totalAwards - 1} other award{(totalAwards - 1) === 1 ? " is" : "(s) are"} linked to this supplier
+                        </div>
+                    </Col>
                 </Row>
                 <Row>
                     <Col sm={titleRowWidth}>Value</Col>
@@ -49,7 +55,8 @@ export const AwardDetailsModalBody = (props: { award: AwardDAO | undefined }) =>
                 </Row>
                 <Row>
                     <Col sm={titleRowWidth}>Attachments</Col>
-                    <Col><FontAwesome name={"warning"} className={"mr-2"} hidden={props.award?.attachments.length > 0}/>{props.award?.attachments.length} total</Col>
+                    <Col><FontAwesome name={"warning"} className={"mr-2"}
+                                      hidden={props.award?.attachments.length > 0}/>{props.award?.attachments.length} total</Col>
                 </Row>
                 <Row>
                     <Col><AttachmentsAccordion award={props.award}/></Col>

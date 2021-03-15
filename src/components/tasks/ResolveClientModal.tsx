@@ -1,17 +1,16 @@
 import {Alert, Button, ListGroup, Modal} from "react-bootstrap";
 import {AlertWrapper} from "../AlertWrapper";
 import axios from "axios";
-import React, {useEffect, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import {LoadingWrapper} from "../LoadingWrapper";
-import {hide} from "react-functional-modal";
 import {isValid, toNormalised} from "postcode";
 import FontAwesome from "react-fontawesome";
 import firebase from "firebase";
 import {Options, ToastProvider, useToasts} from "react-toast-notifications";
-import {TASK_MODAL_ID_PREFIX} from "../../pages/Tasks";
 import {LinkToParentResponse} from "../../interfaces/LinkToParentResponse";
 import {LinkRecordsButton} from "./LinkRecordsButton";
 import {FosToastContainer} from "../FosToastContainer";
+import AppContext from "../core/AppContext";
 
 interface ClientDetailsDAO {
     id: string,
@@ -28,6 +27,7 @@ interface ClientSearchResponse {
 }
 
 export const ResolveClientModal = (props: { id: string, taskId: string, removeTaskCB: (taskId: string) => void }) => {
+    const {hideModal} = useContext(AppContext);
     const {addToast} = useToasts();
     const [client, setClient] = useState<ClientDetailsDAO>({
         id: "",
@@ -102,7 +102,7 @@ export const ResolveClientModal = (props: { id: string, taskId: string, removeTa
 
     return (
         <Modal backdrop={"static"} show centered size={"xl"}>
-            <Modal.Header closeButton onClick={() => hide(TASK_MODAL_ID_PREFIX + props.taskId)}>
+            <Modal.Header closeButton onClick={() => hideModal()}>
                 <Modal.Title>Task: Resolve client</Modal.Title>
             </Modal.Header>
             <Modal.Body>
@@ -162,7 +162,7 @@ export const ResolveClientModal = (props: { id: string, taskId: string, removeTa
                 </ToastProvider>
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="primary" onClick={() => hide(TASK_MODAL_ID_PREFIX + props.taskId)}>
+                <Button variant="primary" onClick={() => hideModal()}>
                     OK
                 </Button>
             </Modal.Footer>
@@ -180,6 +180,7 @@ enum FosTasks {
 }
 
 const ActionsButtons = (props: { details: ClientDetailsDAO, taskId: string, removeTaskCallback: (taskId: string) => void }) => {
+    const {hideModal} = useContext(AppContext);
     const {addToast} = useToasts();
 
     if (undefined === props.details.id || null === firebase || null === firebase.auth()) {
@@ -202,9 +203,7 @@ const ActionsButtons = (props: { details: ClientDetailsDAO, taskId: string, remo
                     appearance: "success",
                     autoDismiss: true,
                     id: entityId,
-                    onDismiss: () => {
-                        hide(TASK_MODAL_ID_PREFIX + taskId)
-                    }
+                    onDismiss: () => {hideModal()}
                 });
             })
             .catch(reason => {
@@ -239,9 +238,10 @@ const ActionsButtons = (props: { details: ClientDetailsDAO, taskId: string, remo
     )
 };
 
+// todo this whole function is a shit-show and needs rewritten ... I mean, look at this signature, wtf was I doing
 export function linkToParent(taskId: string, authToken: string, source: string, target: string, removeTaskCB: (taskId: string) => void,
                              addToast: (content: React.ReactNode, options?: Options, callback?: (id: string) => void) => void,
-                             setButtonIcon: (icon: string) => void
+                             setButtonIcon: (icon: string) => void, hideModalCallback: () => void
 ) {
     axios.put<LinkToParentResponse>(`/api/ui/tasks/${FosTasks.link_client_parent}`, {
         authToken: authToken,
@@ -257,7 +257,7 @@ export function linkToParent(taskId: string, authToken: string, source: string, 
                 autoDismiss: true,
                 id: taskId,
                 onDismiss: () => {
-                    hide(TASK_MODAL_ID_PREFIX + taskId)
+                    hideModalCallback()
                 }
             });
         })

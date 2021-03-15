@@ -9,9 +9,9 @@ import {AwardDAO} from "../interfaces/AwardDAO";
 import Datatable from 'react-bs-datatable';
 import {ContractValueFormat} from "../components/ContractValueFormat";
 import {css} from "@emotion/css";
-import {show} from "react-functional-modal";
 import {AwardDetailsModal} from "../components/graphs/AwardDetailsModal";
 import PaneContext from "../components/core/PaneContext";
+import AppContext from "../components/core/AppContext";
 
 export const Awards = () => {
 
@@ -19,6 +19,8 @@ export const Awards = () => {
     const [awards, setAwardsList] = useState<AwardDAO[]>([]);
     const [loaded, setLoaded] = useState(false);
     const [error, setError] = useState(false);
+    const appContext = useContext(AppContext);
+    const {showRightPane, setModalBody} = useContext(AppContext);
     const paneContext = useContext(PaneContext);
 
     function getHeader() {
@@ -50,11 +52,7 @@ export const Awards = () => {
     }
 
     function openModal(id: string) {
-        show(
-            <PaneContext.Provider value={paneContext}>
-                <AwardDetailsModal id={id}/>
-            </PaneContext.Provider>, {key: id}
-        )
+        setModalBody(<AwardDetailsModal id={id}/>)
     }
 
     const tableClasses = {

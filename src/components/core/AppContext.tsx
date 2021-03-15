@@ -7,6 +7,9 @@ const AppContext = React.createContext({
     setDisplayName: (name: string) => {console.error("not implemented")},
     showRightPane: false,
     setShowRightPane: (show: boolean) => {console.error("not implemented")},
+    modalBody: <></>,
+    setModalBody: (body: any) => {},
+    hideModal: () => {},
 });
 
 export default AppContext;

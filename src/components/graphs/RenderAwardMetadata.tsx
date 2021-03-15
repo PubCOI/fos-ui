@@ -18,6 +18,7 @@ export const RenderAwardMetadata = (props: {id: string}) => {
         noticeId: "",
         organisation: "",
         supplierName: "",
+        supplierNumTotalAwards: -1,
         value: 0,
         valueMax: 0,
         valueMin: 0,

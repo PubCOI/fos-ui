@@ -1,13 +1,14 @@
-import React, {Context, useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {Modal} from "react-bootstrap";
-import {hide} from "react-functional-modal";
 import axios from "axios";
 import {AwardDAO} from "../../interfaces/AwardDAO";
 import {AwardDetailsModalBody} from "./AwardDetailsModalBody";
 import {DataTypeEnum, FixDataIssueWidget} from "./FixDataIssueWidget";
+import AppContext from "../core/AppContext";
 
-export const AwardDetailsModal = (props: { id: string}) => {
+export const AwardDetailsModal = (props: { id: string }) => {
 
+    const {hideModal, showRightPane} = useContext(AppContext);
     const [loaded, setLoaded] = useState(false);
     const [award, setAward] = useState<AwardDAO>();
 
@@ -26,8 +27,8 @@ export const AwardDetailsModal = (props: { id: string}) => {
 
     return (
         <>
-            <Modal backdrop={"static"} show centered size={"xl"}>
-                <Modal.Header closeButton onClick={() => hide(props.id)}>
+            <Modal backdrop={"static"} show centered size={"xl"} enforceFocus={!showRightPane}>
+                <Modal.Header closeButton onClick={() => hideModal()}>
                     <Modal.Title>Award Details</Modal.Title>
                 </Modal.Header>
                 {body}
@@ -36,7 +37,6 @@ export const AwardDetailsModal = (props: { id: string}) => {
         </>
     )
 };
-
 
 
 const LoadingGrow = () => {
