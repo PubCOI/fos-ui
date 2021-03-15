@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {ClientResponseDAO} from "../../interfaces/ClientResponseDAO";
+import {ClientNodeResponseDAO} from "../../interfaces/ClientNodeResponseDAO";
 import {useToasts} from "react-toast-notifications";
 import axios from "axios";
 import {ListGroup} from "react-bootstrap";
@@ -14,7 +14,7 @@ export const RenderClientMetadata = (
     }
 ) => {
     let baseURL = `/api/ui/graphs/clients/${props.id}`;
-    const [client, setClient] = useState<ClientResponseDAO>({
+    const [client, setClient] = useState<ClientNodeResponseDAO>({
         id: "",
         name: "",
         postCode: "",
@@ -26,7 +26,7 @@ export const RenderClientMetadata = (
     const {addToast} = useToasts();
 
     useEffect(() => {
-        axios.get<ClientResponseDAO>(baseURL).then(response => {
+        axios.get<ClientNodeResponseDAO>(baseURL).then(response => {
             // setClient(Object.assign(response.data, processResponse(response.data)));
             setClient(response.data)
         })

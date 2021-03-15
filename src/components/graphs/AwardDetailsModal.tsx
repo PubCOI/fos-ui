@@ -1,10 +1,11 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {Modal} from "react-bootstrap";
 import axios from "axios";
-import {AwardDAO} from "../../interfaces/AwardDAO";
+import {AwardDAO} from "../../interfaces/DAO/AwardDAO";
 import {AwardDetailsModalBody} from "./AwardDetailsModalBody";
 import {DataTypeEnum, FixDataIssueWidget} from "./FixDataIssueWidget";
 import AppContext from "../core/AppContext";
+import {LoadingGrow} from "../LoadingGrow";
 
 export const AwardDetailsModal = (props: { id: string }) => {
 
@@ -37,13 +38,3 @@ export const AwardDetailsModal = (props: { id: string }) => {
         </>
     )
 };
-
-
-const LoadingGrow = () => {
-        return (
-            <div className="spinner-grow text-dark m-3" role="status">
-                <span className="sr-only">Loading...</span>
-            </div>
-        )
-    }
-;

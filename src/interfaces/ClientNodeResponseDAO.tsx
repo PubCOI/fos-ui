@@ -1,6 +1,6 @@
 import {NoticeResponseDAO} from "./NoticeResponseDAO";
 
-export interface ClientResponseDAO {
+export interface ClientNodeResponseDAO {
     id: string,
     name: string,
     postCode: string,

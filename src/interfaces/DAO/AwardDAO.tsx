@@ -1,4 +1,4 @@
-import {AttachmentDAO} from "./AttachmentDAO";
+import {AttachmentDAO} from "../AttachmentDAO";
 
 export interface AwardDAO {
     id: string,

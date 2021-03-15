@@ -5,7 +5,7 @@ import {AlertWrapper} from "../components/AlertWrapper";
 import axios from "axios";
 import FontAwesome from "react-fontawesome";
 import {PageTitle} from "../components/PageTitle";
-import {AwardDAO} from "../interfaces/AwardDAO";
+import {AwardDAO} from "../interfaces/DAO/AwardDAO";
 import Datatable from 'react-bs-datatable';
 import {ContractValueFormat} from "../components/ContractValueFormat";
 import {css} from "@emotion/css";

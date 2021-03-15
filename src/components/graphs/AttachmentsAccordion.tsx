@@ -1,4 +1,4 @@
-import {AwardDAO} from "../../interfaces/AwardDAO";
+import {AwardDAO} from "../../interfaces/DAO/AwardDAO";
 import {Accordion, Alert, Badge, Card} from "react-bootstrap";
 import {GetOpenExtLink} from "../GetOpenExtLink";
 import FontAwesome from "react-fontawesome";
@@ -15,7 +15,7 @@ export const AttachmentsAccordion = (props: { award: AwardDAO }) => {
     return (
         <>
             <div hidden={hasAttachment({award: props.award})}>
-                <Accordion className={"mt-2"}>
+                <Accordion>
                     {props.award.attachments.map(attachment => (
                         <Card key={"attachment_card_" + attachment.id}>
                             <Accordion.Toggle as={Card.Header} eventKey={"attachment-" + attachment.id}>
@@ -23,7 +23,7 @@ export const AttachmentsAccordion = (props: { award: AwardDAO }) => {
                                     <div>{attachment.type}{(attachment.description ? `: ${attachment.description}` : "")}</div>
                                     <div>{(attachment.mime) ? <Badge
                                         pill variant={"primary"}>{attachment.mime}</Badge> : null} <FontAwesome
-                                        name={"warning"} hidden={attachment.ocr}/>
+                                        name={"warning"} className={"ml-3"} hidden={attachment.ocr}/>
                                     </div>
                                 </div>
                             </Accordion.Toggle>

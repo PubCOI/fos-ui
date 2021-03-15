@@ -1,8 +1,10 @@
 import {Button, Col, Form, Row} from "react-bootstrap";
-import React, {FormEvent, useContext, useState} from "react";
+import React, {FormEvent, useContext, useEffect, useState} from "react";
 import AppContext from "../components/core/AppContext";
 import {useToasts} from "react-toast-notifications";
-import axios from "axios";
+import axios, {AxiosResponse} from "axios";
+import firebase from "firebase";
+import {UpdateProfileRequestDAO, UpdateProfileResponseDAO} from "../interfaces/DAO/UserDAO";
 
 export const Profile = () => {
 
@@ -11,17 +13,26 @@ export const Profile = () => {
     const [displayName, setDisplayName] = useState(appContext.displayName);
     const [isSubmitted, setIsSubmitted] = useState(false);
 
+    // auth
+    const [authToken, setAuthToken] = useState("");
+    useEffect(() => {
+        firebase.auth().currentUser?.getIdToken(/* forceRefresh */ true).then(function (idToken) {
+            setAuthToken(idToken);
+        });
+    }, [firebase.auth().currentUser]);
+
     const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setIsSubmitted(true);
-        let f = new FormData(e.currentTarget);
-        f.set('displayName', displayName);
-        // f.set('_csrf', (status.csrf) ? status.csrf : '');
-        axios.put("/api/ui/users", {
-            method: "PUT",
-            body: f,
+        let data = {
+            displayName: displayName
+        };
+        axios.put<UpdateProfileRequestDAO, AxiosResponse<UpdateProfileResponseDAO>>("/api/ui/user", data, {
+            headers: {
+                authToken: authToken
+            }
         })
-            .then(() => {
+            .then((r) => {
                 addToast("Updated profile", {
                     appearance: "success",
                     autoDismiss: true,
@@ -40,7 +51,7 @@ export const Profile = () => {
 
     return (
         <>
-            <Row>
+            <Row className={"mt-3"}>
                 <Col md={8} className={"offset-md-2"}>
                     <h3>Profile</h3>
                 </Col>
@@ -59,7 +70,6 @@ export const Profile = () => {
                                 full name, nickname or a pseudonym.
                             </Form.Text>
                         </Form.Group>
-
                         <Button variant="primary" type="submit" disabled={isSubmitted}>
                             Submit
                         </Button>

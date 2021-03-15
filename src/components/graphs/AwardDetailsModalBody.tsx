@@ -1,4 +1,4 @@
-import {AwardDAO} from "../../interfaces/AwardDAO";
+import {AwardDAO} from "../../interfaces/DAO/AwardDAO";
 import {Col, Modal, Row} from "react-bootstrap";
 import React, {useEffect, useState} from "react";
 import {ContractValueFormat} from "../ContractValueFormat";
@@ -58,7 +58,7 @@ export const AwardDetailsModalBody = (props: { award: AwardDAO | undefined }) =>
                     <Col><FontAwesome name={"warning"} className={"mr-2"}
                                       hidden={props.award?.attachments.length > 0}/>{props.award?.attachments.length} total</Col>
                 </Row>
-                <Row>
+                <Row className={"my-2"}>
                     <Col><AttachmentsAccordion award={props.award}/></Col>
                 </Row>
             </Modal.Body>

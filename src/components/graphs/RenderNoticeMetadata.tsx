@@ -3,7 +3,7 @@ import {useToasts} from "react-toast-notifications";
 import axios from "axios";
 import {NoticeResponseDAO} from "../../interfaces/NoticeResponseDAO";
 import Moment from "react-moment";
-import {AwardDAO} from "../../interfaces/AwardDAO";
+import {AwardDAO} from "../../interfaces/DAO/AwardDAO";
 import {MinMaxValueFormat} from "../MinMaxValueFormat";
 import {Button, ListGroup} from "react-bootstrap";
 import FontAwesome from "react-fontawesome";

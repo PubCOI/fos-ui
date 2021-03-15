@@ -1,4 +1,4 @@
-import {AwardDAO} from "./AwardDAO";
+import {AwardDAO} from "./DAO/AwardDAO";
 
 export interface NoticeResponseDAO {
     id: string,

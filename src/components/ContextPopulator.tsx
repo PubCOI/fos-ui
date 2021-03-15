@@ -1,14 +1,14 @@
 import {useContext, useEffect, useState} from "react";
 import firebase from "firebase";
-import axios from "axios";
-import {FosUserInfo} from "../interfaces/FosUserInfo";
+import axios, {AxiosResponse} from "axios";
 import AppContext from "./core/AppContext";
 import {useToasts} from "react-toast-notifications";
+import {UpdateProfileRequestDAO, UpdateProfileResponseDAO} from "../interfaces/DAO/UserDAO";
 
 export const ContextPopulator = () => {
 
     const [globalIsSignedIn, setGlobalIsSignedIn] = useState(false);
-    const [fosUserInfo, setFosUserInfo] = useState<FosUserInfo>({displayName: ""});
+    const [fosUserInfo, setFosUserInfo] = useState<UpdateProfileResponseDAO>({displayName: "", uid: ""});
     const {addToast} = useToasts();
     const appContext = useContext(AppContext);
 
@@ -19,7 +19,11 @@ export const ContextPopulator = () => {
     useEffect(() => {
         if (globalIsSignedIn) {
             firebase.auth().currentUser?.getIdToken(/* forceRefresh */ true).then(function (idToken) {
-                axios.post<FosUserInfo>("/api/ui/user", {authToken: idToken})
+                axios.post<UpdateProfileRequestDAO, AxiosResponse<UpdateProfileResponseDAO>>("/api/ui/user", {}, {
+                    headers: {
+                        authToken: idToken
+                    }
+                })
                     .then(r => {
                         setFosUserInfo(r.data);
                     })
@@ -42,8 +46,9 @@ export const ContextPopulator = () => {
     }, [globalIsSignedIn]);
 
     useEffect(() => {
+        console.log("setting name to", fosUserInfo.displayName);
         appContext.setDisplayName(fosUserInfo.displayName);
-    }, [fosUserInfo.displayName]);
+    }, [fosUserInfo]);
 
     return (
         <>

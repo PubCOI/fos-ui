@@ -1,8 +1,12 @@
-import React, {useEffect, useState} from "react";
+import React, {FormEvent, useEffect, useState} from "react";
 import {DataTypeEnum} from "./FixDataIssueWidget";
 import firebase from "firebase";
 import {LoadingWrapper} from "../LoadingWrapper";
 import {Alert, Button, Col, Form, Row} from "react-bootstrap";
+import {LoadingGrow} from "../LoadingGrow";
+import axios, {AxiosError, AxiosResponse} from "axios";
+import {useToasts} from "react-toast-notifications";
+import {CreateTaskRequestDAO, CreateTaskResponseDAO} from "../../interfaces/DAO/TaskDAO";
 
 interface OptionItem {
     value: string,
@@ -12,13 +16,19 @@ interface OptionItem {
 }
 
 export const FixDataPaneContents = (props: { type: DataTypeEnum, id: string }) => {
-    const [authToken, setAuthToken] = useState("");
+    const {addToast} = useToasts();
     const [loaded, setLoaded] = useState(false);
-    const [errorType, setErrorType] = useState("Please select...");
     const [options, setOptions] = useState([] as OptionItem[]);
     const [optionHelp, setOptionHelp] = useState("");
     const [canHelp, setCanHelp] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
+    // used on the form
+    const [errorType, setErrorType] = useState("");
+    const [additionalNotes, setAdditionalNotes] = useState("");
+
+    // auth
+    const [authToken, setAuthToken] = useState("");
     useEffect(() => {
         firebase.auth().currentUser?.getIdToken(/* forceRefresh */ true).then(function (idToken) {
             setAuthToken(idToken);
@@ -29,6 +39,44 @@ export const FixDataPaneContents = (props: { type: DataTypeEnum, id: string }) =
         setLoaded(authToken !== "");
     }, [authToken]);
 
+    function doReport(e: FormEvent<HTMLFormElement>) {
+        e.preventDefault();
+        setIsSubmitting(true);
+        let data: CreateTaskRequestDAO = {
+            type: props.type,
+            id: props.id,
+            errorType: errorType,
+            notes: additionalNotes,
+        };
+        axios.put<CreateTaskRequestDAO, AxiosResponse<CreateTaskResponseDAO>>("/api/ui/tasks", data,
+            {
+                headers: {
+                    authToken: authToken
+                }
+            })
+            .then(r => {
+                console.log(r);
+                console.log("created task", r.data.taskId);
+                setIsSubmitting(false);
+                addToast(`Created task ${r.data.taskId}`, {
+                    appearance: "success",
+                    autoDismiss: true,
+                })
+            })
+            .then(() => {
+                // setTimeout(close, 1000)
+                console.log("all good")
+            })
+            .catch((e: AxiosError) => {
+                addToast(`${e?.response?.data.message}`, {
+                    appearance: "error",
+                    autoDismiss: true,
+                });
+                setIsSubmitting(false);
+            })
+
+    }
+
     useEffect(() => {
         // set options ... each data type will have different things
         // that could be wrong
@@ -37,8 +85,14 @@ export const FixDataPaneContents = (props: { type: DataTypeEnum, id: string }) =
             opts.push({
                 text: "Attachment(s) missing",
                 value: "attachments_missing",
-                help: "Government and public bodies are obliged to provide contract details. Use " +
+                help: "Government and public bodies are obliged to publish contract details. Use " +
                     "this option to mark details as missing - this will help us start and track an FOI process.",
+                canHelp: true,
+            });
+            opts.push({
+                text: "Contract value(s) missing",
+                value: "values_missing",
+                help: "Use this to mark contract values as missing, FOI will be required.",
                 canHelp: true,
             });
         }
@@ -68,6 +122,7 @@ export const FixDataPaneContents = (props: { type: DataTypeEnum, id: string }) =
 
     useEffect(() => {
         if (undefined !== options && options.length > 0) {
+            setErrorType(options[0].value);
             setOptionHelp(options[0].help);
             setCanHelp((options[0].canHelp) ? options[0].canHelp : false);
         }
@@ -89,7 +144,7 @@ export const FixDataPaneContents = (props: { type: DataTypeEnum, id: string }) =
                     <div className={"text-muted small"}>to change the name displayed publicly, go to your profile</div>
                 </Alert></Col>
             </Row>
-            <Form id={"reportData"} className={"form"}>
+            <Form id={"reportData"} className={"form"} onSubmit={doReport}>
                 <Form.Group controlId="reportData.error_id">
                     <Form.Label>Node ID</Form.Label>
                     <Form.Control as={"text"} readOnly>{props.type}:{props.id}</Form.Control>
@@ -117,12 +172,21 @@ export const FixDataPaneContents = (props: { type: DataTypeEnum, id: string }) =
                 </Form.Group>
                 <Form.Group controlId="reportData.notes">
                     <Form.Label>Additional notes</Form.Label>
-                    <Form.Control as="textarea" type={"text"} rows={3}/>
+                    <Form.Control as="textarea" type={"text"} rows={3} onChange={(
+                        e: React.ChangeEvent<HTMLTextAreaElement>
+                    ): void => {
+                        setAdditionalNotes(e.target.value);
+                    }}/>
                 </Form.Group>
                 <Form.Group className={"d-flex justify-content-end"}>
                     <Button type={"submit"} variant={"primary"} className={"m-1"}>report</Button>
-                    <Button type={"submit"} variant={"success"} disabled={!canHelp} className={"m-1"}>report and start fixing</Button>
+                    <Button type={"submit"} variant={"success"} disabled={!canHelp || isSubmitting} className={"m-1"}>report and start
+                        fixing
+                    </Button>
                 </Form.Group>
+                <div className={"justify-content-end " + ((isSubmitting) ? "d-flex" : "d-none")}>
+                    <LoadingGrow/>
+                </div>
             </Form>
         </>
     )
