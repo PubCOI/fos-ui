@@ -4,6 +4,7 @@ import axios, {AxiosResponse} from "axios";
 import AppContext from "./core/AppContext";
 import {useToasts} from "react-toast-notifications";
 import {UpdateProfileRequestDAO, UpdateProfileResponseDAO} from "../interfaces/DAO/UserDAO";
+import {ApplicationConfig} from "../interfaces/ApplicationConfig";
 
 export const ContextPopulator = () => {
 
@@ -48,6 +49,20 @@ export const ContextPopulator = () => {
     useEffect(() => {
         appContext.setDisplayName(fosUserInfo.displayName);
     }, [fosUserInfo]);
+
+    useEffect(() => {
+        axios.get<string, AxiosResponse<ApplicationConfig>>("/api/status")
+            .then((r) => {
+                appContext.setApplicationConfig(r.data);
+            })
+            .catch((error) => {
+                addToast("Loading application status failed: " + error.toString(), {
+                        appearance: "error",
+                        autoDismiss: true
+                    }
+                )
+            })
+    }, []);
 
     return (
         <>

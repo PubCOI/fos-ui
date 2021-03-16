@@ -24,6 +24,8 @@ import "react-sliding-pane/dist/react-sliding-pane.css";
 import {PaneContainer} from "./components/pane/PaneContainer";
 import PaneContext from "./components/core/PaneContext";
 import {ModalContainer} from "./components/ModalContainer";
+import axios, {AxiosResponse} from "axios";
+import {ApplicationConfig} from "./interfaces/ApplicationConfig";
 
 function App() {
 
@@ -38,8 +40,11 @@ function App() {
     const [showRightPane, setShowRightPane] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [modalBody, setModalBody] = useState(MODAL_EMPTY);
+    const [applicationConfig, setApplicationConfig] = useState({batch: false, debug: false});
 
     const applicationSettings = {
+        config: applicationConfig,
+        setApplicationConfig,
         displayName: displayName,
         setDisplayName: setDisplayName,
         showRightPane: showRightPane,
