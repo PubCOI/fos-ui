@@ -28,8 +28,16 @@ export const AwardDetailsModalBody = (props: { award: AwardDAO | undefined }) =>
         <>
             <Modal.Body>
                 <Row>
+                    <Col sm={titleRowWidth}>Awarded for</Col>
+                    <Col>{props.award.noticeTitle}</Col>
+                </Row>
+                <Row>
                     <Col sm={titleRowWidth}>Award&nbsp;ID</Col>
                     <Col>{props.award.id}</Col>
+                </Row>
+                <Row>
+                    <Col sm={titleRowWidth}>Notice ID</Col>
+                    <Col>{props.award.noticeId}</Col>
                 </Row>
                 <Row>
                     <Col sm={titleRowWidth}>Awarded to</Col>

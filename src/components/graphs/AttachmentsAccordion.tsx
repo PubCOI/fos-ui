@@ -29,7 +29,7 @@ export const AttachmentsAccordion = (props: { award: AwardDAO }) => {
                             </Accordion.Toggle>
                             <Accordion.Collapse eventKey={"attachment-" + attachment.id}>
                                 <Card.Body>
-                                    <Alert variant={"danger"} hidden={attachment.ocr} className={"small mb-0"}>
+                                    <Alert variant={"danger"} hidden={attachment.ocr} className={"small"}>
                                         <FontAwesome name={"warning"}/> We were unable to automatically download and
                                         index this content as it was an unrecognised file type, or an external resource
                                         that did not seem to contain information relating to this contract
