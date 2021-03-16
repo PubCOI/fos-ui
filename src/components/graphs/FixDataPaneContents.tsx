@@ -1,4 +1,4 @@
-import React, {FormEvent, useEffect, useState} from "react";
+import React, {FormEvent, useContext, useEffect, useState} from "react";
 import {DataTypeEnum} from "./FixDataIssueWidget";
 import firebase from "firebase";
 import {LoadingWrapper} from "../LoadingWrapper";
@@ -7,6 +7,8 @@ import {LoadingGrow} from "../LoadingGrow";
 import axios, {AxiosError, AxiosResponse} from "axios";
 import {useToasts} from "react-toast-notifications";
 import {CreateTaskRequestDAO, CreateTaskResponseDAO} from "../../interfaces/DAO/TaskDAO";
+import {useWindowSize} from "../../hooks/Utils";
+import AppContext from "../core/AppContext";
 
 interface OptionItem {
     value: string,
@@ -17,6 +19,8 @@ interface OptionItem {
 
 export const FixDataPaneContents = (props: { type: DataTypeEnum, id: string }) => {
     const {addToast} = useToasts();
+    const {displayName} = useContext(AppContext);
+
     const [loaded, setLoaded] = useState(false);
     const [options, setOptions] = useState([] as OptionItem[]);
     const [optionHelp, setOptionHelp] = useState("");
@@ -32,12 +36,8 @@ export const FixDataPaneContents = (props: { type: DataTypeEnum, id: string }) =
     useEffect(() => {
         firebase.auth().currentUser?.getIdToken(/* forceRefresh */ true).then(function (idToken) {
             setAuthToken(idToken);
-        });
+        })
     }, [firebase.auth().currentUser]);
-
-    useEffect(() => {
-        setLoaded(authToken !== "");
-    }, [authToken]);
 
     function doReport(e: FormEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -74,7 +74,6 @@ export const FixDataPaneContents = (props: { type: DataTypeEnum, id: string }) =
                 });
                 setIsSubmitting(false);
             })
-
     }
 
     useEffect(() => {
@@ -128,12 +127,8 @@ export const FixDataPaneContents = (props: { type: DataTypeEnum, id: string }) =
         }
     }, [options]);
 
-    if (!loaded) {
-        return <LoadingWrapper/>
-    }
-
-    if (loaded && !firebase.auth().currentUser) {
-        return <Alert>You need to be logged in to report / fix data</Alert>
+    if (displayName === undefined || authToken === "") {
+        return <Alert variant={"danger"}>You need to be logged in to create a task</Alert>
     }
 
     return (
@@ -147,7 +142,8 @@ export const FixDataPaneContents = (props: { type: DataTypeEnum, id: string }) =
             <Form id={"reportData"} className={"form"} onSubmit={doReport}>
                 <Form.Group controlId="reportData.error_id">
                     <Form.Label>Node ID</Form.Label>
-                    <Form.Control as={"text"} readOnly>{props.type}:{props.id}</Form.Control>
+                    <Alert variant={"dark"} className={"text-muted small"}>{props.type}:{props.id}</Alert>
+                    {/*<Form.Control as={Alert} variant={"light"}>{props.type}:{props.id}</Form.Control>*/}
                 </Form.Group>
                 <Form.Group controlId="reportData.error_type">
                     <Form.Label>Error type</Form.Label>

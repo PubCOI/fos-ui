@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useState} from "react";
-import {Alert, Badge, ListGroup} from "react-bootstrap";
+import {Alert, Badge, Container, ListGroup} from "react-bootstrap";
 import {FirebaseAuthConsumer} from "@react-firebase/auth";
 import FontAwesome from "react-fontawesome";
 import axios from "axios";
@@ -48,6 +48,7 @@ export const Tasks = () => {
 
     return (
         <>
+            <Container fluid className={"p-3"}>
             <PageTitle title={"Data reconciliation tasks"}/>
 
             <TasksInfobox/>
@@ -74,6 +75,7 @@ export const Tasks = () => {
                 </ListGroup>
             )}
             {/*<h2 className={"mt-3"}>Recently completed tasks</h2>*/}
+            </Container>
         </>
     )
 };

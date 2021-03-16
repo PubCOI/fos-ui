@@ -88,7 +88,7 @@ function App() {
                     <ContextPopulator/>
                     <PaneContainer/>
                     <Header/>
-                    <Container fluid>
+                    <Container fluid className={"p-0"}>
                         <main role={"main"}>
                             <Switch>
                                 <Route exact path={"/"} component={Home}/>

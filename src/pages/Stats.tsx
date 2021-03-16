@@ -2,7 +2,7 @@ import {PageTitle} from "../components/PageTitle";
 import React, {useContext, useEffect, useState} from "react";
 import axios from "axios";
 import {LoadingWrapper} from "../components/LoadingWrapper";
-import {Accordion, AccordionContext, Button, Card, ListGroup, useAccordionToggle} from "react-bootstrap";
+import {Accordion, AccordionContext, Button, Card, Container, ListGroup, useAccordionToggle} from "react-bootstrap";
 import {AlertWrapper} from "../components/AlertWrapper";
 import FontAwesome from "react-fontawesome";
 import Moment from "react-moment";
@@ -82,6 +82,7 @@ export const Stats = () => {
 
     return (
         <>
+            <Container fluid className={"p-3"}>
             <PageTitle title={"System stats"}/>
             <h3>Recent batch jobs</h3>
             <Accordion>
@@ -143,6 +144,7 @@ export const Stats = () => {
                     className={"mb-5"}
                     onClick={() => setStartAt(startAt + 10)}>Load more <FontAwesome name={"caret-down"}/></Button>
 
+            </Container>
         </>
     )
 };

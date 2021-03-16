@@ -5,9 +5,12 @@ import {SearchBar} from "../components/search/SearchBar";
 import {NoResultsBlock} from "../components/search/NoResultsBlock";
 import {SearchResultWrapper} from "../components/search/SearchInterfaces";
 import {SearchResultsBlock} from "../components/search/SearchResultsBlock";
+import {useToasts} from "react-toast-notifications";
+import {Container} from "react-bootstrap";
 
 export const Search = () => {
 
+    const {addToast} = useToasts();
     const [loaded, setLoaded] = useState(false);
     const [error, setError] = useState(false);
     const [results, setResults] = useState<SearchResultWrapper | undefined>(undefined);
@@ -34,7 +37,13 @@ export const Search = () => {
                 setResults(response.data)
             })
             .then(() => setLoaded(true))
-            .catch(() => setError(true));
+            .catch(() => {
+                addToast("Error loading results", {
+                    autoDismiss: true,
+                    appearance: "error"
+                });
+                setError(true)
+            });
     }, [searchParams, aggregated]);
 
     function submitHandler(e: FormEvent<HTMLFormElement>) {

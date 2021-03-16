@@ -44,8 +44,7 @@ export const RenderNoticeMetadata = (props: {id: string, awardDetailsCB: (id: st
         <>
             <div>{notice.title}</div>
             <div className={"mb-2 text-muted small"}>Published by {notice.organisation} <Moment date={notice.postedDT} format={"DD MMM yyyy"}/> (<Moment from={notice.postedDT} ago/> ago)</div>
-            <h6>Value</h6>
-            <div className={"mb-2"}>{<MinMaxValueFormat min={notice.valueLow} max={notice.valueHigh} rounded/>}</div>
+            <div className={"mb-2"}>Value {<MinMaxValueFormat min={notice.valueLow} max={notice.valueHigh} rounded/>}</div>
             <h6>{notice.awards.length} {notice.awards.length === 1 ? "award" : "awards"} published</h6>
             <ListGroup className={"y-scroll"}>
 

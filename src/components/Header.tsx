@@ -82,6 +82,11 @@ const LoginNavbar = () => {
         setDisplayName(appContext.displayName);
     }, [appContext.displayName]);
 
+    let pathname = window.location.pathname;
+    useEffect(() => {
+        pathname = window.location.pathname;
+    }, [window.location.pathname]);
+
     return (
         <FirebaseAuthConsumer>
             {({isSignedIn}) => {
@@ -104,7 +109,7 @@ const LoginNavbar = () => {
                     );
                 } else {
                     return (<>
-                        <Nav.Link as={Link} to={"/login"}>Log in</Nav.Link>
+                        <Nav.Link as={Link} to={"/login"} className={(pathname.includes("/login")) ? "d-none" : undefined}>Log in</Nav.Link>
                     </>);
                 }
             }}

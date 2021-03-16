@@ -1,4 +1,4 @@
-import {Alert} from "react-bootstrap";
+import {Alert, Container, OverlayTrigger, Tooltip} from "react-bootstrap";
 import React, {useContext, useEffect, useState} from "react";
 import {LoadingWrapper} from "../components/LoadingWrapper";
 import {AlertWrapper} from "../components/AlertWrapper";
@@ -12,6 +12,7 @@ import {css} from "@emotion/css";
 import {AwardDetailsModal} from "../components/graphs/AwardDetailsModal";
 import PaneContext from "../components/core/PaneContext";
 import AppContext from "../components/core/AppContext";
+import {renderTooltip} from "../hooks/Utils";
 
 export const Awards = () => {
 
@@ -19,9 +20,7 @@ export const Awards = () => {
     const [awards, setAwardsList] = useState<AwardDAO[]>([]);
     const [loaded, setLoaded] = useState(false);
     const [error, setError] = useState(false);
-    const appContext = useContext(AppContext);
-    const {showRightPane, setModalBody} = useContext(AppContext);
-    const paneContext = useContext(PaneContext);
+    const {setModalBody} = useContext(AppContext);
 
     function getHeader() {
         return [
@@ -40,7 +39,14 @@ export const Awards = () => {
             {
                 title: '',
                 prop: '',
-                cell: (row: AwardDAO) => <FontAwesome name={"users"} className={"ml-2"} hidden={!row.group_award}/>
+                cell: (row: AwardDAO) => {
+                    return <OverlayTrigger
+                        placement="auto"
+                        delay={{show: 100, hide: 250}}
+                        overlay={renderTooltip(
+                            {text: "Group award (ie multiple suppliers): only total contract value shown"}
+                        )}><FontAwesome name={"users"} className={"ml-2"} hidden={!row.group_award}/></OverlayTrigger>
+                }
             },
             {
                 title: 'Value',
@@ -84,38 +90,26 @@ export const Awards = () => {
 
     return (
         <>
-            <PageTitle title={"Contracts Finder: raw data"}/>
+            <Container fluid className={"p-3"}>
 
-            <Alert variant={"info"} className={"text-muted"}>
-                These records have been pulled from the HMG Contracts Finder; note that these names are not 'corrected'
-                as on the graph(s)
-            </Alert>
+                <PageTitle title={"Contracts Finder: raw data"}/>
 
-            <Datatable tableHeaders={getHeader()}
-                       tableBody={awards}
-                       initialSort={{prop: 'created', isAscending: false}}
-                // onSort={onSort}
-                       classes={tableClasses}
-                       rowsPerPage={10}
-                       rowsPerPageOption={[5, 10, 25, 50]}
-                       onRowClick={(o) => openModal(o.id)}
-            />
+                <Alert variant={"info"} className={"text-muted"}>
+                    These records have been pulled from the HMG Contracts Finder; note that these names are not
+                    'corrected'
+                    as on the graph(s)
+                </Alert>
 
-            {/*<Table striped bordered hover>*/}
-            {/*
-            {/*    <tbody>*/}
-            {/*    {awards.map(award => (*/}
-            {/*        <tr key={award.id}>*/}
-            {/*            <td>{award.organisation}</td>*/}
-            {/*            <td>{award.supplierName}</td>*/}
-            {/*            /!*<Badge variant={"secondary"} className={`${award.group_award ? "" : "d-none"}`}>G</Badge>*!/*/}
-            {/*            <td align={"right"} className={"text-nowrap"}><ContractValueFormat award={award}/>*/}
-            {/*                <FontAwesome name={"users"} className={"ml-2"} hidden={!award.group_award} />*/}
-            {/*            </td>*/}
-            {/*        </tr>*/}
-            {/*    ))}*/}
-            {/*    </tbody>*/}
-            {/*</Table>*/}
+                <Datatable tableHeaders={getHeader()}
+                           tableBody={awards}
+                           initialSort={{prop: 'created', isAscending: false}}
+                           classes={tableClasses}
+                           rowsPerPage={10}
+                           rowsPerPageOption={[5, 10, 25, 50]}
+                           onRowClick={(o) => openModal(o.id)}
+                />
+
+            </Container>
         </>
     )
 };

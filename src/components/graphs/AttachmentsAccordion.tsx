@@ -34,7 +34,8 @@ export const AttachmentsAccordion = (props: { award: AwardDAO }) => {
                                         index this content as it was an unrecognised file type, or an external resource
                                         that did not seem to contain information relating to this contract
                                     </Alert>
-                                    <FixDataIssueWidget type={DataTypeEnum.attachment} id={attachment.id}/>
+
+
                                     <div className={"mb-2"}>{(attachment.description) ?
                                         <>Resource description: {attachment.description}</> : <>No description
                                             provided</>}
@@ -43,7 +44,12 @@ export const AttachmentsAccordion = (props: { award: AwardDAO }) => {
                                         className={"text-monospace"}>{attachment.href}</span> <GetOpenExtLink
                                         href={attachment.href}/>
                                     </div>
+
                                     <AttachmentAccordionLinks attachment={attachment}/>
+
+                                    <div className={"fix-widget-inside-accordion"}>
+                                        <FixDataIssueWidget type={DataTypeEnum.attachment} id={attachment.id}/>
+                                    </div>
                                 </Card.Body>
                             </Accordion.Collapse>
                         </Card>

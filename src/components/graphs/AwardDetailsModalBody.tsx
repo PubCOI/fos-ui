@@ -1,9 +1,10 @@
 import {AwardDAO} from "../../interfaces/DAO/AwardDAO";
-import {Col, Modal, Row} from "react-bootstrap";
+import {Col, Modal, OverlayTrigger, Row} from "react-bootstrap";
 import React, {useEffect, useState} from "react";
 import {ContractValueFormat} from "../ContractValueFormat";
 import FontAwesome from "react-fontawesome";
 import {AttachmentsAccordion} from "./AttachmentsAccordion";
+import {renderTooltip} from "../../hooks/Utils";
 
 export const AwardDetailsModalBody = (props: { award: AwardDAO | undefined }) => {
 
@@ -35,7 +36,8 @@ export const AwardDetailsModalBody = (props: { award: AwardDAO | undefined }) =>
                     <Col>
                         <div>{props.award.supplierName}</div>
                         <div hidden={totalAwards < 2} className={"text-muted"}>
-                            {totalAwards - 1} other award{(totalAwards - 1) === 1 ? " is" : "(s) are"} linked to this supplier
+                            {totalAwards - 1} other award{(totalAwards - 1) === 1 ? " is" : "(s) are"} linked to this
+                            supplier
                         </div>
                     </Col>
                 </Row>
@@ -55,8 +57,14 @@ export const AwardDetailsModalBody = (props: { award: AwardDAO | undefined }) =>
                 </Row>
                 <Row>
                     <Col sm={titleRowWidth}>Attachments</Col>
-                    <Col><FontAwesome name={"warning"} className={"mr-2"}
-                                      hidden={props.award?.attachments.length > 0}/>{props.award?.attachments.length} total</Col>
+                    <Col><OverlayTrigger placement="auto"
+                                         delay={{show: 100, hide: 250}}
+                                         overlay={renderTooltip(
+                                             {text: "No attachments on this notice, consider creating a task to follow up"}
+                                         )}>
+                        <FontAwesome name={"warning"} className={"mr-2"}
+                                     hidden={props.award?.attachments.length > 0}/>
+                    </OverlayTrigger>{props.award?.attachments.length} total</Col>
                 </Row>
                 <Row className={"my-2"}>
                     <Col><AttachmentsAccordion award={props.award}/></Col>
