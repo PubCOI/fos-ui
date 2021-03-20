@@ -7,6 +7,8 @@ import AppContext from "../components/core/AppContext";
 import axios, {AxiosResponse} from "axios";
 import {INode, IRef} from "../interfaces/DAO/GraphDAO";
 import {useToasts} from "react-toast-notifications";
+import imgNoticeWarning from '../img/graph-notice-warning.svg';
+import imgNotice from '../img/graph-notice.svg';
 
 let coseBilkent = require('cytoscape-cose-bilkent');
 
@@ -147,7 +149,13 @@ export const Graph = (props: { location: Location }) => {
                     selector: 'node[fos_type="notice"]',
                     style: {
                         "label": "Notice",
-                        "background-image": "url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMHB4IiBoZWlnaHQ9IjIwcHgiIHZpZXdCb3g9IjAgMCAxNTM2IDE3OTIiPjxwYXRoIGZpbGw9InJnYigxMjcsNTksNzUpIiBkPSJNMTQ2OCAzODBxMjggMjggNDggNzZ0MjAgODh2MTE1MnEwIDQwLTI4IDY4dC02OCAyOGgtMTM0NHEtNDAgMC02OC0yOHQtMjgtNjh2LTE2MDBxMC00MCAyOC02OHQ2OC0yOGg4OTZxNDAgMCA4OCAyMHQ3NiA0OHpNMTAyNCAxMzZ2Mzc2aDM3NnEtMTAtMjktMjItNDFsLTMxMy0zMTNxLTEyLTEyLTQxLTIyek0xNDA4IDE2NjR2LTEwMjRoLTQxNnEtNDAgMC02OC0yOHQtMjgtNjh2LTQxNmgtNzY4djE1MzZoMTI4MHpNMzg0IDgwMHEwLTE0IDktMjN0MjMtOWg3MDRxMTQgMCAyMyA5dDkgMjN2NjRxMCAxNC05IDIzdC0yMyA5aC03MDRxLTE0IDAtMjMtOXQtOS0yM3YtNjR6TTExMjAgMTAyNHExNCAwIDIzIDl0OSAyM3Y2NHEwIDE0LTkgMjN0LTIzIDloLTcwNHEtMTQgMC0yMy05dC05LTIzdi02NHEwLTE0IDktMjN0MjMtOWg3MDR6TTExMjAgMTI4MHExNCAwIDIzIDl0OSAyM3Y2NHEwIDE0LTkgMjN0LTIzIDloLTcwNHEtMTQgMC0yMy05dC05LTIzdi02NHEwLTE0IDktMjN0MjMtOWg3MDR6Ii8+PC9zdmc+)"
+                        "background-image": imgNotice
+                    },
+                },
+                {
+                    selector: 'node[fos_type="notice"][!has_awards]',
+                    style: {
+                        "background-image": imgNoticeWarning
                     },
                 },
                 {
@@ -251,6 +259,7 @@ export const Graph = (props: { location: Location }) => {
                 data: output,
                 classes: "multiline-auto" // todo make configurable .. currently everything wraps
             };
+
             console.debug(`Adding node ${output.id}:`, ele);
             cy.add(ele);
         }

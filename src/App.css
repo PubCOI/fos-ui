@@ -4,7 +4,7 @@
   right: 0;
   bottom: 0;
   left: 0;
-  background: url("img/pubcoi-network-01.svg") no-repeat fixed bottom right;
+  background: url("img/pubcoi-network.svg") no-repeat fixed bottom right;
   /* strangely, the order here matters ... */
   background-size: 140% auto;
   opacity: 0.08;
