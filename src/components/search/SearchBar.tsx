@@ -1,5 +1,5 @@
 import {Button, Form, FormControl, InputGroup} from "react-bootstrap";
-import React, {FormEvent, SetStateAction, useEffect, useState} from "react";
+import React, {FormEvent, useEffect, useState} from "react";
 import FontAwesome from "react-fontawesome";
 
 export const SearchBar =
@@ -19,7 +19,7 @@ export const SearchBar =
         return (
             <>
                 <Form onSubmit={props.doSubmitCallback} aria-autocomplete={"none"}>
-                    <InputGroup className={"mt-3 mb-0"}>
+                    <InputGroup>
                         <InputGroup.Prepend>
                             <Form.Control as="select">
                                 <option value={"contracts"}>Contracts</option>

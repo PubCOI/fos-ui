@@ -1,15 +1,15 @@
 import React, {useContext} from "react";
-import {Button} from "react-bootstrap";
+import {Button, OverlayTrigger} from "react-bootstrap";
 import FontAwesome from "react-fontawesome";
 import PaneContext from "../core/PaneContext";
 import {FixDataPaneContents} from "./FixDataPaneContents";
+import {renderTooltip} from "../../hooks/Utils";
 
 export enum DataTypeEnum {
     attachment = "attachment",
     award = "award"
 }
 
-// MAKE SURE THIS IS CALLED WITHIN APPLICATION CONTEXT ... modals are notorious for being a PITA
 export const FixDataIssueWidget = (props: { type: DataTypeEnum, id: string }) => {
 
     const {setPaneTitle, setPaneSubtitle, setPaneContents, openPane} = useContext(PaneContext);
@@ -24,8 +24,14 @@ export const FixDataIssueWidget = (props: { type: DataTypeEnum, id: string }) =>
     return (
         <>
             <div className={"d-flex justify-content-end"}>
-                <Button variant={"dark"} size={"sm"} onClick={() => openFixWidget()}> fix data <FontAwesome
-                    name={"wrench"}/></Button>
+                <Button variant={"dark"} size={"sm"} onClick={() => openFixWidget()}>
+                    <OverlayTrigger
+                        placement="auto"
+                        delay={{show: 0, hide: 250}}
+                        overlay={renderTooltip({text: "Fix data issue"})}>
+                        <FontAwesome name={"wrench"}/>
+                    </OverlayTrigger>
+                </Button>
             </div>
         </>
     )

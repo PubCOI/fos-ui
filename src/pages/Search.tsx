@@ -6,7 +6,6 @@ import {NoResultsBlock} from "../components/search/NoResultsBlock";
 import {SearchResultWrapper} from "../components/search/SearchInterfaces";
 import {SearchResultsBlock} from "../components/search/SearchResultsBlock";
 import {useToasts} from "react-toast-notifications";
-import {Container} from "react-bootstrap";
 
 export const Search = () => {
 

@@ -19,12 +19,12 @@ export const AttachmentsAccordion = (props: { award: AwardDAO }) => {
                     {props.award.attachments.map(attachment => (
                         <Card key={"attachment_card_" + attachment.id}>
                             <Accordion.Toggle as={Card.Header} eventKey={"attachment-" + attachment.id}>
-                                <div className={"d-flex justify-content-between align-content-center"}>
+                                <div className={"d-flex align-items-center justify-content-between"}>
                                     <div>{attachment.type}{(attachment.description ? `: ${attachment.description}` : "")}</div>
-                                    <div>{(attachment.mime) ? <Badge
+                                    <>{(attachment.mime) ? <Badge className={"ml-3"}
                                         pill variant={"primary"}>{attachment.mime}</Badge> : null} <FontAwesome
                                         name={"warning"} className={"ml-3"} hidden={attachment.ocr}/>
-                                    </div>
+                                    </>
                                 </div>
                             </Accordion.Toggle>
                             <Accordion.Collapse eventKey={"attachment-" + attachment.id}>
@@ -35,11 +35,11 @@ export const AttachmentsAccordion = (props: { award: AwardDAO }) => {
                                         that did not seem to contain information relating to this contract
                                     </Alert>
 
-
                                     <div className={"mb-2"}>{(attachment.description) ?
                                         <>Resource description: {attachment.description}</> : <>No description
                                             provided</>}
                                     </div>
+
                                     <div hidden={!attachment.href}>Resource URL: <span
                                         className={"text-monospace"}>{attachment.href}</span> <GetOpenExtLink
                                         href={attachment.href}/>

@@ -43,6 +43,32 @@ canvas > path {
   stroke-linecap: round;
 }
 
+.second-nav {
+  position: fixed;
+  top: auto;
+  z-index: 1300;
+  width: 100%;
+}
+
+/* autocomplete status placeholder */
+.rbt-aux {
+  position: fixed;
+  top: auto;
+  right: 0;
+  z-index: 1300;
+  margin-top: 10px;
+  margin-right: 10px;
+}
+
+.rbt-menu {
+  /*width: 75vw!important;*/
+  position: fixed!important;
+  top: auto!important;
+  transform: unset!important;
+  width: 75%!important;
+  left: 24%!important;
+}
+
 @media screen and (max-width: 380px) {
   .metadata-parent {
     margin: 0;
