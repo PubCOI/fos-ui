@@ -15,32 +15,78 @@ let coseBilkent = require('cytoscape-cose-bilkent');
 export const Graph = (props: { location: Location }) => {
     cytoscape.use(coseBilkent);
 
-    const {setModalBody} = useContext(AppContext);
+    const {setModalBody, graphMetadata, setGraphMetadata} = useContext(AppContext);
 
     const {addToast} = useToasts();
     const cyRef = useRef<HTMLDivElement | null>(null);
     const [refVisible, setRefVisible] = useState(false);
     const [cy, setCy] = useState({} as cytoscape.Core);
     const [showMetadata, setShowMetadata] = useState(false);
-    const [metadata, setMetadata] = useState<INodeMetadata>({type: NodeMetadataType.client, id: "", neo4j_id: ""});
 
     useEffect(() => {
-        if (undefined !== metadata.type && undefined !== metadata.id && metadata.id !== "") {
+        if (undefined !== graphMetadata.type && undefined !== graphMetadata.id && graphMetadata.id !== "") {
             setShowMetadata(true);
-            if (metadata.type === NodeMetadataType.notice) {
-                getNoticeChildren(metadata);
+            if (graphMetadata.type === NodeMetadataType.notice) {
+                getNoticeChildren(graphMetadata);
+                getNoticeParents(graphMetadata);
             }
-            if (metadata.type === NodeMetadataType.award) {
-                getAwardChildren(metadata);
+            if (graphMetadata.type === NodeMetadataType.award) {
+                getAwardChildren(graphMetadata);
+                getAwardParents(graphMetadata);
             }
         }
-    }, [metadata]);
+    }, [graphMetadata]);
+
+    useEffect(() => {
+        if (cy === undefined) return;
+        if (graphMetadata.type === undefined || graphMetadata.id === "") return;
+        console.debug("Got update", graphMetadata);
+        if (graphMetadata.clear_graph) {
+            cy.remove(cy.$("*"));
+        }
+        if (graphMetadata.type === NodeMetadataType.client) {
+            axios.get<string, AxiosResponse<{
+                c: INode,
+                n: INode,
+                ref: IRef,
+            }[]>>(
+                "/api/ui/graph/clients/" + graphMetadata.id
+            ).then((r) => {
+                if (r.data.length > 0) {
+                    r.data.forEach(res => {
+                        addNode(res.c, 'client');
+                        addNode(res.n, 'notice');
+                        addEdge(res.ref);
+                    });
+                    reDraw(`node[neo4j_id=${r.data[0].c.neo4j_id}]`);
+                }
+            });
+        }
+        if (graphMetadata.type === NodeMetadataType.organisation) {
+            axios.get<string, AxiosResponse<{
+                o: INode,
+                a: INode,
+                ref: IRef,
+            }[]>>(
+                "/api/ui/graph/organisations/" + graphMetadata.id
+            ).then((r) => {
+                if (r.data.length > 0) {
+                    r.data.forEach(res => {
+                        addNode(res.o, 'organisation');
+                        addNode(res.a, 'award');
+                        addEdge(res.ref);
+                    });
+                    reDraw(`node[neo4j_id=${r.data[0].o.neo4j_id}]`);
+                }
+            });
+        }
+    }, [graphMetadata]);
 
     function setMetadataViaCallback(data: INodeMetadata) {
         let ele = `node[fos_id="${data.id}"]`;
         console.debug("Updating node", ele);
         cy.elements(ele).flashClass("highlight", 1500);
-        setMetadata(data);
+        setGraphMetadata(data);
     }
 
     function hideMetadata() {
@@ -73,9 +119,38 @@ export const Graph = (props: { location: Location }) => {
                     addEdge(res.ref);
                 });
                 reDraw(`node[neo4j_id=${metadata.neo4j_id}]`);
-            }
-            else {
+            } else {
                 addToast(`No awards found on notice ${metadata.id}`, {
+                    appearance: "warning",
+                    autoDismiss: true,
+                })
+            }
+        });
+    }
+
+    function getNoticeParents(metadata: INodeMetadata) {
+        console.debug("Requesting parents of", metadata.id);
+        return axios.get<string, AxiosResponse<{
+            c: INode,
+            n: INode,
+            ref: IRef,
+        }[]>>(
+            `/api/ui/queries/notices/${metadata.id}/parents`,
+            {
+                params: {
+                    max: 25
+                }
+            }
+        ).then((r) => {
+            if (r.data.length > 0) {
+                r.data.forEach(res => {
+                    addNode(res.c, 'client');
+                    addNode(res.n, 'notice');
+                    addEdge(res.ref);
+                });
+                reDraw(`node[neo4j_id=${metadata.neo4j_id}]`);
+            } else {
+                addToast(`No clients found on notice ${metadata.id}`, {
                     appearance: "warning",
                     autoDismiss: true,
                 })
@@ -104,9 +179,34 @@ export const Graph = (props: { location: Location }) => {
                     addEdge(res.ref);
                 });
                 reDraw(`node[neo4j_id=${metadata.neo4j_id}]`);
-            }
-            else {
+            } else {
                 addToast(`No org data found on notice ${metadata.id}`, {
+                    appearance: "warning",
+                    autoDismiss: true,
+                })
+            }
+        });
+    }
+
+    function getAwardParents(metadata: INodeMetadata) {
+        console.debug("Requesting parents of", metadata.id);
+        return axios.get<string, AxiosResponse<{
+            a: INode,
+            n: INode,
+            ref: IRef,
+        }[]>>(
+            `/api/ui/queries/awards/${metadata.id}/parents`
+        ).then((r) => {
+            if (r.data.length > 0) {
+                r.data.forEach(res => {
+                    res.n.properties["has_awards"] = true;
+                    addNode(res.a, 'award');
+                    addNode(res.n, 'notice');
+                    addEdge(res.ref);
+                });
+                reDraw(`node[neo4j_id=${metadata.neo4j_id}]`);
+            } else {
+                addToast(`No notice data found on award ${metadata.id}`, {
                     appearance: "warning",
                     autoDismiss: true,
                 })
@@ -237,6 +337,10 @@ export const Graph = (props: { location: Location }) => {
     }
 
     function addNode(node: INode, type: string) {
+        if (cy === undefined || cy.$id === undefined) {
+            console.debug("Cytoscape not yet initialised");
+            return;
+        }
         const count = cy.$id("node_" + node.neo4j_id);
         if (count["length"] === 0) {
             let output: { [key: string]: any } = {
@@ -267,7 +371,11 @@ export const Graph = (props: { location: Location }) => {
 
     //verify if edge exists, add it if it doesn't
     function addEdge(edge: IRef) {
-        const found = cy.$id("edge_" + edge.neo4j_id);
+        if (cy === undefined || cy.$id === undefined) {
+            console.debug("Cytoscape not yet initialised");
+            return;
+        }
+        const found = cy.$id(`edge_${edge.neo4j_id}`);
         if (found["length"] === 0) {
             let output: { [key: string]: any } = {
                 id: "edge_" + edge.neo4j_id,
@@ -278,7 +386,11 @@ export const Graph = (props: { location: Location }) => {
             };
 
             Object.keys(edge.properties).forEach(key => {
-                output[key] = edge.properties[key];
+                if (key === "id") {
+                    output["fos_id"] = edge.properties[key];
+                } else {
+                    output[key] = edge.properties[key];
+                }
             });
 
             let ele: ElementDefinition = {
@@ -294,6 +406,12 @@ export const Graph = (props: { location: Location }) => {
     }
 
     function reDraw(center?: string) {
+        if (cy === undefined || cy.$id === undefined) {
+            console.debug("Cytoscape not yet initialised");
+            return;
+        }
+
+        console.debug("redrawing", center);
         const layoutOptions = {
             name: "cose-bilkent",
             // name: "cose",
@@ -301,28 +419,14 @@ export const Graph = (props: { location: Location }) => {
         };
         cy.resize();
         var layout = cy.elements().layout(layoutOptions);
+
         layout.promiseOn('layoutstop').then(function (event) {
-            console.debug("finished layout");
             if (center) {
                 const eles = cy.elements(center);
                 if (eles.first()) {
                     let ele = eles.nodes('node').first();
-                    // ele.lock();
-                    // console.debug("panning to ", ele.renderedPosition());
-                    // ele.unlock();
-                    // cy.animate({
-                    //     zoom: {
-                    //         level: 1,
-                    //         position: {
-                    //             x: (ele.position().x - 300),
-                    //             // y: (cy.height() / 2)
-                    //             y: (ele.position().y)
-                    //         }
-                    //     },
-                    //    // center: {eles: ele},
-                    //     duration: 800
-                    // });
-                    cy.animate({zoom: 1, easing: "ease-in-out-sine", duration: 700, center: {eles: ele}});
+                    // unfortunately this runs twice at the moment ... so have to disable for now
+                    // cy.animate({zoom: 1, easing: "ease-in-out-sine", duration: 700, center: {eles: ele}});
                     ele.flashClass("highlight");
                     // ele.unlock();
                 }
@@ -338,10 +442,11 @@ export const Graph = (props: { location: Location }) => {
                 data: () => { fos_id: string, fos_type: NodeMetadataType, neo4j_id: string }
             }
         }) {
-            setMetadata({
+            setGraphMetadata({
                     type: evt.target.data().fos_type,
                     id: evt.target.data().fos_id,
-                    neo4j_id: evt.target.data().neo4j_id
+                    neo4j_id: evt.target.data().neo4j_id,
+                    clear_graph: false,
                 }
             );
         });
@@ -353,7 +458,7 @@ export const Graph = (props: { location: Location }) => {
     return (
         <>
             {/*<GraphFilterBar/>*/}
-            <NodeMetadata hidden={!showMetadata} hideCallback={hideMetadata} metadata={metadata}
+            <NodeMetadata hidden={!showMetadata} hideCallback={hideMetadata} metadata={graphMetadata}
                           setMetadataCallback={setMetadataViaCallback} showAwardDetailsCB={showAwardDetails}/>
             <div id={"cy"} className={"mt-0"}
                  ref={instance => {

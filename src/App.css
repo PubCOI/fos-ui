@@ -63,14 +63,51 @@ canvas > path {
 
 .rbt-menu {
   position: fixed!important;
-  top: auto!important;
+  top: 88px!important;
   transform: unset!important;
-  width: 75%!important;
-  left: 24%!important;
+  text-align: right!important;
+  right: 0!important;
+  z-index: 1000;
+  left: unset!important;
+  max-height: unset!important;
+}
+
+@media screen and (max-width: 399px) {
+  .rbt-menu {
+    width: 98% !important;
+  }
+}
+
+@media screen and (min-width: 400px) {
+  .rbt-menu {
+    min-width: 80% !important;
+  }
+}
+
+@media screen and (min-width: 576px) {
+  .rbt-menu {
+    min-width: 65% !important;
+  }
+}
+
+@media screen and (min-width: 800px) {
+  .rbt-menu {
+    min-width: 50% !important;
+  }
+}
+
+.rbt-menu a {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }
 /****** END GRAPH AUTOCOMPLETE ******/
 
-@media screen and (max-width: 380px) {
+.metadata-parent {
+  z-index: 900;
+}
+
+@media screen and (max-width: 379px) {
   .metadata-parent {
     margin: 0;
     padding: 10px;
@@ -79,12 +116,11 @@ canvas > path {
     top: auto;
     left: 0;
     right: 0;
-    z-index: 1000;
     max-height: 35vh;
   }
 }
 
-@media screen and (min-width: 379px) {
+@media screen and (min-width: 380px) {
   .metadata-parent {
     padding: 20px;
     background-color: rgba(255, 255, 255, 0.8);
@@ -92,7 +128,6 @@ canvas > path {
     margin-top: 20px;
     margin-left: 20px;
     right: 20px;
-    z-index: 1000;
     max-height: 85vh;
   }
 }

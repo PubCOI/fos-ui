@@ -5,7 +5,7 @@ import {LoadingWrapper} from "../LoadingWrapper";
 import {useWindowSize} from "../../hooks/Utils";
 import FontAwesome from "react-fontawesome";
 
-export const CFViewer = (props: {attachment_id: string, page_number: string}) => {
+export const CFViewer = (props: { attachment_id: string, page_number: string }) => {
 
     const size = useWindowSize();
     const [page, setPage] = useState(Number.parseInt(props.page_number || "1"));
@@ -43,7 +43,9 @@ export const CFViewer = (props: {attachment_id: string, page_number: string}) =>
             {Boolean(pdfDocument && pdfDocument.numPages && totalPages > 1) && (
                 <Navbar fixed={"bottom"} className={"mb-5 pdf-navigation"}>
                     <Col xs={1} sm={2}>
-                        <Button className={"d-flex justify-content-center"} block disabled={page === 1} onClick={() => setPage(page - 1)}>{(size.width >= 768) ? "Prev" : <FontAwesome name={"caret-left"} fixedWidth/>}</Button>
+                        <Button className={"d-flex justify-content-center"} block disabled={page === 1}
+                                onClick={() => setPage(page - 1)}>{(size.width >= 768) ? "Prev" :
+                            <FontAwesome name={"caret-left"} fixedWidth/>}</Button>
                     </Col>
                     <Col xs={10} sm={8}>
                         <div className={"d-flex justify-content-between align-items-center"}>
@@ -58,7 +60,9 @@ export const CFViewer = (props: {attachment_id: string, page_number: string}) =>
                         </div>
                     </Col>
                     <Col xs={1} sm={2} className={"d-flex justify-content-center"}>
-                        <Button className={"d-flex justify-content-center"} block disabled={page === totalPages} onClick={() => setPage(page + 1)}>{(size.width >= 768) ? "Next" : <FontAwesome name={"caret-right"} fixedWidth/>}</Button>
+                        <Button className={"d-flex justify-content-center"} block disabled={page === totalPages}
+                                onClick={() => setPage(page + 1)}>{(size.width >= 768) ? "Next" :
+                            <FontAwesome name={"caret-right"} fixedWidth/>}</Button>
                     </Col>
                 </Navbar>
             )}

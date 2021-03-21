@@ -26,6 +26,7 @@ import PaneContext from "./components/core/PaneContext";
 import {ModalContainer} from "./components/ModalContainer";
 import {GraphFilterBar} from "./components/graphs/GraphFilterBar";
 import {SearchBar} from "./components/search/SearchBar";
+import {INodeMetadata, NodeMetadataType} from "./interfaces/INodeMetadata";
 
 function App() {
 
@@ -34,6 +35,10 @@ function App() {
         setShowModal(false);
         setModalBody(MODAL_EMPTY);
     }
+
+    // ***** graph settings *****
+    const [graphMetadata, setGraphMetadata] = useState<INodeMetadata>({type: NodeMetadataType.client, id: "", neo4j_id: "", clear_graph: false});
+    // ***** end graph settings *****
 
     // ***** application settings ******
     const [displayName, setDisplayName] = useState("");
@@ -51,7 +56,9 @@ function App() {
         setShowRightPane: setShowRightPane,
         modalBody: modalBody,
         setModalBody,
-        hideModal
+        hideModal,
+        graphMetadata,
+        setGraphMetadata
     };
     // ***** end application settings *****
 
@@ -76,7 +83,7 @@ function App() {
         paneContents: paneContents,
         setPaneContents,
         openPane,
-        closePane
+        closePane,
     };
     // ***** end pane settings
 

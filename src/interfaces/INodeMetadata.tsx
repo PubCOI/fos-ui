@@ -8,5 +8,6 @@ export enum NodeMetadataType {
 export interface INodeMetadata {
     id: string,
     type: NodeMetadataType,
-    neo4j_id?: string,
+    neo4j_id: string,
+    clear_graph: boolean,
 }

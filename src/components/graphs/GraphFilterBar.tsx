@@ -1,14 +1,17 @@
-import {Button, Form, FormControl, InputGroup} from "react-bootstrap";
-import React, {useEffect, useState} from "react";
+import {Button, Form, InputGroup} from "react-bootstrap";
+import React, {useContext, useEffect, useState} from "react";
 import FontAwesome from "react-fontawesome";
 import {Menu, MenuItem, MenuProps, Typeahead, TypeaheadProps, TypeaheadResult} from "react-bootstrap-typeahead";
 import axios from "axios";
 import {useToasts} from "react-toast-notifications";
+import {INodeMetadata, NodeMetadataType} from "../../interfaces/INodeMetadata";
+import AppContext from "../core/AppContext";
 
 interface GraphAutocompleteResult {
     name: string,
     score: number,
-    id: string
+    id: string,
+    type: NodeMetadataType
 }
 
 export const GraphFilterBar = () => {
@@ -17,22 +20,7 @@ export const GraphFilterBar = () => {
     const [searchTerms, setSearchTerms] = useState("");
     const [autocompleteResults, setAutocompleteResults] = useState([] as GraphAutocompleteResult[]);
     const [doingRequest, setDoingRequest] = useState(false);
-
-    useEffect(() => {
-        // set initial results
-        setAutocompleteResults([
-            {
-                name: "abc",
-                score: 2,
-                id: "abc123"
-            },
-            {
-                name: "def",
-                score: 1,
-                id: "test123"
-            }
-        ])
-    }, []);
+    const {setGraphMetadata} = useContext(AppContext);
 
     const options: TypeaheadProps<any> = {
         id: "search_graph",
@@ -41,14 +29,33 @@ export const GraphFilterBar = () => {
         onInputChange: (input, e) => {
             setSearchTerms(input);
         },
+        onChange: selected => {
+            console.debug("selected", selected[0]);
+            let node = selected[0];
+            if (!node) return;
+            setGraphMetadata({
+                type: node.type,
+                id: node.id,
+                neo4j_id: node.neo4j_id,
+                clear_graph: true,
+            })
+        }
     };
 
     const renderMenu = (results: Array<TypeaheadResult<GraphAutocompleteResult>>, menuProps: MenuProps) => (
         <Menu {...menuProps}>
 
             {results.map((result, index) => (
-                <MenuItem option={result} position={index}>
-                    {result.name}
+                <MenuItem option={result} position={index} key={"graph_result_" + index}>
+                    <div className={"d-flex justify-content-between align-items-center"}>
+                        <>
+                            {(result.type === NodeMetadataType.organisation) ? <FontAwesome name={"building-o"} fixedWidth/> : <FontAwesome name={"users"} fixedWidth/> }
+                        </>
+                        <div>
+                            <div>{result.name}</div>
+                            <small className={"text-muted"}>{result.id}</small>
+                        </div>
+                    </div>
                 </MenuItem>
             ))}
 
@@ -88,7 +95,7 @@ export const GraphFilterBar = () => {
         <>
             <div className={"second-nav"}>
                 <Form aria-autocomplete={"none"} className={""}>
-                    <InputGroup>
+                    <InputGroup className={"d-flex"}>
                         <InputGroup.Prepend className={"d-none d-sm-block"}>
                             <InputGroup.Text>Quick&nbsp;<span className={"d-none d-md-block"}>search</span> <FontAwesome
                                 name={"caret-right"}
@@ -103,16 +110,13 @@ export const GraphFilterBar = () => {
                                 name={"caret-right"}
                                 className={"ml-2"}/></InputGroup.Text>
                         </InputGroup.Prepend>
-                        <Typeahead {...options} placeholder={"Search term(s)"}
-                                   isLoading={doingRequest}
-                                   renderMenu={
-                                       ((results, menuProps) => renderMenu(results, menuProps))}>
-                        </Typeahead>
-                        {/*<FormControl as={"input"} type={"range"} className={"w-25"}></FormControl>*/}
-                        {/*<input type="range"*/}
-                        {/*       className="custom-range mx-3"*/}
-                        {/*       min="1" max={"10"} step="1" id="dateRange"*/}
-                        {/*/>*/}
+                        <div className={"flex-grow-1"}>
+                            <Typeahead {...options} placeholder={"Search term(s)"}
+                                       isLoading={doingRequest}
+                                       renderMenu={
+                                           ((results, menuProps) => renderMenu(results, menuProps))}>
+                            </Typeahead>
+                        </div>
                         <InputGroup.Append>
                             <Button variant="secondary" type={"submit"}>Search</Button>
                         </InputGroup.Append>

@@ -13,7 +13,7 @@ export const RenderClientMetadata = (
         setMetadataCallback: (metadata: INodeMetadata) => void
     }
 ) => {
-    let baseURL = `/api/ui/graphs/clients/${props.metadata.id}`;
+    let baseURL = `/api/ui/clients/${props.metadata.id}`;
     const [client, setClient] = useState<ClientNodeResponseDAO>({
         id: "",
         name: "",
@@ -65,6 +65,8 @@ export const RenderClientMetadata = (
                         onClick={() => props.setMetadataCallback({
                             id: notice.id,
                             type: NodeMetadataType.notice,
+                            neo4j_id: "",
+                            clear_graph: false,
                         })}
                         key={`notice_metadata_${notice.id}`}>
                         <div>{notice.description} (value <MinMaxValueFormat

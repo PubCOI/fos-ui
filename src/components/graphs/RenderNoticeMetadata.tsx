@@ -23,7 +23,7 @@ export const RenderNoticeMetadata = (props: {id: string, awardDetailsCB: (id: st
         awards: [] as AwardDAO[]
     });
 
-    let baseURL = `/api/ui/graphs/notices/${props.id}`;
+    let baseURL = `/api/ui/notices/${props.id}`;
 
     useEffect(() => {
         axios.get<NoticeResponseDAO>(baseURL).then(response => {
