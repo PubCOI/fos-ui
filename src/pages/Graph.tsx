@@ -38,7 +38,10 @@ export const Graph = (props: { location: Location }) => {
     }, [graphMetadata]);
 
     useEffect(() => {
-        if (cy === undefined) return;
+        if (cy === undefined || cy.$id === undefined) {
+            console.debug("Cytoscape not yet initialised");
+            return;
+        }
         if (graphMetadata.type === undefined || graphMetadata.id === "") return;
         console.debug("Got update", graphMetadata);
         if (graphMetadata.clear_graph) {
@@ -213,11 +216,11 @@ export const Graph = (props: { location: Location }) => {
             });
         })
             .then(() => {
-            if (dataAdded) {
-                console.debug("Data added to graph, redrawing -");
-                reDraw(`node[neo4j_id=${metadata.neo4j_id}]`);
-            }
-        });
+                if (dataAdded) {
+                    console.debug("Data added to graph, redrawing -");
+                    reDraw(`node[neo4j_id=${metadata.neo4j_id}]`);
+                }
+            });
     }
 
     useEffect(() => {
@@ -446,8 +449,7 @@ export const Graph = (props: { location: Location }) => {
                 const eles = cy.elements(center);
                 if (eles.first()) {
                     let ele = eles.nodes('node').first();
-                    // unfortunately this runs twice at the moment ... so have to disable for now
-                    cy.animate({zoom: 1, easing: "ease-in-out-sine", duration: 700, center: {eles: ele}});
+                    cy.animate({zoom: 1, easing: "ease-in-out-sine", duration: 400, center: {eles: ele}});
                     ele.flashClass("highlight");
                     // ele.unlock();
                 }
