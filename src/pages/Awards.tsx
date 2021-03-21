@@ -1,4 +1,4 @@
-import {Alert, Container, OverlayTrigger, Tooltip} from "react-bootstrap";
+import {Alert, Container, OverlayTrigger} from "react-bootstrap";
 import React, {useContext, useEffect, useState} from "react";
 import {LoadingWrapper} from "../components/LoadingWrapper";
 import {AlertWrapper} from "../components/AlertWrapper";
@@ -10,7 +10,6 @@ import Datatable from 'react-bs-datatable';
 import {ContractValueFormat} from "../components/ContractValueFormat";
 import {css} from "@emotion/css";
 import {AwardDetailsModal} from "../components/graphs/AwardDetailsModal";
-import PaneContext from "../components/core/PaneContext";
 import AppContext from "../components/core/AppContext";
 import {renderTooltip} from "../hooks/Utils";
 

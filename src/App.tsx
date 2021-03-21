@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {Dispatch, FormEvent, MutableRefObject, SetStateAction, useEffect, useState} from 'react';
 import './App.css';
 import "react-datetime/css/react-datetime.css";
 import "firebase/auth";
@@ -7,7 +7,7 @@ import "bootswatch/dist/cosmo/bootstrap.min.css";
 import {Header} from "./components/Header";
 import {Login} from "./pages/Login";
 import {Awards} from "./pages/Awards";
-import {Container, Modal} from "react-bootstrap";
+import {Container} from "react-bootstrap";
 import {About} from "./pages/About";
 import {Tasks} from "./pages/Tasks";
 import {Home} from "./pages/Home";
@@ -24,8 +24,8 @@ import "react-sliding-pane/dist/react-sliding-pane.css";
 import {PaneContainer} from "./components/pane/PaneContainer";
 import PaneContext from "./components/core/PaneContext";
 import {ModalContainer} from "./components/ModalContainer";
-import axios, {AxiosResponse} from "axios";
-import {ApplicationConfig} from "./interfaces/ApplicationConfig";
+import {GraphFilterBar} from "./components/graphs/GraphFilterBar";
+import {SearchBar} from "./components/search/SearchBar";
 
 function App() {
 
@@ -35,7 +35,7 @@ function App() {
         setModalBody(MODAL_EMPTY);
     }
 
-    // ***** application ******
+    // ***** application settings ******
     const [displayName, setDisplayName] = useState("");
     const [showRightPane, setShowRightPane] = useState(false);
     const [showModal, setShowModal] = useState(false);
@@ -53,7 +53,7 @@ function App() {
         setModalBody,
         hideModal
     };
-    // &&&&& end application settings
+    // ***** end application settings *****
 
     // ***** pane settings *****
     const [paneTitle, setPaneTitle] = useState("");
@@ -80,6 +80,27 @@ function App() {
     };
     // ***** end pane settings
 
+    // ***** search settings
+    // we're only passing up and down by one layer so no point setting up a separate context
+    const [groupBy, setGroupBy] = useState(true);
+    const [searchParams, setSearchParams] = useState("");
+    const [submitSearchEvent, setSubmitSearchEvent] = useState<FormEvent<HTMLFormElement>>();
+    // for persisting across renders
+    const searchParamsRef = React.useRef("");
+
+    const [docSearchBar, setDocSearch] = useState<{
+        initialParams: MutableRefObject<string>,
+        doSubmitHandler: Dispatch<SetStateAction<FormEvent<HTMLFormElement> | undefined>>,
+        setParamsCallback: (input: string) => void,
+        setGroupByCallback: Dispatch<SetStateAction<boolean>>
+    }>({
+        initialParams: searchParamsRef,
+        doSubmitHandler: setSubmitSearchEvent,
+        setParamsCallback: setSearchParams,
+        setGroupByCallback: setGroupBy
+    });
+    // ***** end search settings
+
     useEffect(() => {
         if (undefined !== modalBody && modalBody !== MODAL_EMPTY) {
             setShowModal(true);
@@ -93,6 +114,10 @@ function App() {
                     <ContextPopulator/>
                     <PaneContainer/>
                     <Header/>
+                    <Switch>
+                        <Route exact path={"/graph"} component={GraphFilterBar}/>
+                        <Route exact path={"/search"} render={() => <SearchBar {...docSearchBar} />}/>
+                    </Switch>
                     <Container fluid className={"p-0"}>
                         <main role={"main"}>
                             <Switch>
@@ -104,7 +129,7 @@ function App() {
                                 <Route exact path={"/profile"} component={Profile}/>
                                 <Route exact path={"/data/upload"} component={Upload}/>
                                 <Route exact path={"/graph"} component={Graph}/>
-                                <Route exact path={"/search"} component={Search}/>
+                                <Route exact path={"/search"} render={() => <Search groupBy={groupBy} searchParams={searchParams}/>}/>
                                 <Route exact path={"/stats"} component={Stats}/>
                                 <Route path={"/view"} component={Viewer}/>
                             </Switch>

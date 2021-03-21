@@ -44,12 +44,13 @@ canvas > path {
 }
 
 .second-nav {
-  position: fixed;
-  top: auto;
-  z-index: 1300;
+  position: sticky;
+  z-index: 999; /** main menu dropdown is 1000 **/
   width: 100%;
+  top: 54px;
 }
 
+/****** GRAPH AUTOCOMPLETE ******/
 /* autocomplete status placeholder */
 .rbt-aux {
   position: fixed;
@@ -61,13 +62,13 @@ canvas > path {
 }
 
 .rbt-menu {
-  /*width: 75vw!important;*/
   position: fixed!important;
   top: auto!important;
   transform: unset!important;
   width: 75%!important;
   left: 24%!important;
 }
+/****** END GRAPH AUTOCOMPLETE ******/
 
 @media screen and (max-width: 380px) {
   .metadata-parent {

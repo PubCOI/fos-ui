@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from "react";
 import {usePdf} from "@mikecousins/react-pdf";
-import {Button, Col, Form, Navbar, Row} from "react-bootstrap";
+import {Button, Col, Navbar, Row} from "react-bootstrap";
 import {LoadingWrapper} from "../LoadingWrapper";
 import {useWindowSize} from "../../hooks/Utils";
 import FontAwesome from "react-fontawesome";

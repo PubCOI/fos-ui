@@ -9,7 +9,6 @@ import {INode, IRef} from "../interfaces/DAO/GraphDAO";
 import {useToasts} from "react-toast-notifications";
 import imgNoticeWarning from '../img/graph-notice-warning.svg';
 import imgNotice from '../img/graph-notice.svg';
-import {GraphFilterBar} from "../components/graphs/GraphFilterBar";
 
 let coseBilkent = require('cytoscape-cose-bilkent');
 
@@ -353,7 +352,7 @@ export const Graph = (props: { location: Location }) => {
 
     return (
         <>
-            <GraphFilterBar/>
+            {/*<GraphFilterBar/>*/}
             <NodeMetadata hidden={!showMetadata} hideCallback={hideMetadata} metadata={metadata}
                           setMetadataCallback={setMetadataViaCallback} showAwardDetailsCB={showAwardDetails}/>
             <div id={"cy"} className={"mt-0"}

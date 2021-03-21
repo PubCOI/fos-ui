@@ -1,4 +1,4 @@
-import {Alert, Col, Row} from "react-bootstrap";
+import {Alert, Col, Container, Row} from "react-bootstrap";
 import React from "react";
 import FontAwesome from "react-fontawesome";
 import {FosDropZone} from "../components/FosDropZone";
@@ -6,6 +6,7 @@ import {FosDropZone} from "../components/FosDropZone";
 export const Upload = () => {
     return (
         <>
+            <Container fluid className={"p-3"}>
             <Row>
                 <Col md={8} className={"offset-md-2 mt-3"}>
                     <h2>Contracts Finder: data upload</h2>
@@ -44,6 +45,7 @@ export const Upload = () => {
                     <FosDropZone/>
                 </Col>
             </Row>
+            </Container>
         </>
     )
 };

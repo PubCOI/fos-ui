@@ -1,36 +1,34 @@
-import React, {FormEvent, useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 import {SearchInfoBlock} from "../components/search/SearchInfoBlock";
 import axios from "axios";
-import {SearchBar} from "../components/search/SearchBar";
 import {NoResultsBlock} from "../components/search/NoResultsBlock";
 import {SearchResultWrapper} from "../components/search/SearchInterfaces";
 import {SearchResultsBlock} from "../components/search/SearchResultsBlock";
 import {useToasts} from "react-toast-notifications";
 
-export const Search = () => {
+export const Search = (
+    props: {
+        groupBy: boolean,
+        searchParams: string,
+    }) => {
 
     const {addToast} = useToasts();
     const [loaded, setLoaded] = useState(false);
     const [error, setError] = useState(false);
     const [results, setResults] = useState<SearchResultWrapper | undefined>(undefined);
 
-    // is passed off to child handler to populate
-    const [searchParams, setSearchParams] = useState("");
-
     // store whether we've done any search at all ... if not just return generic info
     const [initialSearch, setInitialSearch] = useState(false);
-
-    const [aggregated, setAggregated] = useState(true);
 
     let url = "/api/ui/search";
 
     useEffect(() => {
-        if (searchParams === "") return;
+        if (props.searchParams === "") return;
         if (!initialSearch) setInitialSearch(true);
 
         axios.post<SearchResultWrapper>(url, {
-            q: searchParams,
-            groupResults: aggregated
+            q: props.searchParams,
+            groupResults: props.groupBy
         })
             .then(response => {
                 setResults(response.data)
@@ -43,27 +41,17 @@ export const Search = () => {
                 });
                 setError(true)
             });
-    }, [searchParams, aggregated]);
+    }, [props.searchParams, props.groupBy]);
 
-    function submitHandler(e: FormEvent<HTMLFormElement>) {
-        e.preventDefault();
-        setInitialSearch(true);
-    }
-
-    let searchResults = (undefined !== results && results?.results > 0) ? <SearchResultsBlock data={results} aggregated={aggregated}/> :
+    let searchResults = (undefined !== results && results?.results > 0) ?
+        <SearchResultsBlock data={results} aggregated={props.groupBy}/> :
         <NoResultsBlock/>;
 
     let searchResultBlock = (initialSearch ? searchResults : <SearchInfoBlock/>);
 
     return (
         <>
-            <SearchBar
-                setGroupBy={setAggregated}
-                doSubmitCallback={submitHandler}
-                setParamsCallback={setSearchParams}/>
-
-                {searchResultBlock}
-
+            {searchResultBlock}
             <div className={"my-5"}>&nbsp;</div>
         </>
     )
