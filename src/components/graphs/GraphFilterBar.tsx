@@ -4,7 +4,7 @@ import FontAwesome from "react-fontawesome";
 import {Menu, MenuItem, MenuProps, Typeahead, TypeaheadProps, TypeaheadResult} from "react-bootstrap-typeahead";
 import axios from "axios";
 import {useToasts} from "react-toast-notifications";
-import {INodeMetadata, NodeMetadataType} from "../../interfaces/INodeMetadata";
+import {NodeMetadataType} from "../../interfaces/INodeMetadata";
 import AppContext from "../core/AppContext";
 
 interface GraphAutocompleteResult {
@@ -63,7 +63,7 @@ export const GraphFilterBar = () => {
     );
 
     useEffect(() => {
-        if (searchTerms.length < 3) {
+        if (searchTerms.length < 2) {
             setDoingRequest(false);
             return;
         }

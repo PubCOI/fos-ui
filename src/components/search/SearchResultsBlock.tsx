@@ -10,7 +10,7 @@ import {CFViewer} from "../viewer/CFViewer";
 
 export const SearchResultsBlock = (props: { data: SearchResultWrapper, aggregated: boolean }) => {
 
-    const {setPaneTitle, setPaneSubtitle, setPaneContents, openPane} = useContext(PaneContext);
+    const {setPaneTitle, setPaneContents, openPane} = useContext(PaneContext);
 
     function openPDFPane(attachment_id: string, page_number: string) {
         setPaneTitle("PDF: attachment " + attachment_id);
@@ -43,8 +43,8 @@ export const SearchResultsBlock = (props: { data: SearchResultWrapper, aggregate
                                     <div className={"text-muted font-italic"}>{item.noticeDescription}</div>
 
                                     <div className={"text-muted shadow rounded p-3 mt-3"} hidden={item.fragments.length < 1}>
-                                        {item.fragments.map(fragment => (
-                                            <><span dangerouslySetInnerHTML={{
+                                        {item.fragments.map((fragment, index) => (
+                                            <><span key={`${item.key}_fragment_${index}`} dangerouslySetInnerHTML={{
                                                 __html: fragment
                                             }}/>&#8230; </>))}
                                     </div>
