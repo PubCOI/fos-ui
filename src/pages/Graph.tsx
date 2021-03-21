@@ -23,16 +23,16 @@ export const Graph = (props: { location: Location }) => {
     const [cy, setCy] = useState({} as cytoscape.Core);
     const [showMetadata, setShowMetadata] = useState(false);
 
+    let debugCallStack = false;
+
     useEffect(() => {
         if (undefined !== graphMetadata.type && undefined !== graphMetadata.id && graphMetadata.id !== "") {
             setShowMetadata(true);
             if (graphMetadata.type === NodeMetadataType.notice) {
-                getNoticeChildren(graphMetadata);
-                getNoticeParents(graphMetadata);
+                getNoticeNodes(graphMetadata);
             }
             if (graphMetadata.type === NodeMetadataType.award) {
-                getAwardChildren(graphMetadata);
-                getAwardParents(graphMetadata);
+                getAwardNodes(graphMetadata);
             }
         }
     }, [graphMetadata]);
@@ -98,9 +98,10 @@ export const Graph = (props: { location: Location }) => {
         setModalBody(<AwardDetailsModal id={id}/>);
     }
 
-    function getNoticeChildren(metadata: INodeMetadata) {
+    function getNoticeNodes(metadata: INodeMetadata) {
         console.debug("Requesting children of", metadata.id);
-        return axios.get<string, AxiosResponse<{
+        let dataAdded = false;
+        axios.get<string, AxiosResponse<{
             a: INode,
             n: INode,
             ref: IRef,
@@ -111,56 +112,59 @@ export const Graph = (props: { location: Location }) => {
                     max: 25
                 }
             }
-        ).then((r) => {
-            if (r.data.length > 0) {
-                r.data.forEach(res => {
-                    addNode(res.a, 'award');
-                    addNode(res.n, 'notice');
-                    addEdge(res.ref);
-                });
-                reDraw(`node[neo4j_id=${metadata.neo4j_id}]`);
-            } else {
-                addToast(`No awards found on notice ${metadata.id}`, {
-                    appearance: "warning",
-                    autoDismiss: true,
-                })
-            }
-        });
-    }
-
-    function getNoticeParents(metadata: INodeMetadata) {
-        console.debug("Requesting parents of", metadata.id);
-        return axios.get<string, AxiosResponse<{
-            c: INode,
-            n: INode,
-            ref: IRef,
-        }[]>>(
-            `/api/ui/queries/notices/${metadata.id}/parents`,
-            {
-                params: {
-                    max: 25
+        )
+            .then((r) => {
+                if (r.data.length > 0) {
+                    r.data.forEach(res => {
+                        dataAdded = addNode(res.a, 'award') || dataAdded;
+                        dataAdded = addNode(res.n, 'notice') || dataAdded;
+                        dataAdded = addEdge(res.ref) || dataAdded;
+                    });
+                } else {
+                    addToast(`No awards found on notice ${metadata.id}`, {
+                        appearance: "warning",
+                        autoDismiss: true,
+                    })
                 }
-            }
-        ).then((r) => {
-            if (r.data.length > 0) {
-                r.data.forEach(res => {
-                    addNode(res.c, 'client');
-                    addNode(res.n, 'notice');
-                    addEdge(res.ref);
+            })
+            .then(() => {
+                axios.get<string, AxiosResponse<{
+                    c: INode,
+                    n: INode,
+                    ref: IRef,
+                }[]>>(
+                    `/api/ui/queries/notices/${metadata.id}/parents`,
+                    {
+                        params: {
+                            max: 25
+                        }
+                    }
+                ).then((r) => {
+                    if (r.data.length > 0) {
+                        r.data.forEach(res => {
+                            dataAdded = addNode(res.c, 'client') || dataAdded;
+                            dataAdded = addNode(res.n, 'notice') || dataAdded;
+                            dataAdded = addEdge(res.ref) || dataAdded;
+                        });
+                    } else {
+                        addToast(`No clients found on notice ${metadata.id}`, {
+                            appearance: "warning",
+                            autoDismiss: true,
+                        })
+                    }
                 });
+            }).then(() => {
+            if (dataAdded) {
+                console.debug("Data added to graph, redrawing -");
                 reDraw(`node[neo4j_id=${metadata.neo4j_id}]`);
-            } else {
-                addToast(`No clients found on notice ${metadata.id}`, {
-                    appearance: "warning",
-                    autoDismiss: true,
-                })
             }
-        });
+        })
     }
 
-    function getAwardChildren(metadata: INodeMetadata) {
+    function getAwardNodes(metadata: INodeMetadata) {
         console.debug("Requesting children of", metadata.id);
-        return axios.get<string, AxiosResponse<{
+        let dataAdded = false;
+        axios.get<string, AxiosResponse<{
             a: INode,
             o: INode,
             ref: IRef,
@@ -174,42 +178,44 @@ export const Graph = (props: { location: Location }) => {
         ).then((r) => {
             if (r.data.length > 0) {
                 r.data.forEach(res => {
-                    addNode(res.a, 'award');
-                    addNode(res.o, 'organisation');
-                    addEdge(res.ref);
+                    dataAdded = addNode(res.a, 'award') || dataAdded;
+                    dataAdded = addNode(res.o, 'organisation') || dataAdded;
+                    dataAdded = addEdge(res.ref) || dataAdded;
                 });
-                reDraw(`node[neo4j_id=${metadata.neo4j_id}]`);
             } else {
                 addToast(`No org data found on notice ${metadata.id}`, {
                     appearance: "warning",
                     autoDismiss: true,
                 })
             }
-        });
-    }
-
-    function getAwardParents(metadata: INodeMetadata) {
-        console.debug("Requesting parents of", metadata.id);
-        return axios.get<string, AxiosResponse<{
-            a: INode,
-            n: INode,
-            ref: IRef,
-        }[]>>(
-            `/api/ui/queries/awards/${metadata.id}/parents`
-        ).then((r) => {
-            if (r.data.length > 0) {
-                r.data.forEach(res => {
-                    res.n.properties["has_awards"] = true;
-                    addNode(res.a, 'award');
-                    addNode(res.n, 'notice');
-                    addEdge(res.ref);
-                });
+        }).then(() => {
+            console.debug("Requesting parents of", metadata.id);
+            return axios.get<string, AxiosResponse<{
+                a: INode,
+                n: INode,
+                ref: IRef,
+            }[]>>(
+                `/api/ui/queries/awards/${metadata.id}/parents`
+            ).then((r) => {
+                if (r.data.length > 0) {
+                    r.data.forEach(res => {
+                        res.n.properties["has_awards"] = true;
+                        dataAdded = addNode(res.a, 'award') || dataAdded;
+                        dataAdded = addNode(res.n, 'notice') || dataAdded;
+                        dataAdded = addEdge(res.ref) || dataAdded;
+                    });
+                } else {
+                    addToast(`No notice data found on award ${metadata.id}`, {
+                        appearance: "warning",
+                        autoDismiss: true,
+                    })
+                }
+            });
+        })
+            .then(() => {
+            if (dataAdded) {
+                console.debug("Data added to graph, redrawing -");
                 reDraw(`node[neo4j_id=${metadata.neo4j_id}]`);
-            } else {
-                addToast(`No notice data found on award ${metadata.id}`, {
-                    appearance: "warning",
-                    autoDismiss: true,
-                })
             }
         });
     }
@@ -339,7 +345,7 @@ export const Graph = (props: { location: Location }) => {
     function addNode(node: INode, type: string) {
         if (cy === undefined || cy.$id === undefined) {
             console.debug("Cytoscape not yet initialised");
-            return;
+            return false;
         }
         const count = cy.$id("node_" + node.neo4j_id);
         if (count["length"] === 0) {
@@ -366,14 +372,16 @@ export const Graph = (props: { location: Location }) => {
 
             console.debug(`Adding node ${output.id}:`, ele);
             cy.add(ele);
+            return true;
         }
+        return false;
     }
 
     //verify if edge exists, add it if it doesn't
     function addEdge(edge: IRef) {
         if (cy === undefined || cy.$id === undefined) {
             console.debug("Cytoscape not yet initialised");
-            return;
+            return false;
         }
         const found = cy.$id(`edge_${edge.neo4j_id}`);
         if (found["length"] === 0) {
@@ -400,9 +408,10 @@ export const Graph = (props: { location: Location }) => {
             console.debug("Adding edge:", ele);
             cy.add(ele);
             console.debug(`edge_${edge.neo4j_id} created between node_${edge.start} and node_${edge.end}`);
-        } else {
-            console.debug(`edge_${edge.neo4j_id} already exists`);
+            return true;
         }
+        console.debug(`edge_${edge.neo4j_id} already exists`);
+        return false;
     }
 
     function reDraw(center?: string) {
@@ -411,12 +420,24 @@ export const Graph = (props: { location: Location }) => {
             return;
         }
 
-        console.debug("redrawing", center);
+        if (debugCallStack) {
+            // nabbed from https://gist.github.com/irisli/716b6dacd3f151ce2b7e
+            let stackTrace = (new Error()).stack; // Only tested in latest FF and Chrome
+            let callerName = stackTrace?.replace(/^Error\s+/, ''); // Sanitize Chrome
+            callerName = callerName?.split("\n")[1]; // 1st item is this, 2nd item is caller
+            callerName = callerName?.replace(/^\s+at Object./, ''); // Sanitize Chrome
+            callerName = callerName?.replace(/ \(.+\)$/, ''); // Sanitize Chrome
+            callerName = callerName?.replace(/\@.+/, ''); // Sanitize Firefox
+            console.log("called from", callerName);
+        }
+
+        console.debug("redrawing, center is", center);
         const layoutOptions = {
             name: "cose-bilkent",
             // name: "cose",
             fit: false,
         };
+
         cy.resize();
         var layout = cy.elements().layout(layoutOptions);
 
@@ -426,7 +447,7 @@ export const Graph = (props: { location: Location }) => {
                 if (eles.first()) {
                     let ele = eles.nodes('node').first();
                     // unfortunately this runs twice at the moment ... so have to disable for now
-                    // cy.animate({zoom: 1, easing: "ease-in-out-sine", duration: 700, center: {eles: ele}});
+                    cy.animate({zoom: 1, easing: "ease-in-out-sine", duration: 700, center: {eles: ele}});
                     ele.flashClass("highlight");
                     // ele.unlock();
                 }
@@ -467,6 +488,5 @@ export const Graph = (props: { location: Location }) => {
                  }}>
             </div>
         </>
-    )
-
+    );
 };
