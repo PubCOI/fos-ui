@@ -1,11 +1,9 @@
-import {SearchResultWrapper} from "./SearchInterfaces";
-import {Badge, Button, ListGroup, Media} from "react-bootstrap";
-import React, {useContext} from "react";
+import {BaseSearchResult, SearchResultWrapper} from "./SearchInterfaces";
+import {Badge, Button, Col, ListGroup, Media, OverlayTrigger, Row, Table} from "react-bootstrap";
+import React, {useContext, useEffect, useState} from "react";
 import Moment from "react-moment";
 import FontAwesome from "react-fontawesome";
-import {Link} from "react-router-dom";
 import PaneContext from "../core/PaneContext";
-import {strict} from "assert";
 import {CFViewer} from "../viewer/CFViewer";
 
 export const SearchResultsBlock = (props: { data: SearchResultWrapper, aggregated: boolean }) => {
@@ -16,33 +14,30 @@ export const SearchResultsBlock = (props: { data: SearchResultWrapper, aggregate
         setPaneTitle("PDF: attachment " + attachment_id);
         setPaneContents(<CFViewer attachment_id={attachment_id} page_number={page_number}/>);
         openPane();
-        //  as={Link} to={`/view/cf/${item.attachmentId}/page/1`}
     }
 
     return (
         <>
             {Boolean(props.aggregated) && (
                 <ListGroup variant={"flush"}>
-                    {props.data.aggregated.map(item => (
-                        <ListGroup.Item key={`fts_result_${item.key}`} action onClick={() => openPDFPane(item.attachmentId, "1")}>
+                    {props.data.results.map(item => (
+                        <ListGroup.Item key={`fts_result_${item.key}`} action
+                                        onClick={() => openPDFPane(item.attachmentId, "1")}>
 
                             <Media className={"py-3"}>
                                 <FontAwesome name={"file-pdf-o"} size={"2x"} className={"pr-4"}/>
                                 <Media.Body>
                                     <div className={"pt-1 d-flex justify-content-between"}>
 
-                                        <h5>{item.organisation} <small
+                                        <h5>Attachment #{item.attachmentId} <small
                                             className={"ml-1 text-muted font-italic"}>{item.hits} hits</small></h5>
 
-                                        <div>
-                                            <Badge
-                                                variant={"info"} pill>pub. <Moment
-                                                format={"DD MMM YY"}>{item.noticeDT}</Moment></Badge>
-                                        </div>
                                     </div>
-                                    <div className={"text-muted font-italic"}>{item.noticeDescription}</div>
 
-                                    <div className={"text-muted shadow rounded p-3 mt-3"} hidden={item.fragments.length < 1}>
+                                    <SearchMetadataBlock item={item}/>
+
+                                    <div className={"text-muted shadow rounded p-3 mt-3"}
+                                         hidden={item.fragments.length < 1}>
                                         {item.fragments.map((fragment, index) => (
                                             <><span key={`${item.key}_fragment_${index}`} dangerouslySetInnerHTML={{
                                                 __html: fragment
@@ -51,13 +46,6 @@ export const SearchResultsBlock = (props: { data: SearchResultWrapper, aggregate
 
                                 </Media.Body>
                             </Media>
-
-                            {/*<div className={"d-flex justify-content-between align-items-center mt-2"}>*/}
-                            {/*    <div>*/}
-                            {/*        <Button size={"sm"} variant={"outline-secondary"}>attachment <FontAwesome*/}
-                            {/*            name={"external-link"}/></Button>*/}
-                            {/*    </div>*/}
-                            {/*</div>*/}
                         </ListGroup.Item>
                     ))}
                 </ListGroup>
@@ -65,16 +53,15 @@ export const SearchResultsBlock = (props: { data: SearchResultWrapper, aggregate
 
             {Boolean(!props.aggregated) && (
                 <ListGroup>
-                    {props.data.paged.map(item => (
-                        <ListGroup.Item key={`fts_result_${item.key}`} action onClick={() => openPDFPane(item.attachmentId, item.pageNumber)}>
-                            <h5 className={"d-flex justify-content-between"}>{item.organisation} <small><Badge
-                                variant={"info"} pill>pub. <Moment format={"DD MMM YY"}>{item.noticeDT}</Moment></Badge></small>
-                            </h5>
+                    {props.data.results.map(item => (
+                        <ListGroup.Item key={`fts_result_${item.key}`} action
+                                        onClick={() => openPDFPane(item.attachmentId, item.pageNumber)}>
                             <div>
-                                <Badge variant={"dark"}>Page {item.pageNumber}</Badge> {item.fragments.map(fragment => (
-                                    <><span dangerouslySetInnerHTML={{
-                                        __html: fragment
-                                    }}/>&#8230; </>))}
+                                <Badge
+                                    variant={"dark"}>Page {item.pageNumber}</Badge> {item.fragments.map((fragment, index) => (
+                                <><span key={`${item.key}_fragment_${index}`} dangerouslySetInnerHTML={{
+                                    __html: fragment
+                                }}/>&#8230; </>))}
                             </div>
                             <div className={"d-flex justify-content-between align-items-center mt-2"}>
                                 <div className={"text-muted"}>Notice {item.noticeId}</div>
@@ -89,5 +76,29 @@ export const SearchResultsBlock = (props: { data: SearchResultWrapper, aggregate
                 </ListGroup>
             )}
         </>
+    )
+};
+
+const SearchMetadataBlock = (props: { item: BaseSearchResult}) => {
+    return (
+        <>
+            <SearchMetadataRow icon={"building-o"} label={"Purchaser"} value={props.item.client}/>
+            <SearchMetadataRow icon={"calendar"} label={"First award date"} value={<Moment date={props.item.firstAwardDT} format={"DD MMM yyyy"}/>}/>
+            <SearchMetadataRow icon={"calendar"} label={"Published"} value={<>
+                <Moment date={props.item.noticeDT} format={"DD MMM yyyy"}/> (<Moment duration={props.item.firstAwardDT} date={props.item.noticeDT} format={"D"}/> days later)
+            </>}/>
+            <SearchMetadataRow icon={"quote-right"} label={"Contract description"} value={props.item.noticeDescription}/>
+        </>
+    )
+};
+
+const SearchMetadataRow = (props: {icon: string, label: string, value: any}) => {
+    return (
+        <Row className={"small"}>
+            <Col md={3} className={"text-nowrap"}>
+                <FontAwesome name={props.icon} className={"mr-1"}/> {props.label}
+            </Col>
+            <Col className={"mb-2 mb-md-0"}>{props.value}</Col>
+        </Row>
     )
 };

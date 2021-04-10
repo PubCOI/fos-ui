@@ -7,7 +7,7 @@ import {CFViewer} from "../viewer/CFViewer";
 
 export const AttachmentAccordionLinks = (props: { attachment: AttachmentDAO }) => {
 
-    const {setPaneTitle, setPaneSubtitle, setPaneContents, openPane} = useContext(PaneContext);
+    const {setPaneTitle, setPaneContents, openPane} = useContext(PaneContext);
 
     function openDocument(id: string) {
         setPaneTitle("Attachment: " + id);

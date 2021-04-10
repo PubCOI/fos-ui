@@ -1,7 +1,7 @@
 import React from 'react';
 import {useParams} from "react-router-dom";
-import {CFViewerRouteParams} from "../interfaces/CFViewerRouteParams";
 import {CFViewer} from "../components/viewer/CFViewer";
+import {CFViewerRouteParams} from "../interfaces/CFViewerRouteParams";
 
 export const CFViewerRouter = () => {
     let {attachment_id, page_number} = useParams<CFViewerRouteParams>();

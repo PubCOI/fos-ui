@@ -1,25 +1,19 @@
-interface SearchByAggregationResult extends BaseSearchResult {
-    hits: number,
-}
-
 export interface SearchResultWrapper {
-    tookInMillis: number,
-    results: number,
-    paged: SearchByPageResult[];
-    aggregated: SearchByAggregationResult[];
+    took: number,
+    count: number,
+    results: BaseSearchResult[];
 }
 
-export interface SearchByPageResult extends BaseSearchResult {
-    pageNumber: string
-}
-
-interface BaseSearchResult {
+export interface BaseSearchResult {
+    key: string
     fragments: string[],
     attachmentId: string,
     noticeId: string,
-    key: string
     noticeInfo: string,
     noticeDescription: string,
-    organisation: string,
+    client: string,
     noticeDT: string,
+    firstAwardDT: string,
+    hits: number,
+    pageNumber: string,
 }

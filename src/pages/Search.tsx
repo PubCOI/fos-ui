@@ -15,6 +15,8 @@ export const Search = (
     const {addToast} = useToasts();
     const [loaded, setLoaded] = useState(false);
     const [error, setError] = useState(false);
+    // stops multiple toasts from appearing in event of error
+    const [errToastShown, setErrToastShown] = useState(false);
     const [results, setResults] = useState<SearchResultWrapper | undefined>(undefined);
 
     // store whether we've done any search at all ... if not just return generic info
@@ -35,15 +37,21 @@ export const Search = (
             })
             .then(() => setLoaded(true))
             .catch(() => {
-                addToast("Error loading results", {
-                    autoDismiss: true,
-                    appearance: "error"
-                });
+                if (!errToastShown) {
+                    setErrToastShown(true);
+                    addToast("Error loading results", {
+                        autoDismiss: true,
+                        appearance: "error",
+                        onDismiss: function() {
+                            setErrToastShown(false);
+                        }
+                    });
+                }
                 setError(true)
             });
     }, [props.searchParams, props.groupBy]);
 
-    let searchResults = (undefined !== results && results?.results > 0) ?
+    let searchResults = (undefined !== results && results?.count > 0) ?
         <SearchResultsBlock data={results} aggregated={props.groupBy}/> :
         <NoResultsBlock/>;
 

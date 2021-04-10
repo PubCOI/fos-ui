@@ -1,21 +1,40 @@
 import React, {useEffect, useRef, useState} from "react";
 import {usePdf} from "@mikecousins/react-pdf";
-import {Button, Col, Navbar, Row} from "react-bootstrap";
+import {Accordion, Alert, Button, Col, Navbar, Row} from "react-bootstrap";
 import {LoadingWrapper} from "../LoadingWrapper";
 import {useWindowSize} from "../../hooks/Utils";
 import FontAwesome from "react-fontawesome";
+import axios, {AxiosResponse} from "axios";
+import {useToasts} from "react-toast-notifications";
+import {AttachmentDAO} from "../../interfaces/AttachmentDAO";
 
 export const CFViewer = (props: { attachment_id: string, page_number: string }) => {
-
+    const {addToast} = useToasts();
     const size = useWindowSize();
     const [page, setPage] = useState(Number.parseInt(props.page_number || "1"));
     const [totalPages, setTotalPages] = useState(0);
     const canvasRef = useRef(null);
     const {pdfDocument, pdfPage} = usePdf({
-        file: `/api/ui/view?attachment_id=${props.attachment_id}`,
+        file: `/api/attachments/${props.attachment_id}/view`,
         page,
         canvasRef
     });
+    const [showMetadata, setShowMetadata] = useState(false);
+    const [metadata, setMetadata] = useState<AttachmentDAO>();
+
+    useEffect(() => {
+        axios.get<string, AxiosResponse<AttachmentDAO>>(`/api/attachments/${props.attachment_id}/metadata`)
+            .then(d => {
+                    setMetadata(d.data)
+                }
+            )
+            .catch(e => {
+                addToast("Error loading metadata", {
+                    appearance: "error",
+                    autoDismiss: true
+                })
+            })
+    }, []);
 
     useEffect(() => {
         if (undefined === pdfDocument) return;
@@ -26,8 +45,30 @@ export const CFViewer = (props: { attachment_id: string, page_number: string }) 
         setPage(Number.parseInt(pageNumber));
     }
 
+    function toggleMetadata() {
+        setShowMetadata(!showMetadata);
+    }
+
     return (
         <>
+            <div className={"pane-top"}>
+                <Button
+                    onClick={() => toggleMetadata()}
+                    variant={"primary"}
+                    size={"sm"}><FontAwesome name={showMetadata ? "caret-up" : "caret-down"} className={"mr-2"}/> View
+                    Details</Button>
+            </div>
+            <Accordion.Collapse className={"pane-accordion-metadata mt-3"} eventKey={`${metadata?.id}`}
+                                key={`_accordion_${metadata?.id}`} in={showMetadata}>
+                <Alert variant={"dark"}>
+                    <MetadataRow label={"Description"} value={metadata?.description}/>
+                    <MetadataRow label={"Attachment ID"} value={metadata?.id}/>
+                    <MetadataRow label={"Notice ID"} value={metadata?.noticeId}/>
+                    <MetadataRow label={"Original format"} value={metadata?.mime}/>
+                    <MetadataRow label={"Type"} value={metadata?.type}/>
+                    <MetadataRow label={"URL"} value={metadata?.href}/>
+                </Alert>
+            </Accordion.Collapse>
             <Row noGutters className={"mt-3"}>
                 <Col md={1}>
                     <div>&nbsp;</div>
@@ -67,6 +108,16 @@ export const CFViewer = (props: { attachment_id: string, page_number: string }) 
                 </Navbar>
             )}
         </>
-
     )
 };
+
+const MetadataRow = (props: { label: string, value: string | undefined }) => {
+    return (
+        <>
+            <Row>
+                <Col md={3}>{props.label}</Col>
+                <Col className={"text-break"}>{(props.value ? props.value : "[undefined]")}</Col>
+            </Row>
+        </>
+    )
+}

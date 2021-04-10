@@ -21,8 +21,7 @@ export const PaneContainer = () => {
                 subtitle={paneSubtitle}
                 onRequestClose={() => {
                     closePane()
-                }}
-            >
+                }}>
                 {paneContents}
             </ReactSlidingPane>
         </>
