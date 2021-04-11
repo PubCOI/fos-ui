@@ -25,7 +25,7 @@ export const FosDropZone = () => {
     }, [authToken]);
 
     const getUploadParams = () => {
-        const url = "/api/ui/data/contracts";
+        const url = "/api/contracts";
         const fields = {
             authToken: authToken
         };

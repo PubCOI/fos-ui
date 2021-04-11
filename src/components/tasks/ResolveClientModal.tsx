@@ -63,7 +63,7 @@ export const ResolveClientModal = (props: { id: string, taskId: string, removeTa
     useEffect(() => {
         // short-circuit if param is empty
         if (client.name === "" || client?.canonical) return;
-        axios.get<ClientSearchResponse[]>("/api/ui/graphs/clients", {
+        axios.get<ClientSearchResponse[]>("/api/graphs/_search/clients", {
             params: {
                 query: encodeURIComponent(client.name),
                 currentNode: client.id

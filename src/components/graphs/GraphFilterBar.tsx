@@ -69,7 +69,7 @@ export const GraphFilterBar = () => {
             return;
         }
         setDoingRequest(true);
-        axios.get<GraphAutocompleteResult[]>("/api/ui/graphs/search", {
+        axios.get<GraphAutocompleteResult[]>("/api/graphs/_search", {
             params: {
                 query: encodeURIComponent(searchTerms),
                 _t: Date.now()

@@ -20,7 +20,7 @@ export const ContextPopulator = () => {
     useEffect(() => {
         if (globalIsSignedIn) {
             firebase.auth().currentUser?.getIdToken(/* forceRefresh */ true).then(function (idToken) {
-                axios.post<UpdateProfileRequestDAO, AxiosResponse<UpdateProfileResponseDAO>>("/api/ui/user", {}, {
+                axios.post<UpdateProfileRequestDAO, AxiosResponse<UpdateProfileResponseDAO>>("/api/profile", {}, {
                     headers: {
                         authToken: idToken
                     }

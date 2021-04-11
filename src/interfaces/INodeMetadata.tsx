@@ -3,6 +3,7 @@ export enum NodeMetadataType {
     notice = "notice",
     award = "award",
     organisation = "organisation",
+    person = "person",
 }
 
 export interface INodeMetadata {

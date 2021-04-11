@@ -27,8 +27,6 @@ export const Graph = (props: { location: Location }) => {
     const [cy, setCy] = useState({} as cytoscape.Core);
     const [showMetadata, setShowMetadata] = useState(false);
 
-    let debugCallStack = false;
-
     useEffect(() => {
         if (undefined !== graphMetadata.type && undefined !== graphMetadata.id && graphMetadata.id !== "") {
             setShowMetadata(true);
@@ -73,13 +71,13 @@ export const Graph = (props: { location: Location }) => {
         if (graphMetadata.clear_graph) {
             cy.remove(cy.$("*"));
         }
-        if (graphMetadata.type === NodeMetadataType.client) {
+        if (graphMetadata.type as NodeMetadataType === NodeMetadataType.client) {
             axios.get<string, AxiosResponse<{
                 c: INode,
                 n: INode,
                 ref: IRef,
             }[]>>(
-                "/api/ui/graph/clients/" + graphMetadata.id
+                "/api/graphs/clients/" + graphMetadata.id
             ).then((r) => {
                 if (r.data.length > 0) {
                     r.data.forEach(res => {
@@ -91,13 +89,13 @@ export const Graph = (props: { location: Location }) => {
                 }
             });
         }
-        if (graphMetadata.type === NodeMetadataType.organisation) {
+        if (graphMetadata.type as NodeMetadataType === NodeMetadataType.organisation) {
             axios.get<string, AxiosResponse<{
                 o: INode,
                 a: INode,
                 ref: IRef,
             }[]>>(
-                "/api/ui/graph/organisations/" + graphMetadata.id
+                "/api/graphs/organisations/" + graphMetadata.id
             ).then((r) => {
                 if (r.data.length > 0) {
                     r.data.forEach(res => {
@@ -135,7 +133,7 @@ export const Graph = (props: { location: Location }) => {
             n: INode,
             ref: IRef,
         }[]>>(
-            `/api/ui/queries/notices/${metadata.id}/children`,
+            `/api/graphs/notices/${metadata.id}/children`,
             {
                 params: {
                     max: 25
@@ -162,7 +160,7 @@ export const Graph = (props: { location: Location }) => {
                     n: INode,
                     ref: IRef,
                 }[]>>(
-                    `/api/ui/queries/notices/${metadata.id}/parents`,
+                    `/api/graphs/notices/${metadata.id}/parents`,
                     {
                         params: {
                             max: 25
@@ -184,7 +182,7 @@ export const Graph = (props: { location: Location }) => {
                 });
             }).then(() => {
             if (dataAdded) {
-                console.debug("Data added to graph, redrawing -");
+                console.debug("Data added to graph, redrawing - center", metadata.neo4j_id);
                 reDraw(`node[neo4j_id=${metadata.neo4j_id}]`);
             }
         })
@@ -198,7 +196,7 @@ export const Graph = (props: { location: Location }) => {
             o: INode,
             ref: IRef,
         }[]>>(
-            `/api/ui/queries/awards/${metadata.id}/children`,
+            `/api/graphs/awards/${metadata.id}/children`,
             {
                 params: {
                     max: 25
@@ -224,7 +222,7 @@ export const Graph = (props: { location: Location }) => {
                 n: INode,
                 ref: IRef,
             }[]>>(
-                `/api/ui/queries/awards/${metadata.id}/parents`
+                `/api/graphs/awards/${metadata.id}/parents`
             ).then((r) => {
                 if (r.data.length > 0) {
                     r.data.forEach(res => {
@@ -243,7 +241,7 @@ export const Graph = (props: { location: Location }) => {
         })
             .then(() => {
                 if (dataAdded) {
-                    console.debug("Data added to graph, redrawing -");
+                    console.debug("Data added to graph, redrawing - center", metadata.neo4j_id);
                     reDraw(`node[neo4j_id=${metadata.neo4j_id}]`);
                 }
             });
@@ -256,7 +254,7 @@ export const Graph = (props: { location: Location }) => {
             o: INode,
             p: INode,
             ref: IRef
-        }[]>>(`/api/ui/queries/organisations/${metadata.id}/relationships`, {params: {max: 25}})
+        }[]>>(`/api/graphs/organisations/${metadata.id}/relationships`, {params: {max: 50}})
             .then((r) => {
                 if (r.data.length > 0) {
                     r.data.forEach(res => {
@@ -278,16 +276,17 @@ export const Graph = (props: { location: Location }) => {
                         if (org_person_current) {
                             Object.assign(res.ref.properties, {timeFilter_numeric: 100});
                             Object.assign(res.p.properties, {timeFilter_numeric: 100});
-                        }
-                        else {
+                        } else {
                             // if it's not current, try find if it's recent ...
                             let sDT = res.ref.properties['startDT'];
                             let eDT = res.ref.properties['endDT'];
                             let msDT = moment(sDT);
                             let meDT = moment(eDT);
-                            // if we're seeing more than 3 years' difference, mark as historic, otherwise recent
+
+                            // if we're seeing more than 3 years' difference, mark as historic (0),
+                            // otherwise mark as recent (50)
                             let days = Math.abs(msDT.diff(meDT, 'days'));
-                            let timeFilter = {timeFilter_numeric: (days > (365*3)) ? 0 : 50};
+                            let timeFilter = {timeFilter_numeric: (days > (365 * 3)) ? 0 : 50};
                             Object.assign(res.ref.properties, timeFilter);
                             Object.assign(res.p.properties, timeFilter);
                         }
@@ -305,8 +304,8 @@ export const Graph = (props: { location: Location }) => {
             })
             .then(() => {
                 if (dataAdded) {
-                    console.debug("Data added to graph, redrawing -");
-                    reDraw(`node[neo4j_id=${metadata.neo4j_id}]`);
+                    console.debug("Data added to graph, redrawing - center", metadata.neo4j_id);
+                    reDraw(("" === metadata.neo4j_id) ? undefined : `node[neo4j_id=${metadata.neo4j_id}]`);
                 }
             })
     }
@@ -412,15 +411,15 @@ export const Graph = (props: { location: Location }) => {
     }, [refVisible]);
 
     useEffect(() => {
-        visualizeAll();
+        defaultVisualisation();
     }, [cy]);
 
-    function visualizeAll() {
+    function defaultVisualisation() {
         if (!refVisible) {
             return;
         }
 
-        // console.log("Removing all elements");
+        // remove all elements
         cy.remove(cy.$("*"));
 
         return axios.get<string, AxiosResponse<{
@@ -428,7 +427,7 @@ export const Graph = (props: { location: Location }) => {
             n: INode,
             ref: IRef,
         }[]>>(
-            "/api/ui/queries/initial",
+            "/api/graphs/_meta/initial",
             {
                 params: {
                     max: 50
@@ -524,17 +523,6 @@ export const Graph = (props: { location: Location }) => {
             return;
         }
 
-        if (debugCallStack) {
-            // nabbed from https://gist.github.com/irisli/716b6dacd3f151ce2b7e
-            let stackTrace = (new Error()).stack; // Only tested in latest FF and Chrome
-            let callerName = stackTrace?.replace(/^Error\s+/, ''); // Sanitize Chrome
-            callerName = callerName?.split("\n")[1]; // 1st item is this, 2nd item is caller
-            callerName = callerName?.replace(/^\s+at Object./, ''); // Sanitize Chrome
-            callerName = callerName?.replace(/ \(.+\)$/, ''); // Sanitize Chrome
-            callerName = callerName?.replace(/\@.+/, ''); // Sanitize Firefox
-            console.log("called from", callerName);
-        }
-
         console.debug("redrawing, center is", center);
         const layoutOptions = {
             name: "cose-bilkent",
@@ -568,13 +556,13 @@ export const Graph = (props: { location: Location }) => {
                 data: () => { fos_id: string, fos_type: NodeMetadataType, neo4j_id: string }
             }
         }) {
-            setGraphMetadata({
-                    type: evt.target.data().fos_type,
-                    id: evt.target.data().fos_id,
-                    neo4j_id: evt.target.data().neo4j_id,
-                    clear_graph: false,
-                }
-            );
+            let metadata = {
+                type: evt.target.data().fos_type,
+                id: evt.target.data().fos_id,
+                neo4j_id: evt.target.data().neo4j_id,
+                clear_graph: false,
+            };
+            setGraphMetadata(metadata);
         });
         // todo add cytoscape.js-popper
         // mark added so that we don't add twice

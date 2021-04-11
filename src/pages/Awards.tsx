@@ -15,7 +15,7 @@ import {renderTooltip} from "../hooks/Utils";
 
 export const Awards = () => {
 
-    let url = "/api/ui/awards";
+    let url = "/api/awards";
     const [awards, setAwardsList] = useState<AwardDAO[]>([]);
     const [loaded, setLoaded] = useState(false);
     const [error, setError] = useState(false);

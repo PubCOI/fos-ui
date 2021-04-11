@@ -15,7 +15,7 @@ export const Login = () => {
             <FirebaseAuthConsumer>
                 {({isSignedIn, user, providerId}) => {
                     if (isSignedIn) {
-                        axios.post("/api/ui/login", {uid: user.uid}).then(r => {
+                        axios.post("/api/login", {uid: user.uid}).then(r => {
                             history.push("/");
                         });
                         return <></>;

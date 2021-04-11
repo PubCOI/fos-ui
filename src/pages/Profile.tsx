@@ -27,7 +27,7 @@ export const Profile = () => {
         let data = {
             displayName: displayName
         };
-        axios.put<UpdateProfileRequestDAO, AxiosResponse<UpdateProfileResponseDAO>>("/api/ui/user", data, {
+        axios.put<UpdateProfileRequestDAO, AxiosResponse<UpdateProfileResponseDAO>>("/api/profile", data, {
             headers: {
                 authToken: authToken
             }

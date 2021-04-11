@@ -1,11 +1,11 @@
 import React, {useEffect, useState} from "react";
-import {ClientNodeResponseDAO} from "../../interfaces/ClientNodeResponseDAO";
+import {ClientNodeResponseDAO} from "../../../interfaces/ClientNodeResponseDAO";
 import {useToasts} from "react-toast-notifications";
 import axios from "axios";
 import {ListGroup} from "react-bootstrap";
-import {NoticeResponseDAO} from "../../interfaces/NoticeResponseDAO";
-import {MinMaxValueFormat} from "../MinMaxValueFormat";
-import {INodeMetadata, NodeMetadataType} from "../../interfaces/INodeMetadata";
+import {NoticeResponseDAO} from "../../../interfaces/NoticeResponseDAO";
+import {MinMaxValueFormat} from "../../MinMaxValueFormat";
+import {INodeMetadata, NodeMetadataType} from "../../../interfaces/INodeMetadata";
 
 export const RenderClientMetadata = (
     props: {
@@ -13,7 +13,7 @@ export const RenderClientMetadata = (
         setMetadataCallback: (metadata: INodeMetadata) => void
     }
 ) => {
-    let baseURL = `/api/ui/clients/${props.metadata.id}`;
+    let baseURL = `/api/graphs/clients/${props.metadata.id}/metadata`;
     const [client, setClient] = useState<ClientNodeResponseDAO>({
         id: "",
         name: "",

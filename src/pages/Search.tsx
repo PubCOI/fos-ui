@@ -22,7 +22,7 @@ export const Search = (
     // store whether we've done any search at all ... if not just return generic info
     const [initialSearch, setInitialSearch] = useState(false);
 
-    let url = "/api/ui/search";
+    let url = "/api/search";
 
     useEffect(() => {
         if (props.searchParams === "") return;

@@ -1,13 +1,13 @@
 import React, {useEffect, useState} from "react";
 import {useToasts} from "react-toast-notifications";
 import axios from "axios";
-import {NoticeResponseDAO} from "../../interfaces/NoticeResponseDAO";
+import {NoticeResponseDAO} from "../../../interfaces/NoticeResponseDAO";
 import Moment from "react-moment";
-import {AwardDAO} from "../../interfaces/DAO/AwardDAO";
-import {MinMaxValueFormat} from "../MinMaxValueFormat";
+import {AwardDAO} from "../../../interfaces/DAO/AwardDAO";
+import {MinMaxValueFormat} from "../../MinMaxValueFormat";
 import {Button, ListGroup} from "react-bootstrap";
 import FontAwesome from "react-fontawesome";
-import {ContractValueFormat} from "../ContractValueFormat";
+import {ContractValueFormat} from "../../ContractValueFormat";
 
 export const RenderNoticeMetadata = (props: {id: string, awardDetailsCB: (id: string) => void}) => {
     const {addToast} = useToasts();
@@ -23,7 +23,7 @@ export const RenderNoticeMetadata = (props: {id: string, awardDetailsCB: (id: st
         awards: [] as AwardDAO[]
     });
 
-    let baseURL = `/api/ui/notices/${props.id}`;
+    let baseURL = `/api/graphs/notices/${props.id}/metadata`;
 
     useEffect(() => {
         axios.get<NoticeResponseDAO>(baseURL).then(response => {

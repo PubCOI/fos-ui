@@ -1,9 +1,9 @@
 import React, {useEffect, useState} from "react";
 import {INodeMetadata, NodeMetadataType} from "../interfaces/INodeMetadata";
 import FontAwesome from "react-fontawesome";
-import {RenderNoticeMetadata} from "./graphs/RenderNoticeMetadata";
-import {RenderClientMetadata} from "./graphs/RenderClientMetadata";
-import {RenderAwardMetadata} from "./graphs/RenderAwardMetadata";
+import {RenderNoticeMetadata} from "./graphs/metadata/RenderNoticeMetadata";
+import {RenderClientMetadata} from "./graphs/metadata/RenderClientMetadata";
+import {RenderAwardMetadata} from "./graphs/metadata/RenderAwardMetadata";
 
 
 export const NodeMetadata = (
@@ -48,6 +48,11 @@ export const NodeMetadata = (
         if (props.metadata.type === NodeMetadataType.organisation) {
             setIcon(<FontAwesome name={"building-o"}/>);
             //setOutput(<>{props.metadata.neo4j_id}</>);
+            setOutput(<></>);
+            return;
+        }
+        if (props.metadata.type === NodeMetadataType.person) {
+            setIcon(<FontAwesome name={"user"}/>);
             setOutput(<></>);
             return;
         }
