@@ -12,13 +12,14 @@ import imgNotice from '../img/graph-notice.svg';
 import imgUser from '../img/graph-user.svg';
 import imgUserFormer from '../img/graph-user-former.svg';
 import moment from 'moment';
+import {TimebaseDataEnum} from "../components/graphs/preferences/TimebaseDataEnum";
 
 let coseBilkent = require('cytoscape-cose-bilkent');
 
 export const Graph = (props: { location: Location }) => {
     cytoscape.use(coseBilkent);
 
-    const {setModalBody, graphMetadata, setGraphMetadata} = useContext(AppContext);
+    const {setModalBody, graphMetadata, setGraphMetadata, graphConfig} = useContext(AppContext);
 
     const {addToast} = useToasts();
     const cyRef = useRef<HTMLDivElement | null>(null);
@@ -42,6 +43,25 @@ export const Graph = (props: { location: Location }) => {
             }
         }
     }, [graphMetadata]);
+
+    useEffect(() => {
+        console.debug("got graph config update, explicitly calling redraw", graphConfig);
+        reDraw();
+    }, [graphConfig]);
+
+    function doTimeFilter() {
+        if (cy === undefined || cy.$id === undefined) {
+            console.debug("Cytoscape not yet initialised");
+            return;
+        }
+        let timeFilter = (graphConfig.show_timebase_data as TimebaseDataEnum === TimebaseDataEnum.current ? 100 : (graphConfig.show_timebase_data as TimebaseDataEnum === TimebaseDataEnum.recent ? 50 : 0));
+        cy.elements(`*[hasTimeFilter][timeFilter_numeric < ${timeFilter}]`).css({
+            "display": "none"
+        });
+        cy.elements(`*[hasTimeFilter][timeFilter_numeric >= ${timeFilter}]`).css({
+            "display": "element"
+        });
+    }
 
     useEffect(() => {
         if (cy === undefined || cy.$id === undefined) {
@@ -522,6 +542,8 @@ export const Graph = (props: { location: Location }) => {
             nodeDimensionsIncludeLabels: true,
         };
 
+        doTimeFilter();
+
         cy.resize();
         var layout = cy.elements().layout(layoutOptions);
 
@@ -561,7 +583,6 @@ export const Graph = (props: { location: Location }) => {
 
     return (
         <>
-            {/*<GraphFilterBar/>*/}
             <NodeMetadata hidden={!showMetadata} hideCallback={hideMetadata} metadata={graphMetadata}
                           setMetadataCallback={setMetadataViaCallback} showAwardDetailsCB={showAwardDetails}/>
             <div id={"cy"} className={"mt-0"}
