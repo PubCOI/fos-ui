@@ -9,6 +9,9 @@ import {INode, IRef} from "../interfaces/DAO/GraphDAO";
 import {useToasts} from "react-toast-notifications";
 import imgNoticeWarning from '../img/graph-notice-warning.svg';
 import imgNotice from '../img/graph-notice.svg';
+import imgUser from '../img/graph-user.svg';
+import imgUserFormer from '../img/graph-user-former.svg';
+import moment from 'moment';
 
 let coseBilkent = require('cytoscape-cose-bilkent');
 
@@ -33,6 +36,9 @@ export const Graph = (props: { location: Location }) => {
             }
             if (graphMetadata.type === NodeMetadataType.award) {
                 getAwardNodes(graphMetadata);
+            }
+            if (graphMetadata.type === NodeMetadataType.organisation) {
+                getOrgNodes(graphMetadata);
             }
         }
     }, [graphMetadata]);
@@ -102,7 +108,7 @@ export const Graph = (props: { location: Location }) => {
     }
 
     function getNoticeNodes(metadata: INodeMetadata) {
-        console.debug("Requesting children of", metadata.id);
+        console.debug("getNoticeNodes: Requesting children of", metadata.id);
         let dataAdded = false;
         axios.get<string, AxiosResponse<{
             a: INode,
@@ -165,7 +171,7 @@ export const Graph = (props: { location: Location }) => {
     }
 
     function getAwardNodes(metadata: INodeMetadata) {
-        console.debug("Requesting children of", metadata.id);
+        console.debug("getAwardNodes: Requesting children of", metadata.id);
         let dataAdded = false;
         axios.get<string, AxiosResponse<{
             a: INode,
@@ -223,6 +229,68 @@ export const Graph = (props: { location: Location }) => {
             });
     }
 
+    function getOrgNodes(metadata: INodeMetadata) {
+        console.debug("getOrgNodes: requesting relationships for", metadata.id);
+        let dataAdded = false;
+        axios.get<string, AxiosResponse<{
+            o: INode,
+            p: INode,
+            ref: IRef
+        }[]>>(`/api/ui/queries/organisations/${metadata.id}/relationships`, {params: {max: 25}})
+            .then((r) => {
+                if (r.data.length > 0) {
+                    r.data.forEach(res => {
+                        // if the ref has an end date, it's a FORMER position - mark node and ref as such
+
+                        // first mark that we're using time filters on these objects
+                        Object.assign(res.ref.properties, {hasTimeFilter: true});
+                        Object.assign(res.p.properties, {hasTimeFilter: true});
+
+                        // NB - NUMERIC time filter should allow us to filter by '... x > y'
+                        // 100 = current
+                        // 0 = most historic
+                        // at some point we might be adding a sliding scale ...
+
+                        // now find out if the person is 'current'
+                        // note that the time data is on the RELATIONSHIP
+                        let org_person_current = !('endDT' in res.ref.properties);
+
+                        if (org_person_current) {
+                            Object.assign(res.ref.properties, {timeFilter_numeric: 100});
+                            Object.assign(res.p.properties, {timeFilter_numeric: 100});
+                        }
+                        else {
+                            // if it's not current, try find if it's recent ...
+                            let sDT = res.ref.properties['startDT'];
+                            let eDT = res.ref.properties['endDT'];
+                            let msDT = moment(sDT);
+                            let meDT = moment(eDT);
+                            // if we're seeing more than 3 years' difference, mark as historic, otherwise recent
+                            let days = Math.abs(msDT.diff(meDT, 'days'));
+                            let timeFilter = {timeFilter_numeric: (days > (365*3)) ? 0 : 50};
+                            Object.assign(res.ref.properties, timeFilter);
+                            Object.assign(res.p.properties, timeFilter);
+                        }
+
+                        dataAdded = addNode(res.o, 'organisation') || dataAdded;
+                        dataAdded = addNode(res.p, 'person') || dataAdded;
+                        dataAdded = addEdge(res.ref) || dataAdded;
+                    });
+                } else {
+                    addToast(`No relationships found for organisation ${metadata.id}`, {
+                        appearance: "warning",
+                        autoDismiss: true,
+                    })
+                }
+            })
+            .then(() => {
+                if (dataAdded) {
+                    console.debug("Data added to graph, redrawing -");
+                    reDraw(`node[neo4j_id=${metadata.neo4j_id}]`);
+                }
+            })
+    }
+
     useEffect(() => {
         if (!refVisible) {
             return
@@ -231,7 +299,7 @@ export const Graph = (props: { location: Location }) => {
             container: cyRef.current,
             zoomingEnabled: true,
             panningEnabled: true,
-            style: [ // the stylesheet for the graph
+            style: [
                 {
                     selector: 'node',
                     style: {
@@ -282,6 +350,20 @@ export const Graph = (props: { location: Location }) => {
                     }
                 },
                 {
+                    selector: 'node[fos_type="person"]',
+                    style: {
+                        "label": "data(commonName)",
+                        "background-image": imgUserFormer
+                    }
+                },
+                {
+                    selector: 'node[fos_type="person"][!org_person_former]',
+                    style: {
+                        "label": "data(commonName)",
+                        "background-image": imgUser
+                    }
+                },
+                {
                     selector: '.highlight',
                     style: {
                         "border-color": "#fff000",
@@ -296,7 +378,6 @@ export const Graph = (props: { location: Location }) => {
                         "width": "1",
                         "line-style": "dotted",
                         "curve-style": "haystack"
-                        // "curve-style": "unbundled-bezier"
                     },
                 },
                 {
@@ -437,8 +518,8 @@ export const Graph = (props: { location: Location }) => {
         console.debug("redrawing, center is", center);
         const layoutOptions = {
             name: "cose-bilkent",
-            // name: "cose",
             fit: false,
+            nodeDimensionsIncludeLabels: true,
         };
 
         cy.resize();

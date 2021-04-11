@@ -41,14 +41,6 @@ export const RenderClientMetadata = (
 
     }, [props.metadata.id]);
 
-    // function processResponse(data: ClientResponseDAO) {
-    //     return {
-    //         // append this to response object
-    //         normalisedPostCode: (undefined !== data.postCode && data.postCode) ?
-    //             (isValid(client?.postCode) ? toNormalised(client?.postCode as string) : client?.postCode) : ""
-    //     };
-    // }
-
     return (
         <>
             <div className={"my-2"}>{client.name} (<a

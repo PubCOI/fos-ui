@@ -27,6 +27,8 @@ import {ModalContainer} from "./components/ModalContainer";
 import {GraphFilterBar} from "./components/graphs/GraphFilterBar";
 import {SearchBar} from "./components/search/SearchBar";
 import {INodeMetadata, NodeMetadataType} from "./interfaces/INodeMetadata";
+import {IGraphConfig} from "./components/graphs/preferences/IGraphConfig";
+import {TimebaseDataEnum} from "./components/graphs/preferences/TimebaseDataEnum";
 
 function App() {
 
@@ -38,6 +40,7 @@ function App() {
 
     // ***** graph settings *****
     const [graphMetadata, setGraphMetadata] = useState<INodeMetadata>({type: NodeMetadataType.client, id: "", neo4j_id: "", clear_graph: false});
+    const [graphConfig, setGraphConfig] = useState<IGraphConfig>({show_timebase_data: TimebaseDataEnum.recent});
     // ***** end graph settings *****
 
     // ***** application settings ******
@@ -58,7 +61,9 @@ function App() {
         setModalBody,
         hideModal,
         graphMetadata,
-        setGraphMetadata
+        setGraphMetadata,
+        graphConfig,
+        setGraphConfig
     };
     // ***** end application settings *****
 

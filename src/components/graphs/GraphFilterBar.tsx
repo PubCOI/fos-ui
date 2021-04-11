@@ -6,6 +6,7 @@ import axios from "axios";
 import {useToasts} from "react-toast-notifications";
 import {NodeMetadataType} from "../../interfaces/INodeMetadata";
 import AppContext from "../core/AppContext";
+import {SetPrefsModal} from "./preferences/SetPrefsModal";
 
 interface GraphAutocompleteResult {
     name: string,
@@ -20,7 +21,7 @@ export const GraphFilterBar = () => {
     const [searchTerms, setSearchTerms] = useState("");
     const [autocompleteResults, setAutocompleteResults] = useState([] as GraphAutocompleteResult[]);
     const [doingRequest, setDoingRequest] = useState(false);
-    const {setGraphMetadata} = useContext(AppContext);
+    const {setGraphMetadata, setGraphConfig, setModalBody, hideModal} = useContext(AppContext);
 
     const options: TypeaheadProps<any> = {
         id: "search_graph",
@@ -91,6 +92,10 @@ export const GraphFilterBar = () => {
 
     }, [searchTerms]);
 
+    function showPrefsModal() {
+        setModalBody(<SetPrefsModal/>);
+    }
+
     return (
         <>
             <div className={"second-nav"}>
@@ -118,7 +123,7 @@ export const GraphFilterBar = () => {
                             </Typeahead>
                         </div>
                         <InputGroup.Append>
-                            <Button variant="secondary" type={"submit"}>Search</Button>
+                            <Button variant="secondary" type={"button"} onClick={() => showPrefsModal()}>Settings <FontAwesome name={"gears"}/></Button>
                         </InputGroup.Append>
                     </InputGroup>
                 </Form>
