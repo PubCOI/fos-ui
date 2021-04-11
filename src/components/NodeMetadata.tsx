@@ -4,6 +4,7 @@ import FontAwesome from "react-fontawesome";
 import {RenderNoticeMetadata} from "./graphs/metadata/RenderNoticeMetadata";
 import {RenderClientMetadata} from "./graphs/metadata/RenderClientMetadata";
 import {RenderAwardMetadata} from "./graphs/metadata/RenderAwardMetadata";
+import {RenderPersonMetadata} from "./graphs/metadata/RenderPersonMetadata";
 
 
 export const NodeMetadata = (
@@ -53,7 +54,7 @@ export const NodeMetadata = (
         }
         if (props.metadata.type === NodeMetadataType.person) {
             setIcon(<FontAwesome name={"user"}/>);
-            setOutput(<></>);
+            setOutput(<RenderPersonMetadata id={props.metadata.id}/>);
             return;
         }
         console.debug("Did not match client or notice type");

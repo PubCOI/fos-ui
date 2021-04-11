@@ -376,7 +376,7 @@ export const Graph = (props: { location: Location }) => {
                     }
                 },
                 {
-                    selector: 'node[fos_type="person"][!org_person_former]',
+                    selector: 'node[fos_type="person"][hasTimeFilter][timeFilter_numeric > 50]',
                     style: {
                         "label": "data(commonName)",
                         "background-image": imgUser
@@ -480,7 +480,7 @@ export const Graph = (props: { location: Location }) => {
         return false;
     }
 
-    //verify if edge exists, add it if it doesn't
+    // verify if edge exists, add it if it doesn't
     function addEdge(edge: IRef) {
         if (cy === undefined || cy.$id === undefined) {
             console.debug("Cytoscape not yet initialised");
