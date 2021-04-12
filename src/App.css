@@ -53,7 +53,7 @@ canvas > path {
 /****** GRAPH AUTOCOMPLETE ******/
 /* autocomplete status placeholder */
 .rbt-aux {
-  position: fixed;
+  position: absolute;
   top: auto;
   right: 0;
   z-index: 1300;
@@ -61,7 +61,7 @@ canvas > path {
   margin-right: 10px;
 }
 
-.rbt-menu {
+.rbt-menu .typeahead-pos-right {
   position: fixed!important;
   top: 88px!important;
   transform: unset!important;
@@ -73,30 +73,30 @@ canvas > path {
 }
 
 @media screen and (max-width: 399px) {
-  .rbt-menu {
+  .rbt-menu .typeahead-pos-right {
     width: 98% !important;
   }
 }
 
 @media screen and (min-width: 400px) {
-  .rbt-menu {
+  .rbt-menu .typeahead-pos-right {
     min-width: 80% !important;
   }
 }
 
 @media screen and (min-width: 576px) {
-  .rbt-menu {
+  .rbt-menu .typeahead-pos-right {
     min-width: 65% !important;
   }
 }
 
 @media screen and (min-width: 800px) {
-  .rbt-menu {
+  .rbt-menu .typeahead-pos-right {
     min-width: 50% !important;
   }
 }
 
-.rbt-menu a {
+.typeahead-pos-right .rbt-menu a {
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;

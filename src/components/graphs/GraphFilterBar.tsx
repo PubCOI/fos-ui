@@ -38,8 +38,7 @@ export const GraphFilterBar = () => {
     };
 
     const renderMenu = (results: Array<TypeaheadResult<GraphAutocompleteResult>>, menuProps: MenuProps) => (
-        <Menu {...menuProps}>
-
+        <Menu {...menuProps} className={"typeahead-pos-right"}>
             {results.map((result, index) => (
                 <MenuItem option={result} position={index} key={"graph_result_" + index}>
                     <div className={"d-flex justify-content-between align-items-center"}>
@@ -53,7 +52,6 @@ export const GraphFilterBar = () => {
                     </div>
                 </MenuItem>
             ))}
-
         </Menu>
     );
 

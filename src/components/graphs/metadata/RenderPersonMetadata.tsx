@@ -7,8 +7,10 @@ import {LoadingWrapper} from "../../LoadingWrapper";
 import FontAwesome from "react-fontawesome";
 import AppContext from "../../core/AppContext";
 import {MergeRecordsModal} from "../modals/MergeRecordsModal";
+import {AddRelationshipModal} from "../modals/AddRelationshipModal";
+import {INodeMetadata} from "../../../interfaces/INodeMetadata";
 
-export const RenderPersonMetadata = (props: { id: string }) => {
+export const RenderPersonMetadata = (props: { metadata: INodeMetadata }) => {
     const {addToast} = useToasts();
     const {setModalBody} = useContext(AppContext);
     const [loaded, setLoaded] = useState(false);
@@ -28,21 +30,25 @@ export const RenderPersonMetadata = (props: { id: string }) => {
     // to be honest, we could just pull this from the metadata client-side but
     // it's probably less brittle to just use the same pattern as elsewhere ...
     useEffect(() => {
-        axios.get<PersonDAO>(`/api/graphs/persons/${props.id}/metadata`)
+        axios.get<PersonDAO>(`/api/graphs/persons/${props.metadata.id}/metadata`)
             .then((response) => {
                 setLoaded(true);
                 setPerson(response.data)
             })
             .catch((err) => {
-                addToast(`Unable to load data for person ID ${props.id}`, {
+                addToast(`Unable to load data for person ID ${props.metadata.id}`, {
                     appearance: "error",
                     autoDismiss: true,
                 })
             })
-    }, [props.id]);
+    }, [props.metadata.id]);
 
-    function mergeRecordsModal(id: string) {
-        setModalBody(<MergeRecordsModal id={id}/>);
+    function mergeRecordsModal(metadata: INodeMetadata) {
+        setModalBody(<MergeRecordsModal id={metadata.id}/>);
+    }
+
+    function addRelationshipModal(metadata: INodeMetadata) {
+        setModalBody(<AddRelationshipModal metadata={metadata}/>)
     }
 
     if (!loaded) {
@@ -111,13 +117,25 @@ export const RenderPersonMetadata = (props: { id: string }) => {
 
             <hr/>
 
-            <div>
-                <Button
-                    onClick={() => mergeRecordsModal(props.id)}
-                    variant={"outline-secondary"} size={"sm"} block>
-                    <FontAwesome name={"compress"}/> Merge records
-                </Button>
-            </div>
+            <Row>
+                <Col>
+                    <Button
+                        onClick={() => mergeRecordsModal(props.metadata)}
+                        variant={"outline-secondary"} size={"sm"} block>
+                        <FontAwesome name={"compress"}/> Merge records
+                    </Button>
+                </Col>
+            </Row>
+
+            <Row className={"mt-2"}>
+                <Col>
+                    <Button
+                        onClick={() => addRelationshipModal(props.metadata)}
+                        variant={"outline-secondary"} size={"sm"} block>
+                        <FontAwesome name={"link"}/> Add relationship
+                    </Button>
+                </Col>
+            </Row>
         </>
     )
 };

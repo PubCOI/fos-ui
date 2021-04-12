@@ -55,7 +55,7 @@ export const NodeMetadata = (
         }
         if (props.metadata.type === NodeMetadataType.person) {
             setIcon(<FontAwesome name={"user"}/>);
-            setOutput(<RenderPersonMetadata id={props.metadata.id}/>);
+            setOutput(<RenderPersonMetadata metadata={props.metadata}/>);
             return;
         }
         console.debug("Did not match client or notice type");
