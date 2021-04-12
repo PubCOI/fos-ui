@@ -13,13 +13,19 @@ import imgUser from '../img/graph-user.svg';
 import imgUserFormer from '../img/graph-user-former.svg';
 import moment from 'moment';
 import {TimebaseDataEnum} from "../components/graphs/preferences/TimebaseDataEnum";
+import 'cytoscape-context-menus/cytoscape-context-menus.css';
+// import {contextMenus} from 'cytoscape-context-menus';
+import submenuIndicatorDefault from '../img/graph-context-submenu-indicator-default.svg';
+// import ctxAdd from '../img/graph-context-add.svg';
+// image: {src: ctxAdd, width: 12, height: 12, x: 6, y: 4},
 
+let contextMenus = require('cytoscape-context-menus');
 let coseBilkent = require('cytoscape-cose-bilkent');
 
 export const Graph = (props: { location: Location }) => {
-    cytoscape.use(coseBilkent);
-
     const {setModalBody, graphMetadata, setGraphMetadata, graphConfig} = useContext(AppContext);
+
+    cytoscape.use(coseBilkent);
 
     const {addToast} = useToasts();
     const cyRef = useRef<HTMLDivElement | null>(null);
@@ -38,6 +44,9 @@ export const Graph = (props: { location: Location }) => {
             }
             if (graphMetadata.type === NodeMetadataType.organisation) {
                 getOrgNodes(graphMetadata);
+            }
+            if (graphMetadata.type === NodeMetadataType.person) {
+                getPersonNodes(graphMetadata);
             }
         }
     }, [graphMetadata]);
@@ -69,15 +78,20 @@ export const Graph = (props: { location: Location }) => {
         if (graphMetadata.type === undefined || graphMetadata.id === "") return;
         console.debug("Got update", graphMetadata);
         if (graphMetadata.clear_graph) {
+            console.debug("clearing graph");
+            let nodes = cy.elements("node[hasListener]");
+            nodes.removeListener('tap');
+            nodes.removeData('hasListener');
             cy.remove(cy.$("*"));
         }
         if (graphMetadata.type as NodeMetadataType === NodeMetadataType.client) {
+            // get notices
             axios.get<string, AxiosResponse<{
                 c: INode,
                 n: INode,
                 ref: IRef,
             }[]>>(
-                "/api/graphs/clients/" + graphMetadata.id
+                `/api/graphs/clients/${graphMetadata.id}`
             ).then((r) => {
                 if (r.data.length > 0) {
                     r.data.forEach(res => {
@@ -88,6 +102,24 @@ export const Graph = (props: { location: Location }) => {
                     reDraw(`node[neo4j_id=${r.data[0].c.neo4j_id}]`);
                 }
             });
+            // get persons (if any)
+            axios.get<string, AxiosResponse<{
+                c: INode,
+                p: INode,
+                ref: IRef,
+            }[]>>(
+                `/api/graphs/clients/${graphMetadata.id}/relationships`
+            ).then((r) => {
+                if (r.data.length > 0) {
+                    r.data.forEach(res => {
+                        addNode(res.c, 'client');
+                        addNode(res.p, 'person');
+                        addEdge(res.ref);
+                    });
+                    reDraw(`node[neo4j_id=${r.data[0].c.neo4j_id}]`);
+                }
+            });
+
         }
         if (graphMetadata.type as NodeMetadataType === NodeMetadataType.organisation) {
             axios.get<string, AxiosResponse<{
@@ -179,13 +211,14 @@ export const Graph = (props: { location: Location }) => {
                             autoDismiss: true,
                         })
                     }
-                });
-            }).then(() => {
-            if (dataAdded) {
-                console.debug("Data added to graph, redrawing - center", metadata.neo4j_id);
-                reDraw(`node[neo4j_id=${metadata.neo4j_id}]`);
-            }
-        })
+                })
+                    .then(() => {
+                        if (dataAdded) {
+                            console.debug("Data added to graph, redrawing - center", metadata.neo4j_id);
+                            reDraw(`node[neo4j_id=${metadata.neo4j_id}]`);
+                        }
+                    });
+            })
     }
 
     function getAwardNodes(metadata: INodeMetadata) {
@@ -258,39 +291,7 @@ export const Graph = (props: { location: Location }) => {
             .then((r) => {
                 if (r.data.length > 0) {
                     r.data.forEach(res => {
-                        // if the ref has an end date, it's a FORMER position - mark node and ref as such
-
-                        // first mark that we're using time filters on these objects
-                        Object.assign(res.ref.properties, {hasTimeFilter: true});
-                        Object.assign(res.p.properties, {hasTimeFilter: true});
-
-                        // NB - NUMERIC time filter should allow us to filter by '... x > y'
-                        // 100 = current
-                        // 0 = most historic
-                        // at some point we might be adding a sliding scale ...
-
-                        // now find out if the person is 'current'
-                        // note that the time data is on the RELATIONSHIP
-                        let org_person_current = !('endDT' in res.ref.properties);
-
-                        if (org_person_current) {
-                            Object.assign(res.ref.properties, {timeFilter_numeric: 100});
-                            Object.assign(res.p.properties, {timeFilter_numeric: 100});
-                        } else {
-                            // if it's not current, try find if it's recent ...
-                            let sDT = res.ref.properties['startDT'];
-                            let eDT = res.ref.properties['endDT'];
-                            let msDT = moment(sDT);
-                            let meDT = moment(eDT);
-
-                            // if we're seeing more than 3 years' difference, mark as historic (0),
-                            // otherwise mark as recent (50)
-                            let days = Math.abs(msDT.diff(meDT, 'days'));
-                            let timeFilter = {timeFilter_numeric: (days > (365 * 3)) ? 0 : 50};
-                            Object.assign(res.ref.properties, timeFilter);
-                            Object.assign(res.p.properties, timeFilter);
-                        }
-
+                        handleOrgPersonLink(res);
                         dataAdded = addNode(res.o, 'organisation') || dataAdded;
                         dataAdded = addNode(res.p, 'person') || dataAdded;
                         dataAdded = addEdge(res.ref) || dataAdded;
@@ -310,8 +311,77 @@ export const Graph = (props: { location: Location }) => {
             })
     }
 
+    function handleOrgPersonLink(res: {
+        o: INode,
+        p: INode,
+        ref: IRef
+    }) {
+        // if the ref has an end date, it's a FORMER position - mark node and ref as such
+
+        // first mark that we're using time filters on these objects
+        Object.assign(res.ref.properties, {hasTimeFilter: true});
+        Object.assign(res.p.properties, {hasTimeFilter: true});
+
+        // NB - NUMERIC time filter should allow us to filter by '... x > y'
+        // 100 = current
+        // 0 = most historic
+        // at some point we might be adding a sliding scale ...
+
+        // now find out if the person is 'current'
+        // note that the time data is on the RELATIONSHIP
+        let org_person_current = !('endDT' in res.ref.properties);
+
+        if (org_person_current) {
+            Object.assign(res.ref.properties, {timeFilter_numeric: 100});
+            Object.assign(res.p.properties, {timeFilter_numeric: 100});
+        } else {
+            // if it's not current, try find if it's recent ...
+            let sDT = res.ref.properties['startDT'];
+            let eDT = res.ref.properties['endDT'];
+            let msDT = moment(sDT);
+            let meDT = moment(eDT);
+
+            // if we're seeing more than 3 years' difference, mark as historic (0),
+            // otherwise mark as recent (50)
+            let days = Math.abs(msDT.diff(meDT, 'days'));
+            let timeFilter = {timeFilter_numeric: (days > (365 * 3)) ? 0 : 50};
+            Object.assign(res.ref.properties, timeFilter);
+            Object.assign(res.p.properties, timeFilter);
+        }
+    }
+
+    function getPersonNodes(metadata: INodeMetadata) {
+        console.debug("getPersonNodes: Requesting relationships for", metadata.id);
+        let dataAdded = false;
+        axios.get<string, AxiosResponse<{
+            p: INode,
+            o: INode,
+            ref: IRef,
+        }[]>>(
+            `/api/graphs/persons/${metadata.id}/relationships`, {
+                params: {
+                    max: 50
+                }
+            }
+        ).then((r) => {
+            if (r.data.length > 0) {
+                r.data.forEach(res => {
+                    handleOrgPersonLink(res);
+                    dataAdded = addNode(res.p, 'person') || dataAdded;
+                    dataAdded = addNode(res.o, 'organisation') || dataAdded;
+                    dataAdded = addEdge(res.ref) || dataAdded;
+                });
+            } else {
+                addToast(`No data found on object ${metadata.id}`, {
+                    appearance: "warning",
+                    autoDismiss: true,
+                })
+            }
+        })
+    }
+
     useEffect(() => {
-        if (!refVisible) {
+        if (!refVisible || !cytoscape) {
             return
         }
         setCy(cytoscape({
@@ -413,6 +483,13 @@ export const Graph = (props: { location: Location }) => {
     useEffect(() => {
         defaultVisualisation();
     }, [cy]);
+
+    useEffect(() => {
+        if (cytoscape && typeof (cytoscape as any).contextMenus === undefined) {
+            console.debug("Loading contextMenus extension");
+            cytoscape.use(contextMenus);
+        }
+    }, [cytoscape]);
 
     function defaultVisualisation() {
         if (!refVisible) {
@@ -568,6 +645,47 @@ export const Graph = (props: { location: Location }) => {
         // mark added so that we don't add twice
         nodes.data("hasListener", "tap");
     }
+
+    useEffect(() => {
+        //if (!cytoscape || !cy || typeof (cy as any).contextMenus === "undefined") return;
+        if (!cytoscape || !cy) return;
+        let calls = 0;
+        let interval = setInterval(function () {
+            if (typeof (cy as any).contextMenus == 'undefined' && calls < 3) {
+                console.debug("Waiting for contextMenus extension to load", calls);
+                calls += 1;
+                return;
+            }
+            clearInterval(interval);
+            if (calls >= 3) {
+                console.log("unable to load ext");
+                return;
+            }
+            let contextMenu = (cy as any).contextMenus({
+                menuItems: [
+                    {
+                        id: 'add-relationship',
+                        content: 'add relationship',
+                        selector: 'node',
+                        coreAsWell: true,
+                        show: true,
+                        submenu: [
+                            {
+                                id: 'personal',
+                                content: 'personal',
+                                tooltipText: 'Add personal relationship',
+                                onClickFunction: function (event: any) {
+                                    // let target = event.target || event.cyTarget;
+                                    console.log("got click", event)
+                                },
+                            },
+                        ]
+                    },
+                ],
+                submenuIndicator: {src: submenuIndicatorDefault, width: 12, height: 12}
+            });
+        }, 1000);
+    }, [cy]);
 
     return (
         <>

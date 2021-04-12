@@ -7,13 +7,7 @@ import {useToasts} from "react-toast-notifications";
 import {NodeMetadataType} from "../../interfaces/INodeMetadata";
 import AppContext from "../core/AppContext";
 import {SetPrefsModal} from "./preferences/SetPrefsModal";
-
-interface GraphAutocompleteResult {
-    name: string,
-    score: number,
-    id: string,
-    type: NodeMetadataType
-}
+import {GraphAutocompleteResult} from "../../interfaces/GraphAutocompleteResult";
 
 export const GraphFilterBar = () => {
 

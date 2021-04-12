@@ -9,5 +9,6 @@ export interface PersonDAO {
     ocId: string,
     commonName: string,
     occupation: string,
+    nationality: string,
     positions: CompanyPositionDAO[]
 }

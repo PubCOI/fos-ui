@@ -11,6 +11,7 @@ import {LinkToParentResponse} from "../../interfaces/LinkToParentResponse";
 import {LinkRecordsButton} from "./LinkRecordsButton";
 import {FosToastContainer} from "../FosToastContainer";
 import AppContext from "../core/AppContext";
+import {FosTasksEnum} from "../../interfaces/FosTasksEnum";
 
 interface ClientDetailsDAO {
     id: string,
@@ -174,28 +175,30 @@ interface SetAsCanonicalResponse {
     response: string
 }
 
-enum FosTasks {
-    canonical_client = "mark_canonical_clientNode",
-    link_client_parent = "link_clientNode_to_parentClientNode"
-}
-
 const ActionsButtons = (props: { details: ClientDetailsDAO, taskId: string, removeTaskCallback: (taskId: string) => void }) => {
     const {hideModal} = useContext(AppContext);
     const {addToast} = useToasts();
 
-    if (undefined === props.details.id || null === firebase || null === firebase.auth()) {
-        return <></>
-    }
-    const currentUser = firebase.auth().currentUser;
-    if (null == currentUser) {
+    // auth
+    const [authToken, setAuthToken] = useState("");
+    useEffect(() => {
+        firebase.auth().currentUser?.getIdToken(/* forceRefresh */ true).then(function (idToken) {
+            setAuthToken(idToken);
+        })
+    }, [firebase.auth().currentUser]);
+
+    if ("" === props.details.id) {
         return <></>
     }
 
     function setAsCanonical(entityId: string | undefined, authToken: string, taskId: string, removeTaskCallback: (taskId: string) => void) {
-        axios.put<SetAsCanonicalResponse>(`/api/ui/tasks/${FosTasks.canonical_client}`, {
-            authToken: authToken,
+        axios.put<SetAsCanonicalResponse>(`/api/ui/tasks/${FosTasksEnum.canonical_client}`, {
             target: entityId,
             taskId: taskId
+        }, {
+            headers: {
+                authToken: authToken
+            }
         })
             .then(value => {
                 removeTaskCallback(taskId);
@@ -203,7 +206,9 @@ const ActionsButtons = (props: { details: ClientDetailsDAO, taskId: string, remo
                     appearance: "success",
                     autoDismiss: true,
                     id: entityId,
-                    onDismiss: () => {hideModal()}
+                    onDismiss: () => {
+                        hideModal()
+                    }
                 });
             })
             .catch(reason => {
@@ -222,14 +227,7 @@ const ActionsButtons = (props: { details: ClientDetailsDAO, taskId: string, remo
                 <Button variant={"danger"}
                         className={"text-dark"} size={"sm"} block
                         onClick={() => {
-                            currentUser.getIdToken(/* forceRefresh */ true).then(function (idToken) {
-                                setAsCanonical(props.details.id, idToken, props.taskId, props.removeTaskCallback);
-                            }).catch(function (error) {
-                                addToast(error.toString(), {
-                                    appearance: "error",
-                                    autoDismiss: true,
-                                });
-                            });
+                            setAsCanonical(props.details.id, authToken, props.taskId, props.removeTaskCallback);
                         }}>
                     Designate as canonical entity
                 </Button>
@@ -243,11 +241,14 @@ export function linkToParent(taskId: string, authToken: string, source: string, 
                              addToast: (content: React.ReactNode, options?: Options, callback?: (id: string) => void) => void,
                              setButtonIcon: (icon: string) => void, hideModalCallback: () => void
 ) {
-    axios.put<LinkToParentResponse>(`/api/ui/tasks/${FosTasks.link_client_parent}`, {
-        authToken: authToken,
+    axios.put<LinkToParentResponse>(`/api/ui/tasks/${FosTasksEnum.link_client_parent}`, {
         source: source,
         target: target,
         taskId: taskId
+    }, {
+        headers: {
+            authToken: authToken
+        }
     })
         .then(value => {
             removeTaskCB(taskId);

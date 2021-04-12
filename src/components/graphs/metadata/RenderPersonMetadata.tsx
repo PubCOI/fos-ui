@@ -1,19 +1,23 @@
 import {useToasts} from "react-toast-notifications";
-import React, {useEffect, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import {PersonDAO} from "../../../interfaces/DAO/PersonDAO";
 import axios from "axios";
 import {Alert, Button, Col, Row} from "react-bootstrap";
 import {LoadingWrapper} from "../../LoadingWrapper";
 import FontAwesome from "react-fontawesome";
+import AppContext from "../../core/AppContext";
+import {MergeRecordsModal} from "../modals/MergeRecordsModal";
 
 export const RenderPersonMetadata = (props: { id: string }) => {
     const {addToast} = useToasts();
+    const {setModalBody} = useContext(AppContext);
     const [loaded, setLoaded] = useState(false);
     const [person, setPerson] = useState<PersonDAO>({
         id: "",
         ocId: "",
         commonName: "",
         occupation: "",
+        nationality: "",
         positions: [{
             companyId: "",
             companyName: "",
@@ -37,6 +41,10 @@ export const RenderPersonMetadata = (props: { id: string }) => {
             })
     }, [props.id]);
 
+    function mergeRecordsModal(id: string) {
+        setModalBody(<MergeRecordsModal id={id}/>);
+    }
+
     if (!loaded) {
         return <LoadingWrapper/>
     }
@@ -44,29 +52,44 @@ export const RenderPersonMetadata = (props: { id: string }) => {
     return (
         <>
             <Row>
-                <Col sm={3}>Full name</Col>
+                <Col sm={3}>Name</Col>
                 <Col>
                     {person.commonName}
                 </Col>
             </Row>
-            <Row>
-                <Col sm={3}>Occupation</Col>
-                <Col>
-                    {person.occupation}
-                </Col>
-            </Row>
-            <Row>
-                <Col className={"mb-3"}>
-                    <h6 className={"mt-3"}>Positions</h6>
-                    {person.positions.map(item => (
-                        <div key={`position_info_${item.companyId}`}>
-                            <div className={"d-flex justify-content-between align-items-center"}>
-                                <div>{item.companyName}: {item.position}</div>
+
+            {Boolean(person.occupation) && (
+                <Row>
+                    <Col sm={3}>Occupation</Col>
+                    <Col>
+                        {person.occupation}
+                    </Col>
+                </Row>
+            )}
+
+            {Boolean(person.nationality) && (
+                <Row>
+                    <Col sm={3}>Nationality</Col>
+                    <Col>
+                        {person.nationality}
+                    </Col>
+                </Row>
+            )}
+
+            {Boolean(person.positions.length > 0) && (
+                <Row>
+                    <Col className={"mb-3"}>
+                        <h6 className={"mt-3"}>Positions</h6>
+                        {person.positions.map(item => (
+                            <div key={`position_info_${item.companyId}`}>
+                                <div className={"d-flex justify-content-between align-items-center"}>
+                                    <div>{item.companyName}: {item.position}</div>
+                                </div>
                             </div>
-                        </div>
-                    ))}
-                </Col>
-            </Row>
+                        ))}
+                    </Col>
+                </Row>
+            )}
 
             {Boolean(person.ocId) && (
                 <Row>
@@ -76,7 +99,7 @@ export const RenderPersonMetadata = (props: { id: string }) => {
                                 their <a href={"https://opendatacommons.org/licenses/odbl/1-0/"}>ODbL license</a>
                             </div>
                             <Button
-                                href={`https://opencorporates.com/officers/ ${person.ocId}`}
+                                href={`https://opencorporates.com/officers/${person.ocId}`}
                                 target={"_blank"}
                                 variant={"primary"} block size={"sm"} className={"mt-2"}>
                                 View on OpenCorporates <FontAwesome name={"external-link"}/>
@@ -85,6 +108,16 @@ export const RenderPersonMetadata = (props: { id: string }) => {
                     </Col>
                 </Row>
             )}
+
+            <hr/>
+
+            <div>
+                <Button
+                    onClick={() => mergeRecordsModal(props.id)}
+                    variant={"outline-secondary"} size={"sm"} block>
+                    <FontAwesome name={"compress"}/> Merge records
+                </Button>
+            </div>
         </>
     )
 };

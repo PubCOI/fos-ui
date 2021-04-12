@@ -24,10 +24,12 @@
     "chart.js": "^2.9.4",
     "cytoscape": "^3.18.2",
     "cytoscape-cola": "^2.4.0",
+    "cytoscape-context-menus": "^4.0.0",
     "cytoscape-cose-bilkent": "^4.1.0",
     "datatables": "^1.10.18",
     "firebase": "^8.3.3",
     "font-awesome-assets": "0.0.8",
+    "formik": "^2.2.6",
     "pdfjs-dist": "^2.7.570",
     "popoto": "^2.0.18",
     "postcode": "^5.1.0",
@@ -53,7 +55,8 @@
     "typescript": "^4.2.4",
     "vis-data": "^7.1.2",
     "vis-util": "^5.0.2",
-    "web-vitals": "^1.1.1"
+    "web-vitals": "^1.1.1",
+    "yup": "^0.32.9"
   },
   "scripts": {
     "start": "set -x && set PORT=3300 && react-scripts start",

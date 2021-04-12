@@ -14,7 +14,7 @@ export const AwardDetailsModal = (props: { id: string }) => {
     const [award, setAward] = useState<AwardDAO>();
 
     useEffect(() => {
-        axios.get<AwardDAO>(`/api/ui/awards/${props.id}`)
+        axios.get<AwardDAO>(`/api/graphs/awards/${props.id}/metadata`)
             .then(response => {
                 setAward(response.data);
                 setLoaded(true);

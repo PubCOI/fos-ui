@@ -62,6 +62,7 @@ export const Tasks = () => {
             {
                 title: 'Description',
                 prop: 'description',
+                filterable: true,
             },
         ];
     }

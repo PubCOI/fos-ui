@@ -1,11 +1,14 @@
-import React, {useEffect, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import {ClientNodeResponseDAO} from "../../../interfaces/ClientNodeResponseDAO";
 import {useToasts} from "react-toast-notifications";
 import axios from "axios";
-import {ListGroup} from "react-bootstrap";
+import {Button, ListGroup} from "react-bootstrap";
 import {NoticeResponseDAO} from "../../../interfaces/NoticeResponseDAO";
 import {MinMaxValueFormat} from "../../MinMaxValueFormat";
 import {INodeMetadata, NodeMetadataType} from "../../../interfaces/INodeMetadata";
+import FontAwesome from "react-fontawesome";
+import AppContext from "../../core/AppContext";
+import {AddRelationshipModal} from "../modals/AddRelationshipModal";
 
 export const RenderClientMetadata = (
     props: {
@@ -24,6 +27,7 @@ export const RenderClientMetadata = (
     });
 
     const {addToast} = useToasts();
+    const {setModalBody} = useContext(AppContext);
 
     useEffect(() => {
         axios.get<ClientNodeResponseDAO>(baseURL).then(response => {
@@ -40,6 +44,10 @@ export const RenderClientMetadata = (
             });
 
     }, [props.metadata.id]);
+
+    function addRelationshipModal(metadata: INodeMetadata) {
+        setModalBody(<AddRelationshipModal metadata={metadata}/>);
+    }
 
     return (
         <>
@@ -70,6 +78,14 @@ export const RenderClientMetadata = (
                 ))}
 
             </ListGroup>
+
+            <hr/>
+
+            <div>
+                <Button
+                    onClick={() => addRelationshipModal(props.metadata)}
+                    variant={"outline-secondary"} size={"sm"} block><FontAwesome name={"plus"}/> Add relationship</Button>
+            </div>
         </>
     );
 };

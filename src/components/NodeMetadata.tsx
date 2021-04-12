@@ -5,6 +5,7 @@ import {RenderNoticeMetadata} from "./graphs/metadata/RenderNoticeMetadata";
 import {RenderClientMetadata} from "./graphs/metadata/RenderClientMetadata";
 import {RenderAwardMetadata} from "./graphs/metadata/RenderAwardMetadata";
 import {RenderPersonMetadata} from "./graphs/metadata/RenderPersonMetadata";
+import {RenderOrganisationMetadata} from "./graphs/metadata/RenderOrganisationMetadata";
 
 
 export const NodeMetadata = (
@@ -49,7 +50,7 @@ export const NodeMetadata = (
         if (props.metadata.type === NodeMetadataType.organisation) {
             setIcon(<FontAwesome name={"building-o"}/>);
             //setOutput(<>{props.metadata.neo4j_id}</>);
-            setOutput(<></>);
+            setOutput(<RenderOrganisationMetadata id={props.metadata.id}/>);
             return;
         }
         if (props.metadata.type === NodeMetadataType.person) {
