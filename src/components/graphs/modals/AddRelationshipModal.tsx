@@ -154,11 +154,11 @@ export const AddRelationshipModal = (props: { metadata: INodeMetadata }) => {
         </Menu>
     );
 
-    // >>> *** person search
+    // autocompletes >>> *** person search
     const [personSearchTerms, setPersonSearchTerms] = useState("");
     const [doingPersonSearch, setDoingPersonSearch] = useState(false);
-    const [acPersonResults, setACPersonResults] = useState([] as GraphAutocompleteResult[]);
-    const personACOpts: TypeaheadProps<any> = {
+    const [acPersonResults, setAcPersonResults] = useState([] as GraphAutocompleteResult[]);
+    const personAcOpts: TypeaheadProps<any> = {
         id: "search_persons",
         options: acPersonResults,
         labelKey: "name",
@@ -183,7 +183,7 @@ export const AddRelationshipModal = (props: { metadata: INodeMetadata }) => {
             }
         })
             .then(response => {
-                setACPersonResults(response.data);
+                setAcPersonResults(response.data);
                 setDoingPersonSearch(false);
             })
             .catch(error => {
@@ -194,10 +194,56 @@ export const AddRelationshipModal = (props: { metadata: INodeMetadata }) => {
                         autoDismiss: true,
                     }
                 );
-                setACPersonResults([]);
+                setAcPersonResults([]);
             })
 
     }, [personSearchTerms]);
+
+    // autocompletes >>> *** org search
+    const [orgSearchTerms, setOrgSearchTerms] = useState("");
+    const [doingOrgSearch, setDoingOrgSearch] = useState(false);
+    const [acOrgResults, setAcOrgResults] = useState([] as GraphAutocompleteResult[]);
+    const orgAcOpts: TypeaheadProps<any> = {
+        id: "search_organisations",
+        options: acOrgResults,
+        labelKey: "name",
+        onInputChange: (input, e) => {
+            setOrgSearchTerms(input);
+        },
+        onChange: selected => {
+            console.debug("selected", selected[0]);
+        }
+    };
+
+    // this should be merged with the person search ...
+    useEffect(() => {
+        if (orgSearchTerms.length < 2) {
+            setDoingOrgSearch(false);
+            return;
+        }
+        setDoingOrgSearch(true);
+        axios.get<GraphAutocompleteResult[]>("/api/graphs/_search/organisations", {
+            params: {
+                query: encodeURIComponent(orgSearchTerms),
+                _t: Date.now()
+            }
+        })
+            .then(response => {
+                setAcOrgResults(response.data);
+                setDoingOrgSearch(false);
+            })
+            .catch(error => {
+                addToast(
+                    error.toString(),
+                    {
+                        appearance: "error",
+                        autoDismiss: true,
+                    }
+                );
+                setAcOrgResults([]);
+            })
+
+    }, [orgSearchTerms]);
 
     // *** form population ***
 
@@ -321,19 +367,8 @@ export const AddRelationshipModal = (props: { metadata: INodeMetadata }) => {
                             <Form.Group controlId="addRel.person_name">
                                 <Form.Label>Full name</Form.Label>
                                 <InputGroup>
-                                    {/*<Form.Control*/}
-                                    {/*    required={!direct}*/}
-                                    {/*    placeholder={"Start typing to search..."}*/}
-                                    {/*    type={"text"}*/}
-                                    {/*    onChange={(*/}
-                                    {/*        e: React.ChangeEvent<HTMLInputElement>*/}
-                                    {/*    ): void => {*/}
-                                    {/*        setRelName(e.target.value);*/}
-                                    {/*        setPersonSearchTerms(e.target.value);*/}
-                                    {/*    }}*/}
-                                    {/*/>*/}
                                     <Typeahead className={"w-100"}
-                                                  {...personACOpts} placeholder={"Start typing to search..."}
+                                                  {...personAcOpts} placeholder={"Start typing to search..."}
                                                isLoading={doingPersonSearch}
                                                renderMenu={
                                                    ((results, menuProps) =>
@@ -348,20 +383,14 @@ export const AddRelationshipModal = (props: { metadata: INodeMetadata }) => {
                             <Form.Group controlId="addRel.org_name">
                                 <Form.Label>Organisation name</Form.Label>
                                 <InputGroup>
-                                    <Form.Control
-                                        required={direct}
-                                        placeholder={"Start typing to search..."}
-                                        type={"text"}
-                                        onChange={(
-                                            e: React.ChangeEvent<HTMLInputElement>
-                                        ): void => {
-                                            setOrgName(e.target.value)
-                                        }}
-                                    />
-                                    <InputGroup.Append>
-                                        <Button variant="outline-secondary"><FontAwesome name={"search"}
-                                                                                         className={"mr-1"}/> search</Button>
-                                    </InputGroup.Append>
+                                    <Typeahead className={"w-100"}
+                                               {...orgAcOpts} placeholder={"Start typing to search..."}
+                                               isLoading={doingOrgSearch}
+                                               renderMenu={
+                                                   ((results, menuProps) =>
+                                                           renderACResults(results, menuProps)
+                                                   )}>
+                                    </Typeahead>
                                 </InputGroup>
                             </Form.Group>
                         )}
