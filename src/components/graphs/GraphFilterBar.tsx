@@ -41,10 +41,10 @@ export const GraphFilterBar = () => {
         <Menu {...menuProps} className={"typeahead-pos-right"}>
             {results.map((result, index) => (
                 <MenuItem option={result} position={index} key={"graph_result_" + index}>
-                    <div className={"d-flex justify-content-between align-items-center"}>
-                        <>
+                    <div className={"d-flex justify-content-left align-items-center"}>
+                        <div className={"mr-4"}>
                             {(result.type === NodeMetadataType.organisation) ? <FontAwesome name={"building-o"} fixedWidth/> : <FontAwesome name={"users"} fixedWidth/> }
-                        </>
+                        </div>
                         <div>
                             <div>{result.name}</div>
                             <small className={"text-muted"}>{result.id}</small>

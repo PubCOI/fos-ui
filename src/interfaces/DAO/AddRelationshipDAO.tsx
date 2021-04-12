@@ -1,7 +1,10 @@
 export interface AddRelationshipDAO {
-    name: string,
+    isNewObject: boolean,
+    relId: string,
+    relName: string,
     relType: string,
-    relSubtype: string,
+    coiType: string,
+    coiSubtype: string,
     comments: string,
     evidenceComments: boolean,
     evidenceFile: boolean,

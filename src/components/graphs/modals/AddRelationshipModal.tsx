@@ -1,7 +1,7 @@
 import React, {FormEvent, useContext, useEffect, useState} from "react";
 import AppContext from "../../core/AppContext";
 import {useToasts} from "react-toast-notifications";
-import {Button, Form, InputGroup, Modal, ToggleButton, ToggleButtonGroup} from "react-bootstrap";
+import {Alert, Button, Form, InputGroup, Modal, ToggleButton, ToggleButtonGroup} from "react-bootstrap";
 import {INodeMetadata} from "../../../interfaces/INodeMetadata";
 import axios, {AxiosError, AxiosResponse} from "axios";
 import {GraphAutocompleteResult} from "../../../interfaces/GraphAutocompleteResult";
@@ -120,17 +120,26 @@ export const AddRelationshipModal = (props: { metadata: INodeMetadata }) => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [parentType, setParentType] = useState("person");
     const [direct, setDirect] = useState(false);
+
+    // relationship name and relationship ID are generic - apply to both persons and orgs
+    const [relObjIsNew, setRelObjIsNew] = useState(false);
     const [relName, setRelName] = useState("");
-    const [orgName, setOrgName] = useState("");
-    const [relType, setRelType] = useState("direct_financial");
-    const [relSubtype, setRelSubtype] = useState("director");
+    const [relId, setRelId] = useState("");
+    // relType is either person or organisation ... possibly not required
+    const [relType, setRelType] = useState("");
+
+    const [relTypeSelect, setRelTypeSelect] = useState("direct_financial");
+    const [relSubtypeSelect, setRelSubtypeSelect] = useState("director");
     const [relComments, setRelComments] = useState("");
     const [evidenceType, setEvidenceType] = useState("comments");
     const [evidenceURL, setEvidenceURL] = useState("");
     const [isAcknowledged, setIsAcknowledged] = useState(false);
     const [formSubmissionIcon, setFormSubmissionIcon] = useState("plus");
     const [validated, setValidated] = useState(false);
-    const [step2Opts, setStep2Opts] = useState<SelectOption[]>(allOptions.get(relType) || [{value: "", text: ""}]);
+    const [step2Opts, setStep2Opts] = useState<SelectOption[]>(allOptions.get(relTypeSelect) || [{
+        value: "",
+        text: ""
+    }]);
 
     // auth
     const [authToken, setAuthToken] = useState("");
@@ -167,6 +176,12 @@ export const AddRelationshipModal = (props: { metadata: INodeMetadata }) => {
         },
         onChange: selected => {
             console.debug("selected", selected[0]);
+            let sel = selected[0];
+            if (undefined === sel) return;
+            setRelObjIsNew(sel.hasOwnProperty("customOption"));
+            setRelType(sel.hasOwnProperty("type") ? sel.type : "person");
+            setRelName(sel.hasOwnProperty("name") ? sel.name : sel.name);
+            setRelId(sel.hasOwnProperty("id") ? sel.id : "");
         }
     };
 
@@ -212,6 +227,12 @@ export const AddRelationshipModal = (props: { metadata: INodeMetadata }) => {
         },
         onChange: selected => {
             console.debug("selected", selected[0]);
+            let sel = selected[0];
+            if (undefined === sel) return;
+            setRelObjIsNew(sel.hasOwnProperty("customOption"));
+            setRelType(sel.hasOwnProperty("type") ? sel.type : "organisation");
+            setRelName(sel.hasOwnProperty("name") ? sel.name : sel.name);
+            setRelId(sel.hasOwnProperty("id") ? sel.id : "");
         }
     };
 
@@ -251,11 +272,11 @@ export const AddRelationshipModal = (props: { metadata: INodeMetadata }) => {
         setDirect(parentType === "organisation");
     }, [parentType]);
     useEffect(() => {
-        setRelType(direct ? "direct_financial" : "indirect_financial");
+        setRelTypeSelect(direct ? "direct_financial" : "indirect_financial");
     }, [direct]);
     useEffect(() => {
-        setStep2Opts(allOptions.get(relType) || [{value: "", text: ""}]);
-    }, [relType]);
+        setStep2Opts(allOptions.get(relTypeSelect) || [{value: "", text: ""}]);
+    }, [relTypeSelect]);
 
     // *** submission handling ***
 
@@ -281,13 +302,16 @@ export const AddRelationshipModal = (props: { metadata: INodeMetadata }) => {
             evidenceComments: (evidenceType === "comments"),
             evidenceFile: (evidenceType === "upload"),
             evidenceURL: evidenceURL,
-            name: relName,
+            isNewObject: relObjIsNew,
+            relId: relId,
+            relName: relName,
             relType: relType,
-            relSubtype: relSubtype,
+            coiType: relTypeSelect,
+            coiSubtype: relSubtypeSelect,
             comments: relComments,
         };
         axios.put<AddRelationshipDAO, AxiosResponse<string>>(
-            `/api/graphs/clients/${props.metadata.id}/relationships`,
+            `/api/graphs/${props.metadata.type}s/${props.metadata.id}/relationships`,
             data, {
                 headers: {
                     authToken: authToken
@@ -295,6 +319,11 @@ export const AddRelationshipModal = (props: { metadata: INodeMetadata }) => {
             }).then((r) => {
             console.debug(r);
             setIsSubmitting(false);
+            addToast("Done!", {
+                appearance: "success",
+                autoDismiss: true
+            });
+            hideModal();
         })
             .catch((e: AxiosError) => {
                 addToast("Error adding relationship", {
@@ -316,17 +345,10 @@ export const AddRelationshipModal = (props: { metadata: INodeMetadata }) => {
                         <Modal.Title>Add relationship</Modal.Title>
                     </Modal.Header>
                     <Modal.Body>
-                        {/*<Form.Group controlId="reportData.error_id">*/}
-                        {/*    <Form.Label>Node ID</Form.Label>*/}
-                        {/*    <Alert variant={"dark"} className={"text-muted"}>*/}
-                        {/*        Adding a relationship to {props.metadata.type} {props.metadata.id}*/}
-                        {/*    </Alert>*/}
-                        {/*</Form.Group>*/}
-                        {/*<Alert variant={"primary"}>*/}
-                        {/*    PubCOI bases its COI definitions on those at*/}
-                        {/*    the <a href={"https://www.ukri.org/about-us/our-structure/conflicts-of-interests/"}>UKRI*/}
-                        {/*    website <FontAwesome name={"external-link"}/></a>*/}
-                        {/*</Alert>*/}
+
+                        <Alert variant={"secondary"} className={"small"}>
+                            Adding relationship for {props.metadata.type} {props.metadata.id}
+                        </Alert>
 
                         {/*cards*/}
                         <Form.Group controlId="addRel.name">
@@ -365,17 +387,26 @@ export const AddRelationshipModal = (props: { metadata: INodeMetadata }) => {
 
                         {Boolean(!direct) && (
                             <Form.Group controlId="addRel.person_name">
-                                <Form.Label>Full name</Form.Label>
+                                <Form.Label>Person name</Form.Label>
                                 <InputGroup>
                                     <Typeahead className={"w-100"}
-                                                  {...personAcOpts} placeholder={"Start typing to search..."}
+                                               allowNew
+                                               {...personAcOpts} placeholder={"Start typing to search..."}
                                                isLoading={doingPersonSearch}
+                                        // onChange={(e: React.FormEvent<HTMLInputElement>): void => {
+                                        //     console.log(e);
+                                        // }}
                                                renderMenu={
                                                    ((results, menuProps) =>
                                                            renderACResults(results, menuProps)
                                                    )}>
                                     </Typeahead>
                                 </InputGroup>
+                                <div className={"text-muted small"}>
+                                    This searches any directors for any organisations on the system. Note that persons
+                                    will not appear in this search unless a contract has been awarded to a company with
+                                    which they are associated (as a director, shareholder, or similar).
+                                </div>
                             </Form.Group>
                         )}
 
@@ -384,6 +415,7 @@ export const AddRelationshipModal = (props: { metadata: INodeMetadata }) => {
                                 <Form.Label>Organisation name</Form.Label>
                                 <InputGroup>
                                     <Typeahead className={"w-100"}
+                                               allowNew
                                                {...orgAcOpts} placeholder={"Start typing to search..."}
                                                isLoading={doingOrgSearch}
                                                renderMenu={
@@ -392,7 +424,27 @@ export const AddRelationshipModal = (props: { metadata: INodeMetadata }) => {
                                                    )}>
                                     </Typeahead>
                                 </InputGroup>
+                                <div className={"text-muted small"}>
+                                    Searches any organisations that have been awarded contracts that are referenced on
+                                    our system. If you cannot find a company that you would reasonably expect to be
+                                    on this system, it may be that we do not (as of yet) hold any contracts relating
+                                    to this company.
+                                </div>
                             </Form.Group>
+                        )}
+
+                        {Boolean(relObjIsNew) && (
+                            <Alert variant={"info"} className={"small"}>
+                                <div>
+                                    <FontAwesome name={"info-circle"} className={"mr-2"}/> Adding
+                                    new {relType} entry "{relName}" to database
+                                </div>
+                                <div className={"text-muted mt-2"}>
+                                    If you expected an entry to already exist on the database for this {relType}, please
+                                    try some different search terms. This will save you / us having to merge records
+                                    later on.
+                                </div>
+                            </Alert>
                         )}
 
                         <Form.Group controlId="addRel.relationship_type">
@@ -401,23 +453,24 @@ export const AddRelationshipModal = (props: { metadata: INodeMetadata }) => {
                                           onChange={(
                                               e: React.ChangeEvent<HTMLSelectElement>
                                           ): void => {
-                                              setRelType(e.target.value);
+                                              setRelTypeSelect(e.target.value);
                                           }}>
-                                {Boolean(direct) && (
+                                {/*{Boolean(direct) && (*/}
                                     <>
                                         <option value={"direct_financial"}>Direct financial</option>
                                         <option value={"non_financial_professional"}>Non-financial professional</option>
                                         <option value={"non_financial_personal"}>Non-financial personal</option>
                                     </>
-                                )}
-                                {Boolean(!direct) && (
+                                {/*)}*/}
+                                {/*{Boolean(!direct) && (*/}
                                     <>
                                         <option value={"indirect_financial"}>Indirect financial</option>
                                         <option value={"indirect"}>Indirect (other)</option>
                                     </>
-                                )}
+                                {/*)}*/}
                             </Form.Control>
                         </Form.Group>
+
                         <Form.Group controlId="addRel.step2Opt">
                             <Form.Label>Subtype</Form.Label>
                             <Form.Control as={"select"}
@@ -425,13 +478,14 @@ export const AddRelationshipModal = (props: { metadata: INodeMetadata }) => {
                                           onChange={(
                                               e: React.ChangeEvent<HTMLSelectElement>
                                           ): void => {
-                                              setRelSubtype(e.target.value);
+                                              setRelSubtypeSelect(e.target.value);
                                           }}>
                                 {step2Opts.map(opt => (
                                     <option value={opt.value} key={`opt_${opt.value}`}>{opt.text}</option>
                                 ))}
                             </Form.Control>
                         </Form.Group>
+
                         <Form.Group controlId="addRel.comments">
                             <Form.Label>Comments</Form.Label>
                             <Form.Control as={"textarea"}
@@ -504,19 +558,12 @@ export const AddRelationshipModal = (props: { metadata: INodeMetadata }) => {
                                 label="I acknowledge that any material statement I know to be false, or could not
                                  reasonably be held as true, could constitute libel. I understand that a permanent
                                  record will be made of my unique user ID, which can be mapped back to my email
-                                 address should PubCOI be required to disclose any audit data by law."
+                                 address should PubCOI be required to disclose any audit data by law. Note that site
+                                 access records (IPs etc) are not stored by us, but can be requested of Google
+                                 (as operators of the Firebase authentication and authorisation infrastructure) by
+                                 way of a warrant."
                             />
                         </Form.Group>
-
-                        {/*<Form.Group controlId={"addRel.searchPersons"}>*/}
-                        {/*    <Form.Label>Search for person</Form.Label>*/}
-                        {/*    <Form.Control*/}
-                        {/*        onChange={(*/}
-                        {/*            e: React.ChangeEvent<HTMLInputElement>*/}
-                        {/*        ): void => {*/}
-                        {/*            setPersonSearchTerms(e.target.value)*/}
-                        {/*        }}/>*/}
-                        {/*</Form.Group>*/}
 
                     </Modal.Body>
                     <Modal.Footer>
