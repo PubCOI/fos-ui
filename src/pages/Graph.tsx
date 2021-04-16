@@ -360,7 +360,8 @@ export const Graph = (props: { location: Location }) => {
         }[]>>(
             `/api/graphs/persons/${metadata.id}/relationships`, {
                 params: {
-                    max: 50
+                    max: 50,
+                    reqType: "org"
                 }
             }
         ).then((r) => {
@@ -371,11 +372,34 @@ export const Graph = (props: { location: Location }) => {
                     dataAdded = addNode(res.o, 'organisation') || dataAdded;
                     dataAdded = addEdge(res.ref) || dataAdded;
                 });
-            } else {
-                addToast(`No data found on object ${metadata.id}`, {
-                    appearance: "warning",
-                    autoDismiss: true,
+            }
+        })
+            .then(() => {
+                axios.get<string, AxiosResponse<{
+                    p: INode,
+                    c: INode,
+                    ref: IRef,
+                }[]>>(
+                    `/api/graphs/persons/${metadata.id}/relationships`, {
+                        params: {
+                            max: 50,
+                            reqType: "client"
+                        }
+                    }
+                ).then((r) => {
+                    if (r.data.length > 0) {
+                        r.data.forEach(res => {
+                            dataAdded = addNode(res.p, 'person') || dataAdded;
+                            dataAdded = addNode(res.c, 'client') || dataAdded;
+                            dataAdded = addEdge(res.ref) || dataAdded;
+                        });
+                    }
                 })
+            })
+            .then(() => {
+            if (dataAdded) {
+                console.debug("Data added to graph, redrawing - center", metadata.neo4j_id);
+                reDraw(("" === metadata.neo4j_id) ? undefined : `node[neo4j_id=${metadata.neo4j_id}]`);
             }
         })
     }
@@ -450,6 +474,14 @@ export const Graph = (props: { location: Location }) => {
                     style: {
                         "label": "data(commonName)",
                         "background-image": imgUser
+                    }
+                },
+                {
+                    selector: 'edge[neo4j_type="CONFLICT"]',
+                    style: {
+                        "label": "data(relationshipType)",
+                        "line-color": "#FF0000",
+                        "width": 2
                     }
                 },
                 {

@@ -43,13 +43,27 @@ export const GraphFilterBar = () => {
                 <MenuItem option={result} position={index} key={"graph_result_" + index}>
                     <div className={"d-flex justify-content-left align-items-center"}>
                         <div className={"mr-4"}>
-                            {(result.type === NodeMetadataType.organisation) ? <FontAwesome name={"building-o"} fixedWidth/> : <FontAwesome name={"users"} fixedWidth/> }
+                            {(result.type === NodeMetadataType.organisation) ?
+                                <FontAwesome name={"building-o"} fixedWidth/> :
+                                (result.type === NodeMetadataType.person) ? <FontAwesome name={"user"} fixedWidth/> :
+                                    <FontAwesome name={"users"} fixedWidth/>}
                         </div>
                         <div>
                             <div>{result.name}</div>
                             <small className={"text-muted"}>{result.id}</small>
+                            {Boolean(result.details && result.details.length > 0) && (
+                                <div>
+                                    <small className={"text-muted"}>Associated with </small>
+                                    <small className={"text-muted"}>
+                                        {result.details.map((detail, index) => (
+                                            <span key={`result_detail_${index}`}>{detail}</span>
+                                        ))}
+                                    </small>
+                                </div>
+                            )}
                         </div>
                     </div>
+                    <hr className={"mt-1 mb-0"}/>
                 </MenuItem>
             ))}
         </Menu>
@@ -115,7 +129,8 @@ export const GraphFilterBar = () => {
                             </Typeahead>
                         </div>
                         <InputGroup.Append>
-                            <Button variant="secondary" type={"button"} onClick={() => showPrefsModal()}>Settings <FontAwesome name={"gears"}/></Button>
+                            <Button variant="secondary" type={"button"}
+                                    onClick={() => showPrefsModal()}>Settings <FontAwesome name={"gears"}/></Button>
                         </InputGroup.Append>
                     </InputGroup>
                 </Form>

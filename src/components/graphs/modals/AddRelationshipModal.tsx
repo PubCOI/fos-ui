@@ -9,6 +9,7 @@ import FontAwesome from "react-fontawesome";
 import {AddRelationshipDAO} from "../../../interfaces/DAO/AddRelationshipDAO";
 import firebase from "firebase";
 import {Menu, MenuItem, MenuProps, Typeahead, TypeaheadProps, TypeaheadResult} from "react-bootstrap-typeahead";
+import {RenderAutocompleteResults} from "../autocomplete/RenderAutocompleteResults";
 
 interface SelectOptions {
     direct_financial: SelectOption[]
@@ -150,19 +151,6 @@ export const AddRelationshipModal = (props: { metadata: INodeMetadata }) => {
     }, [firebase.auth().currentUser]);
 
     // *** autocompletes ***
-    const renderACResults = (results: Array<TypeaheadResult<GraphAutocompleteResult>>, menuProps: MenuProps) => (
-        <Menu {...menuProps} className={"typeahead-pos-normal"}>
-            {results.map((result, index) => (
-                <MenuItem option={result} position={index} key={"search_result_" + index}>
-                    <div>
-                        <div>{result.name}</div>
-                        <small className={"text-muted"}>{result.id}</small>
-                    </div>
-                </MenuItem>
-            ))}
-        </Menu>
-    );
-
     // autocompletes >>> *** person search
     const [personSearchTerms, setPersonSearchTerms] = useState("");
     const [doingPersonSearch, setDoingPersonSearch] = useState(false);
@@ -393,12 +381,9 @@ export const AddRelationshipModal = (props: { metadata: INodeMetadata }) => {
                                                allowNew
                                                {...personAcOpts} placeholder={"Start typing to search..."}
                                                isLoading={doingPersonSearch}
-                                        // onChange={(e: React.FormEvent<HTMLInputElement>): void => {
-                                        //     console.log(e);
-                                        // }}
                                                renderMenu={
                                                    ((results, menuProps) =>
-                                                           renderACResults(results, menuProps)
+                                                           <RenderAutocompleteResults results={results} menuProps={menuProps}/>
                                                    )}>
                                     </Typeahead>
                                 </InputGroup>
@@ -420,7 +405,7 @@ export const AddRelationshipModal = (props: { metadata: INodeMetadata }) => {
                                                isLoading={doingOrgSearch}
                                                renderMenu={
                                                    ((results, menuProps) =>
-                                                           renderACResults(results, menuProps)
+                                                           <RenderAutocompleteResults results={results} menuProps={menuProps}/>
                                                    )}>
                                     </Typeahead>
                                 </InputGroup>
