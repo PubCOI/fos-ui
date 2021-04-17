@@ -21,7 +21,9 @@ export const AttachmentsAccordion = (props: { award: AwardDAO }) => {
                             <Accordion.Toggle as={Card.Header} eventKey={"attachment-" + attachment.id}>
                                 <div className={"d-flex align-items-center justify-content-between"}>
                                     <div>{attachment.type}{(attachment.description ? `: ${attachment.description}` : "")}</div>
-                                    <div className={"text-nowrap ml-3"}>{(attachment.mime) ? <RenderMime type={attachment.mime}/> : null} <FontAwesome
+                                    <div className={"text-nowrap ml-3"}>
+                                        {(attachment.href) ? <RenderMime type={"href"}/> : null}
+                                        {(attachment.mime) ? <RenderMime type={attachment.mime}/> : null} <FontAwesome
                                         name={"warning"} className={"ml-1"} hidden={attachment.ocr}/>
                                     </div>
                                 </div>
@@ -62,6 +64,9 @@ export const AttachmentsAccordion = (props: { award: AwardDAO }) => {
 const RenderMime = (props: { type: string }) => {
     let icon = "file-o";
     switch (props.type) {
+        case "href":
+            icon = "link";
+            break;
         case "application/pdf":
             icon = "file-pdf-o";
             break;
