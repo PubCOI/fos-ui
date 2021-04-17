@@ -132,8 +132,12 @@ export const Graph = (props: { location: Location }) => {
                 if (r.data.length > 0) {
                     r.data.forEach(res => {
                         addNode(res.o, 'organisation');
-                        addNode(res.a, 'award');
-                        addEdge(res.ref);
+                        if (null !== res.a) {
+                            addNode(res.a, 'award');
+                        }
+                        if (null !== res.ref) {
+                            addEdge(res.ref);
+                        }
                     });
                     reDraw(`node[neo4j_id=${r.data[0].o.neo4j_id}]`);
                 }

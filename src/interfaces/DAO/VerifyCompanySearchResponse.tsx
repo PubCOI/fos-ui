@@ -4,4 +4,5 @@ export interface VerifyCompanySearchResponse {
     address: string,
     chUrl: string,
     ocUrl: string,
+    flagged: boolean
 }

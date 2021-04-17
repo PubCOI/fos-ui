@@ -1,13 +1,11 @@
 import React, {FormEvent, useContext, useEffect, useState} from "react";
 import {DataTypeEnum} from "./FixDataIssueWidget";
 import firebase from "firebase";
-import {LoadingWrapper} from "../LoadingWrapper";
 import {Alert, Button, Col, Form, Row} from "react-bootstrap";
 import {LoadingGrow} from "../LoadingGrow";
 import axios, {AxiosError, AxiosResponse} from "axios";
 import {useToasts} from "react-toast-notifications";
 import {CreateTaskRequestDAO, CreateTaskResponseDAO} from "../../interfaces/DAO/TaskDAO";
-import {useWindowSize} from "../../hooks/Utils";
 import AppContext from "../core/AppContext";
 
 interface OptionItem {
@@ -110,6 +108,16 @@ export const FixDataPaneContents = (props: { type: DataTypeEnum, id: string }) =
                     "the record as incorrect and we'll take a look."
             });
         }
+        if (props.type === DataTypeEnum.company) {
+            opts.push({
+                text: "No matching company record(s)",
+                value: "no_matching_company",
+                help: "Use this option if you're unable to find a corresponding entry for the company on Companies " +
+                    "House or in OpenCorporates. Please supply some information in 'additional notes' as to where " +
+                    "you've already looked for information.",
+                canHelp: false
+            })
+        }
         opts.push({
             text: "Other",
             value: "other",
@@ -135,7 +143,7 @@ export const FixDataPaneContents = (props: { type: DataTypeEnum, id: string }) =
         <>
             <Row>
                 <Col><Alert variant={"primary"}>
-                    <div>Reporting as {firebase.auth().currentUser?.displayName}</div>
+                    <div>Reporting as "{displayName}"</div>
                     <div className={"text-muted small"}>to change the name displayed publicly, go to your profile</div>
                 </Alert></Col>
             </Row>
@@ -176,7 +184,9 @@ export const FixDataPaneContents = (props: { type: DataTypeEnum, id: string }) =
                 </Form.Group>
                 <Form.Group className={"d-flex justify-content-end"}>
                     <Button type={"submit"} variant={"primary"} className={"m-1"}>report</Button>
-                    <Button type={"submit"} variant={"success"} disabled={!canHelp || isSubmitting} className={"m-1"}>report and start
+                    <Button type={"submit"} variant={"success"}
+                            disabled={!canHelp || isSubmitting}
+                            className={"m-1 " + (canHelp ? "" : "d-none")}>report and start
                         fixing
                     </Button>
                 </Form.Group>

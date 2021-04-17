@@ -179,3 +179,8 @@ canvas > path {
 .pane-accordion-metadata {
   z-index: -1;
 }
+
+/*used for the flagging*/
+.text-grey {
+  color: #757575;
+}

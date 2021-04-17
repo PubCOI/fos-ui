@@ -1,7 +1,7 @@
 import {useToasts} from "react-toast-notifications";
 import {Alert, Button, Col, Row} from "react-bootstrap";
 import React, {useContext, useEffect, useState} from "react";
-import {OrgDAO} from "../../../interfaces/DAO/OrgDAO";
+import {OrganisationMetadataDAO} from "../../../interfaces/DAO/OrganisationMetadataDAO";
 import axios from "axios";
 import {LoadingWrapper} from "../../LoadingWrapper";
 import FontAwesome from "react-fontawesome";
@@ -12,7 +12,7 @@ export const RenderOrganisationMetadata = (props: {id: string}) => {
     const {addToast} = useToasts();
     const {setModalBody, hideModal} = useContext(AppContext);
     const [loaded, setLoaded] = useState(false);
-    const [org, setOrg] = useState<OrgDAO>({
+    const [org, setOrg] = useState<OrganisationMetadataDAO>({
         id: "",
         name: "",
         verified: false
@@ -27,7 +27,7 @@ export const RenderOrganisationMetadata = (props: {id: string}) => {
     }, [org]);
 
     useEffect(() =>{
-        axios.get<OrgDAO>(`/api/graphs/organisations/${props.id}/metadata`)
+        axios.get<OrganisationMetadataDAO>(`/api/graphs/organisations/${props.id}/metadata`)
             .then(res => {
                 setLoaded(true);
                 setOrg(res.data);
