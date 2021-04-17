@@ -9,6 +9,7 @@ import AppContext from "../../core/AppContext";
 import {MergeRecordsModal} from "../modals/MergeRecordsModal";
 import {AddRelationshipModal} from "../modals/AddRelationshipModal";
 import {INodeMetadata} from "../../../interfaces/INodeMetadata";
+import {LoadAssociationsModal} from "../modals/LoadAssociationsModal";
 
 export const RenderPersonMetadata = (props: { metadata: INodeMetadata }) => {
     const {addToast} = useToasts();
@@ -49,6 +50,10 @@ export const RenderPersonMetadata = (props: { metadata: INodeMetadata }) => {
 
     function addRelationshipModal(metadata: INodeMetadata) {
         setModalBody(<AddRelationshipModal metadata={metadata}/>)
+    }
+
+    function loadAssociatedCompaniesModal(metadata: INodeMetadata) {
+        setModalBody(<LoadAssociationsModal metadata={metadata}/>)
     }
 
     if (!loaded) {
@@ -133,6 +138,16 @@ export const RenderPersonMetadata = (props: { metadata: INodeMetadata }) => {
                         onClick={() => addRelationshipModal(props.metadata)}
                         variant={"outline-secondary"} size={"sm"} block>
                         <FontAwesome name={"link"}/> Add relationship
+                    </Button>
+                </Col>
+            </Row>
+
+            <Row className={"mt-2"}>
+                <Col>
+                    <Button
+                        onClick={() => loadAssociatedCompaniesModal(props.metadata)}
+                        variant={"outline-secondary"} size={"sm"} block>
+                        <FontAwesome name={"search"}/> Retrieve associations
                     </Button>
                 </Col>
             </Row>

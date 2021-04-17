@@ -50,7 +50,7 @@ export const NodeMetadata = (
         if (props.metadata.type === NodeMetadataType.organisation) {
             setIcon(<FontAwesome name={"building-o"}/>);
             //setOutput(<>{props.metadata.neo4j_id}</>);
-            setOutput(<RenderOrganisationMetadata id={props.metadata.id}/>);
+            setOutput(<RenderOrganisationMetadata metadata={props.metadata}/>);
             return;
         }
         if (props.metadata.type === NodeMetadataType.person) {

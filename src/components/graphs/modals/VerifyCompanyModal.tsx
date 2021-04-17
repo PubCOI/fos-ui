@@ -100,7 +100,8 @@ export const VerifyCompanyModal = (props: { id: string }) => {
             }
         }).then(value => {
             addToast(value.data.response, {
-                appearance: "success"
+                appearance: "success",
+                autoDismiss: true
             });
             hideModal();
         })
@@ -229,10 +230,7 @@ export const VerifyCompanyModal = (props: { id: string }) => {
 
                     {Boolean(searchComplete && searchResponse.length === 0) && (
                         <Alert variant={"secondary"} className={"mt-3"}>
-                            <p>No results found :(</p>
-                            <div>In future, we'll allow you to enter the details by hand but for now the company will
-                                remain unverified
-                            </div>
+                            <div>No results found :(</div>
                         </Alert>
                     )}
 

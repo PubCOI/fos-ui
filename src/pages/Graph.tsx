@@ -127,7 +127,7 @@ export const Graph = (props: { location: Location }) => {
                 a: INode,
                 ref: IRef,
             }[]>>(
-                "/api/graphs/organisations/" + graphMetadata.id
+                `/api/graphs/organisations/${graphMetadata.id}`
             ).then((r) => {
                 if (r.data.length > 0) {
                     r.data.forEach(res => {
@@ -295,9 +295,11 @@ export const Graph = (props: { location: Location }) => {
             .then((r) => {
                 if (r.data.length > 0) {
                     r.data.forEach(res => {
-                        handleOrgPersonLink(res);
+                        if (res.p.labels.includes("Person")) {
+                            handleOrgPersonLink(res);
+                        }
+                        dataAdded = addNode(res.p) || dataAdded; // will be org or person
                         dataAdded = addNode(res.o, 'organisation') || dataAdded;
-                        dataAdded = addNode(res.p, 'person') || dataAdded;
                         dataAdded = addEdge(res.ref) || dataAdded;
                     });
                 } else {
@@ -489,6 +491,15 @@ export const Graph = (props: { location: Location }) => {
                     }
                 },
                 {
+                    selector: 'edge[neo4j_type="LEGAL_ENTITY"]',
+                    style: {
+                        "label": "[AKA]",
+                        "line-color": "#ffab51",
+                        "width": 2,
+                        "font-size": "10"
+                    }
+                },
+                {
                     selector: '.highlight',
                     style: {
                         "border-color": "#fff000",
@@ -558,7 +569,7 @@ export const Graph = (props: { location: Location }) => {
         });
     }
 
-    function addNode(node: INode, type: string) {
+    function addNode(node: INode, type?: string) {
         if (cy === undefined || cy.$id === undefined) {
             console.debug("Cytoscape not yet initialised");
             return false;
@@ -569,7 +580,7 @@ export const Graph = (props: { location: Location }) => {
                 id: "node_" + node.neo4j_id,
                 neo4j_id: node.neo4j_id,
                 neo4j_label: node.labels.join(),
-                fos_type: type,
+                fos_type: type || node.labels[0].toLowerCase()
             };
 
             Object.keys(node.properties).forEach(key => {

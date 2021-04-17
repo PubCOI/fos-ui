@@ -7,8 +7,10 @@ import {LoadingWrapper} from "../../LoadingWrapper";
 import FontAwesome from "react-fontawesome";
 import AppContext from "../../core/AppContext";
 import {VerifyCompanyModal} from "../modals/VerifyCompanyModal";
+import {INodeMetadata} from "../../../interfaces/INodeMetadata";
+import {AddRelationshipModal} from "../modals/AddRelationshipModal";
 
-export const RenderOrganisationMetadata = (props: {id: string}) => {
+export const RenderOrganisationMetadata = (props: {metadata: INodeMetadata}) => {
     const {addToast} = useToasts();
     const {setModalBody, hideModal} = useContext(AppContext);
     const [loaded, setLoaded] = useState(false);
@@ -27,21 +29,25 @@ export const RenderOrganisationMetadata = (props: {id: string}) => {
     }, [org]);
 
     useEffect(() =>{
-        axios.get<OrganisationMetadataDAO>(`/api/graphs/organisations/${props.id}/metadata`)
+        axios.get<OrganisationMetadataDAO>(`/api/graphs/organisations/${props.metadata.id}/metadata`)
             .then(res => {
                 setLoaded(true);
                 setOrg(res.data);
             })
             .catch(() => {
-                addToast(`Unable to load data for org ${props.id}`, {
+                addToast(`Unable to load data for org ${props.metadata.id}`, {
                     appearance: "error",
                     autoDismiss: true
                 })
             })
-    }, [props.id]);
+    }, [props.metadata.id]);
 
     function verifyCompany(id: string) {
         setModalBody(<VerifyCompanyModal id={id}/>)
+    }
+
+    function addRelationshipModal(metadata: INodeMetadata) {
+        setModalBody(<AddRelationshipModal metadata={metadata}/>);
     }
 
     if (!loaded) {
@@ -81,6 +87,13 @@ export const RenderOrganisationMetadata = (props: {id: string}) => {
                     </Col>
                 </Row>
             )}
+            <Row className={"mt-3"}>
+                <Col>
+                <Button
+                    onClick={() => addRelationshipModal(props.metadata)}
+                    variant={"outline-secondary"} size={"sm"} block><FontAwesome name={"plus"}/> Add relationship</Button>
+                </Col>
+            </Row>
         </>
     )
 };
