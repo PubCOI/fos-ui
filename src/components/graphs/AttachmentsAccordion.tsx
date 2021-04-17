@@ -1,5 +1,5 @@
 import {AwardDAO} from "../../interfaces/DAO/AwardDAO";
-import {Accordion, Alert, Badge, Card} from "react-bootstrap";
+import {Accordion, Alert, Card} from "react-bootstrap";
 import {GetOpenExtLink} from "../GetOpenExtLink";
 import FontAwesome from "react-fontawesome";
 import React from "react";
@@ -21,10 +21,9 @@ export const AttachmentsAccordion = (props: { award: AwardDAO }) => {
                             <Accordion.Toggle as={Card.Header} eventKey={"attachment-" + attachment.id}>
                                 <div className={"d-flex align-items-center justify-content-between"}>
                                     <div>{attachment.type}{(attachment.description ? `: ${attachment.description}` : "")}</div>
-                                    <>{(attachment.mime) ? <Badge className={"ml-3"}
-                                        pill variant={"primary"}>{attachment.mime}</Badge> : null} <FontAwesome
-                                        name={"warning"} className={"ml-3"} hidden={attachment.ocr}/>
-                                    </>
+                                    <div className={"text-nowrap ml-3"}>{(attachment.mime) ? <RenderMime type={attachment.mime}/> : null} <FontAwesome
+                                        name={"warning"} className={"ml-1"} hidden={attachment.ocr}/>
+                                    </div>
                                 </div>
                             </Accordion.Toggle>
                             <Accordion.Collapse eventKey={"attachment-" + attachment.id}>
@@ -56,6 +55,26 @@ export const AttachmentsAccordion = (props: { award: AwardDAO }) => {
                     ))}
                 </Accordion>
             </div>
+        </>
+    )
+};
+
+const RenderMime = (props: { type: string }) => {
+    let icon = "file-o";
+    switch (props.type) {
+        case "application/pdf":
+            icon = "file-pdf-o";
+            break;
+        case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+            icon = "file-word-o";
+            break;
+        default:
+            console.debug(`Unable to find matching type for mime ${props.type}, returning default`)
+    }
+
+    return (
+        <>
+            <FontAwesome name={icon} fixedWidth/>
         </>
     )
 }

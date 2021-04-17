@@ -16,6 +16,9 @@ import {TimebaseDataEnum} from "../components/graphs/preferences/TimebaseDataEnu
 import 'cytoscape-context-menus/cytoscape-context-menus.css';
 // import {contextMenus} from 'cytoscape-context-menus';
 import submenuIndicatorDefault from '../img/graph-context-submenu-indicator-default.svg';
+import FontAwesome from "react-fontawesome";
+import {renderTooltip} from "../hooks/Utils";
+import {OverlayTrigger} from "react-bootstrap";
 // import ctxAdd from '../img/graph-context-add.svg';
 // image: {src: ctxAdd, width: 12, height: 12, x: 6, y: 4},
 
@@ -664,9 +667,16 @@ export const Graph = (props: { location: Location }) => {
                 const eles = cy.elements(center);
                 if (eles.first()) {
                     let ele = eles.nodes('node').first();
-                    cy.animate({zoom: 1, easing: "ease-in-out-sine", duration: 400, center: {eles: ele}});
+                    // todo would be nice to offset this by x if the metadata panel is showing
+                    cy.animate({
+                        zoom: 1,
+                        easing: "ease-in-out-sine",
+                        duration: 400,
+                        center: {
+                            eles: ele
+                        }
+                    });
                     ele.flashClass("highlight");
-                    // ele.unlock();
                 }
             }
         });
@@ -736,6 +746,17 @@ export const Graph = (props: { location: Location }) => {
 
     return (
         <>
+            <div className={"graph-redraw-block"}>
+                <div
+                    role={"button"} onClick={() => reDraw()}
+                    className={"shadow graph-redraw-button p-1 bg-light"}>
+
+                    <OverlayTrigger
+                        placement="auto"
+                        delay={{show: 100, hide: 250}}
+                        overlay={renderTooltip({text: "Force redraw and reset positions"})}><FontAwesome name={"refresh"} fixedWidth/></OverlayTrigger>
+                </div>
+            </div>
             <NodeMetadata hidden={!showMetadata} hideCallback={hideMetadata} metadata={graphMetadata}
                           setMetadataCallback={setMetadataViaCallback} showAwardDetailsCB={showAwardDetails}/>
             <div id={"cy"} className={"mt-0"}

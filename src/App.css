@@ -184,3 +184,11 @@ canvas > path {
 .text-grey {
   color: #757575;
 }
+
+/** used for the redraw buttons on the graph etc **/
+.graph-redraw-block {
+  position: fixed;
+  margin-top: 10px;
+  margin-left: 10px;
+  z-index: 9999;
+}
