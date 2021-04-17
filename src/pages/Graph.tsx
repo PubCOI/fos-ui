@@ -7,10 +7,6 @@ import AppContext from "../components/core/AppContext";
 import axios, {AxiosResponse} from "axios";
 import {INode, IRef} from "../interfaces/DAO/GraphDAO";
 import {useToasts} from "react-toast-notifications";
-import imgNoticeWarning from '../img/graph-notice-warning.svg';
-import imgNotice from '../img/graph-notice.svg';
-import imgUser from '../img/graph-user.svg';
-import imgUserFormer from '../img/graph-user-former.svg';
 import moment from 'moment';
 import {TimebaseDataEnum} from "../components/graphs/preferences/TimebaseDataEnum";
 import 'cytoscape-context-menus/cytoscape-context-menus.css';
@@ -19,6 +15,14 @@ import submenuIndicatorDefault from '../img/graph-context-submenu-indicator-defa
 import FontAwesome from "react-fontawesome";
 import {renderTooltip} from "../hooks/Utils";
 import {OverlayTrigger} from "react-bootstrap";
+
+import imgNoticeWarning from '../img/graph-notice-warning.svg';
+import imgNotice from '../img/graph-notice.svg';
+import imgUser from '../img/graph-user.svg';
+import imgUserFormer from '../img/graph-user-former.svg';
+import imgOrgVerified from '../img/graph-org-verified.svg';
+import imgOrgUnverified from '../img/graph-org-unverified.svg';
+
 // import ctxAdd from '../img/graph-context-add.svg';
 // image: {src: ctxAdd, width: 12, height: 12, x: 6, y: 4},
 
@@ -465,10 +469,17 @@ export const Graph = (props: { location: Location }) => {
                     }
                 },
                 {
-                    selector: 'node[fos_type="organisation"]',
+                    selector: 'node[fos_type="organisation"][verified]',
                     style: {
                         "label": "data(name)",
-                        "background-image": "url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMHB4IiBoZWlnaHQ9IjIwcHgiIHZpZXdCb3g9IjAgMCAxNDA4IDE3OTIiPjxwYXRoIGZpbGw9InJnYig2MSw3OSwxMjUpIiBkPSJNMzg0IDEzMTJ2NjRxMCAxMy05LjUgMjIuNXQtMjIuNSA5LjVoLTY0cS0xMyAwLTIyLjUtOS41dC05LjUtMjIuNXYtNjRxMC0xMyA5LjUtMjIuNXQyMi41LTkuNWg2NHExMyAwIDIyLjUgOS41dDkuNSAyMi41ek0zODQgMTA1NnY2NHEwIDEzLTkuNSAyMi41dC0yMi41IDkuNWgtNjRxLTEzIDAtMjIuNS05LjV0LTkuNS0yMi41di02NHEwLTEzIDkuNS0yMi41dDIyLjUtOS41aDY0cTEzIDAgMjIuNSA5LjV0OS41IDIyLjV6TTY0MCAxMDU2djY0cTAgMTMtOS41IDIyLjV0LTIyLjUgOS41aC02NHEtMTMgMC0yMi41LTkuNXQtOS41LTIyLjV2LTY0cTAtMTMgOS41LTIyLjV0MjIuNS05LjVoNjRxMTMgMCAyMi41IDkuNXQ5LjUgMjIuNXpNMzg0IDgwMHY2NHEwIDEzLTkuNSAyMi41dC0yMi41IDkuNWgtNjRxLTEzIDAtMjIuNS05LjV0LTkuNS0yMi41di02NHEwLTEzIDkuNS0yMi41dDIyLjUtOS41aDY0cTEzIDAgMjIuNSA5LjV0OS41IDIyLjV6TTExNTIgMTMxMnY2NHEwIDEzLTkuNSAyMi41dC0yMi41IDkuNWgtNjRxLTEzIDAtMjIuNS05LjV0LTkuNS0yMi41di02NHEwLTEzIDkuNS0yMi41dDIyLjUtOS41aDY0cTEzIDAgMjIuNSA5LjV0OS41IDIyLjV6TTg5NiAxMDU2djY0cTAgMTMtOS41IDIyLjV0LTIyLjUgOS41aC02NHEtMTMgMC0yMi41LTkuNXQtOS41LTIyLjV2LTY0cTAtMTMgOS41LTIyLjV0MjIuNS05LjVoNjRxMTMgMCAyMi41IDkuNXQ5LjUgMjIuNXpNNjQwIDgwMHY2NHEwIDEzLTkuNSAyMi41dC0yMi41IDkuNWgtNjRxLTEzIDAtMjIuNS05LjV0LTkuNS0yMi41di02NHEwLTEzIDkuNS0yMi41dDIyLjUtOS41aDY0cTEzIDAgMjIuNSA5LjV0OS41IDIyLjV6TTM4NCA1NDR2NjRxMCAxMy05LjUgMjIuNXQtMjIuNSA5LjVoLTY0cS0xMyAwLTIyLjUtOS41dC05LjUtMjIuNXYtNjRxMC0xMyA5LjUtMjIuNXQyMi41LTkuNWg2NHExMyAwIDIyLjUgOS41dDkuNSAyMi41ek0xMTUyIDEwNTZ2NjRxMCAxMy05LjUgMjIuNXQtMjIuNSA5LjVoLTY0cS0xMyAwLTIyLjUtOS41dC05LjUtMjIuNXYtNjRxMC0xMyA5LjUtMjIuNXQyMi41LTkuNWg2NHExMyAwIDIyLjUgOS41dDkuNSAyMi41ek04OTYgODAwdjY0cTAgMTMtOS41IDIyLjV0LTIyLjUgOS41aC02NHEtMTMgMC0yMi41LTkuNXQtOS41LTIyLjV2LTY0cTAtMTMgOS41LTIyLjV0MjIuNS05LjVoNjRxMTMgMCAyMi41IDkuNXQ5LjUgMjIuNXpNNjQwIDU0NHY2NHEwIDEzLTkuNSAyMi41dC0yMi41IDkuNWgtNjRxLTEzIDAtMjIuNS05LjV0LTkuNS0yMi41di02NHEwLTEzIDkuNS0yMi41dDIyLjUtOS41aDY0cTEzIDAgMjIuNSA5LjV0OS41IDIyLjV6TTM4NCAyODh2NjRxMCAxMy05LjUgMjIuNXQtMjIuNSA5LjVoLTY0cS0xMyAwLTIyLjUtOS41dC05LjUtMjIuNXYtNjRxMC0xMyA5LjUtMjIuNXQyMi41LTkuNWg2NHExMyAwIDIyLjUgOS41dDkuNSAyMi41ek0xMTUyIDgwMHY2NHEwIDEzLTkuNSAyMi41dC0yMi41IDkuNWgtNjRxLTEzIDAtMjIuNS05LjV0LTkuNS0yMi41di02NHEwLTEzIDkuNS0yMi41dDIyLjUtOS41aDY0cTEzIDAgMjIuNSA5LjV0OS41IDIyLjV6TTg5NiA1NDR2NjRxMCAxMy05LjUgMjIuNXQtMjIuNSA5LjVoLTY0cS0xMyAwLTIyLjUtOS41dC05LjUtMjIuNXYtNjRxMC0xMyA5LjUtMjIuNXQyMi41LTkuNWg2NHExMyAwIDIyLjUgOS41dDkuNSAyMi41ek02NDAgMjg4djY0cTAgMTMtOS41IDIyLjV0LTIyLjUgOS41aC02NHEtMTMgMC0yMi41LTkuNXQtOS41LTIyLjV2LTY0cTAtMTMgOS41LTIyLjV0MjIuNS05LjVoNjRxMTMgMCAyMi41IDkuNXQ5LjUgMjIuNXpNMTE1MiA1NDR2NjRxMCAxMy05LjUgMjIuNXQtMjIuNSA5LjVoLTY0cS0xMyAwLTIyLjUtOS41dC05LjUtMjIuNXYtNjRxMC0xMyA5LjUtMjIuNXQyMi41LTkuNWg2NHExMyAwIDIyLjUgOS41dDkuNSAyMi41ek04OTYgMjg4djY0cTAgMTMtOS41IDIyLjV0LTIyLjUgOS41aC02NHEtMTMgMC0yMi41LTkuNXQtOS41LTIyLjV2LTY0cTAtMTMgOS41LTIyLjV0MjIuNS05LjVoNjRxMTMgMCAyMi41IDkuNXQ5LjUgMjIuNXpNMTE1MiAyODh2NjRxMCAxMy05LjUgMjIuNXQtMjIuNSA5LjVoLTY0cS0xMyAwLTIyLjUtOS41dC05LjUtMjIuNXYtNjRxMC0xMyA5LjUtMjIuNXQyMi41LTkuNWg2NHExMyAwIDIyLjUgOS41dDkuNSAyMi41ek04OTYgMTY2NGgzODR2LTE1MzZoLTExNTJ2MTUzNmgzODR2LTIyNHEwLTEzIDkuNS0yMi41dDIyLjUtOS41aDMyMHExMyAwIDIyLjUgOS41dDkuNSAyMi41djIyNHpNMTQwOCA2NHYxNjY0cTAgMjYtMTkgNDV0LTQ1IDE5aC0xMjgwcS0yNiAwLTQ1LTE5dC0xOS00NXYtMTY2NHEwLTI2IDE5LTQ1dDQ1LTE5aDEyODBxMjYgMCA0NSAxOXQxOSA0NXoiLz48L3N2Zz4=)",
+                        "background-image": imgOrgVerified
+                    }
+                },
+                {
+                    selector: 'node[fos_type="organisation"][!verified]',
+                    style: {
+                        "label": "data(name)",
+                        "background-image": imgOrgUnverified
                     }
                 },
                 {
