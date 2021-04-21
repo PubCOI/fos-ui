@@ -13,7 +13,7 @@ import {AddRelationshipModal} from "../modals/AddRelationshipModal";
 export const RenderOrganisationMetadata = (props: {metadata: INodeMetadata}) => {
     const {addToast} = useToasts();
     const {setModalBody, hideModal} = useContext(AppContext);
-    const [loaded, setLoaded] = useState(false);
+    const [doingRequest, setDoingRequest] = useState(false);
     const [org, setOrg] = useState<OrganisationMetadataDAO>({
         id: "",
         name: "",
@@ -29,16 +29,18 @@ export const RenderOrganisationMetadata = (props: {metadata: INodeMetadata}) => 
     }, [org]);
 
     useEffect(() =>{
+        setDoingRequest(true);
         axios.get<OrganisationMetadataDAO>(`/api/graphs/organisations/${props.metadata.id}/metadata`)
             .then(res => {
-                setLoaded(true);
+                setDoingRequest(false);
                 setOrg(res.data);
             })
             .catch(() => {
                 addToast(`Unable to load data for org ${props.metadata.id}`, {
                     appearance: "error",
                     autoDismiss: true
-                })
+                });
+                setDoingRequest(false);
             })
     }, [props.metadata.id]);
 
@@ -50,7 +52,7 @@ export const RenderOrganisationMetadata = (props: {metadata: INodeMetadata}) => 
         setModalBody(<AddRelationshipModal metadata={metadata}/>);
     }
 
-    if (!loaded) {
+    if (doingRequest) {
         return <LoadingWrapper/>
     }
 
@@ -62,7 +64,7 @@ export const RenderOrganisationMetadata = (props: {metadata: INodeMetadata}) => 
                         <span>Not verified</span>
                         <Button
                             onClick={() => verifyCompany(org.id)}
-                            variant={"outline-secondary"} size={"sm"} className={"ml-3"}>Click to verify</Button>
+                            variant={"outline-secondary"} size={"sm"} className={"ml-3"}>verify</Button>
                     </div>
                 </Alert>
             )}

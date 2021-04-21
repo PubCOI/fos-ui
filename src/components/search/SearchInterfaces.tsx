@@ -1,10 +1,10 @@
-export interface SearchResultWrapper {
+export interface AttachmentSearchResultWrapper {
     took: number,
     count: number,
-    results: BaseSearchResult[];
+    results: BaseAttachmentSearchResult[];
 }
 
-export interface BaseSearchResult {
+export interface BaseAttachmentSearchResult {
     key: string
     fragments: string[],
     attachmentId: string,

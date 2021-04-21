@@ -1,15 +1,16 @@
 import React, {useEffect, useState} from "react";
 import {SearchInfoBlock} from "../components/search/SearchInfoBlock";
 import axios from "axios";
-import {NoResultsBlock} from "../components/search/NoResultsBlock";
-import {SearchResultWrapper} from "../components/search/SearchInterfaces";
-import {SearchResultsBlock} from "../components/search/SearchResultsBlock";
+import {EmptyAttachmentSearchResponse} from "../components/search/EmptyAttachmentSearchResponse";
+import {AttachmentSearchResultWrapper} from "../components/search/SearchInterfaces";
+import {AttachmentSearchResultsBlock} from "../components/search/AttachmentSearchResultsBlock";
 import {useToasts} from "react-toast-notifications";
 
 export const Search = (
     props: {
         groupBy: boolean,
         searchParams: string,
+        searchType: string
     }) => {
 
     const {addToast} = useToasts();
@@ -17,49 +18,77 @@ export const Search = (
     const [error, setError] = useState(false);
     // stops multiple toasts from appearing in event of error
     const [errToastShown, setErrToastShown] = useState(false);
-    const [results, setResults] = useState<SearchResultWrapper | undefined>(undefined);
+    const [attachmentSearchResults, setAttachmentResults] = useState<AttachmentSearchResultWrapper | undefined>(undefined);
 
     // store whether we've done any search at all ... if not just return generic info
-    const [initialSearch, setInitialSearch] = useState(false);
-
-    let url = "/api/search";
+    const [doneInitialSearch, setDoneInitialSearch] = useState(false);
 
     useEffect(() => {
         if (props.searchParams === "") return;
-        if (!initialSearch) setInitialSearch(true);
+        if (!doneInitialSearch) setDoneInitialSearch(true);
+        if (props.searchType === "contracts") {
+            return doContractSearch();
+        }
+        if (props.searchType === "interests") {
+            return doInterestsSearch();
+        }
+    }, [props.searchParams, props.groupBy, props.searchType]);
 
-        axios.post<SearchResultWrapper>(url, {
+    useEffect(() => {
+        console.debug("Updated search type to", props.searchType);
+    }, [props.searchType]);
+
+    function doContractSearch() {
+        axios.post<AttachmentSearchResultWrapper>("/api/search/attachments", {
             q: props.searchParams,
             groupResults: props.groupBy
         })
             .then(response => {
-                setResults(response.data)
+                setAttachmentResults(response.data)
             })
             .then(() => setLoaded(true))
             .catch(() => {
-                if (!errToastShown) {
-                    setErrToastShown(true);
-                    addToast("Error loading results", {
-                        autoDismiss: true,
-                        appearance: "error",
-                        onDismiss: function() {
-                            setErrToastShown(false);
-                        }
-                    });
-                }
-                setError(true)
+                showError();
             });
-    }, [props.searchParams, props.groupBy]);
+    }
 
-    let searchResults = (undefined !== results && results?.count > 0) ?
-        <SearchResultsBlock data={results} aggregated={props.groupBy}/> :
-        <NoResultsBlock/>;
+    function doInterestsSearch() {
+        console.log("would do interests");
+    }
 
-    let searchResultBlock = (initialSearch ? searchResults : <SearchInfoBlock/>);
+    function showError() {
+        if (!errToastShown) {
+            setErrToastShown(true);
+            addToast("Error loading results", {
+                autoDismiss: true,
+                appearance: "error",
+                onDismiss: function () {
+                    setErrToastShown(false);
+                }
+            });
+        }
+        setError(true);
+    }
 
     return (
         <>
-            {searchResultBlock}
+
+            {Boolean(doneInitialSearch && props.searchType === "contracts") && (
+                (undefined !== attachmentSearchResults && attachmentSearchResults?.count > 0) ?
+                    <AttachmentSearchResultsBlock data={attachmentSearchResults} aggregated={props.groupBy}/> :
+                    <EmptyAttachmentSearchResponse/>
+            )}
+
+            {Boolean(doneInitialSearch && props.searchType === "interests") && (
+                <>
+                    would return interests
+                </>
+            )}
+
+            {Boolean(!doneInitialSearch) && (
+                <SearchInfoBlock type={props.searchType}/>
+            )}
+
             <div className={"my-5"}>&nbsp;</div>
         </>
     )

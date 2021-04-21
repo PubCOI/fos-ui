@@ -1,7 +1,7 @@
 import {Button, Col, Form, Jumbotron, Row} from "react-bootstrap";
 import React from "react";
 
-export const NoResultsBlock = () => {
+export const EmptyAttachmentSearchResponse = () => {
     return (
         <Row>
             <Col md={8} className={"offset-md-2"}>

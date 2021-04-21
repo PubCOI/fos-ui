@@ -96,20 +96,26 @@ function App() {
     // we're only passing up and down by one layer so no point setting up a separate context
     const [groupBy, setGroupBy] = useState(true);
     const [searchParams, setSearchParams] = useState("");
+    const [searchType, setSearchType] = useState("contracts");
     const [submitSearchEvent, setSubmitSearchEvent] = useState<FormEvent<HTMLFormElement>>();
     // for persisting across renders
     const searchParamsRef = React.useRef("");
+    const searchTypeRef = React.useRef("contracts");
 
-    const [docSearchBar, setDocSearch] = useState<{
+    const [searchBarParams, setSearchBarParams] = useState<{
         initialParams: MutableRefObject<string>,
+        searchType: MutableRefObject<string>,
         doSubmitHandler: Dispatch<SetStateAction<FormEvent<HTMLFormElement> | undefined>>,
-        setParamsCallback: (input: string) => void,
-        setGroupByCallback: Dispatch<SetStateAction<boolean>>
+        setParamsCallback: (queryParams: string) => void,
+        setGroupByCallback: Dispatch<SetStateAction<boolean>>,
+        setSearchTypeCallback: Dispatch<SetStateAction<string>>
     }>({
         initialParams: searchParamsRef,
+        searchType: searchTypeRef,
         doSubmitHandler: setSubmitSearchEvent,
         setParamsCallback: setSearchParams,
-        setGroupByCallback: setGroupBy
+        setGroupByCallback: setGroupBy,
+        setSearchTypeCallback: setSearchType
     });
     // ***** end search settings
 
@@ -128,7 +134,7 @@ function App() {
                     <Header/>
                     <Switch>
                         <Route exact path={"/graph"} component={GraphFilterBar}/>
-                        <Route exact path={"/search"} render={() => <SearchBar {...docSearchBar} />}/>
+                        <Route exact path={"/search"} render={() => <SearchBar {...searchBarParams} />}/>
                     </Switch>
                     <Container fluid className={"p-0"}>
                         <main role={"main"}>
@@ -141,7 +147,7 @@ function App() {
                                 <Route exact path={"/profile"} component={Profile}/>
                                 <Route exact path={"/data/upload"} component={Upload}/>
                                 <Route exact path={"/graph"} component={Graph}/>
-                                <Route exact path={"/search"} render={() => <Search groupBy={groupBy} searchParams={searchParams}/>}/>
+                                <Route exact path={"/search"} render={() => <Search groupBy={groupBy} searchParams={searchParams} searchType={searchType}/>}/>
                                 <Route exact path={"/stats"} component={Stats}/>
                                 <Route path={"/view"} component={Viewer}/>
                             </Switch>
