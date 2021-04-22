@@ -1,11 +1,12 @@
 import {InterestsSearchResultsWrapper} from "./SearchInterfaces";
 import {Accordion, Alert, Card, ListGroup} from "react-bootstrap";
-import React from "react";
+import React, {useState} from "react";
 import FontAwesome from "react-fontawesome";
-import Moment from "react-moment";
 import {ContextAwareToggle} from "../ContextAwareToggle";
 
 export const InterestsSearchResultsBlock = (props: { data: InterestsSearchResultsWrapper }) => {
+
+    const [currentEventKey, setCurrentEventKey] = useState("");
 
     return (
         <>
@@ -23,33 +24,15 @@ export const InterestsSearchResultsBlock = (props: { data: InterestsSearchResult
                             {item.top_hits.map((hit) => (
                                 <Card key={`fts_result_${item.mnisPersonId}_hit_${hit.id}`}>
 
-
-                                    {/*<ContextAwareToggle callback={setCurrentEventKey} eventKey={`${hit.id}`}>*/}
-                                    {/*    <div className={"d-flex align-items-start"}>*/}
-                                    {/*        <div className={"mr-2 text-nowrap"}><FontAwesome*/}
-                                    {/*            name={"caret-right"} className={"mr-1"}/> {hit.registeredDate}*/}
-                                    {/*        </div>*/}
-                                    {/*        <div className={"text-muted"}>*/}
-                                    {/*            {hit.fragments.map((fragment, fidx) => (*/}
-                                    {/*                <>*/}
-                                    {/*                <span key={`interest_hit-${hit.id}_fragment_${fidx}`}*/}
-                                    {/*                      dangerouslySetInnerHTML={{*/}
-                                    {/*                          __html: fragment*/}
-                                    {/*                      }}/>&#8230;*/}
-                                    {/*                </>*/}
-                                    {/*            ))}*/}
-                                    {/*        </div>*/}
-                                    {/*    </div>*/}
-                                    {/*</ContextAwareToggle>*/}
-
-
-                                    <Accordion.Toggle
-                                        as={Card.Header} role={"button"}
-                                        eventKey={`interest_hit-${hit.id}`}
-                                        className={"bg-light"}>
+                                    <ContextAwareToggle
+                                        key={`_hit_${hit.id}`} eventKey={hit.id}
+                                        callback={setCurrentEventKey}>
                                         <div className={"d-flex align-items-start"}>
-                                            <div className={"mr-2 text-nowrap"}><FontAwesome
-                                                name={"caret-right"} className={"mr-1"}/> {hit.registeredDate}
+                                            <div className={"mr-2 text-nowrap"}>
+                                                <FontAwesome
+                                                    fixedWidth
+                                                    name={currentEventKey === `${hit.id}` ?
+                                                        "caret-down" : "caret-right"}/>{hit.registeredDate}
                                             </div>
                                             <div className={"text-muted"}>
                                                 {hit.fragments.map((fragment, fidx) => (
@@ -62,8 +45,11 @@ export const InterestsSearchResultsBlock = (props: { data: InterestsSearchResult
                                                 ))}
                                             </div>
                                         </div>
-                                    </Accordion.Toggle>
-                                    <Accordion.Collapse eventKey={`interest_hit-${hit.id}`}>
+                                    </ContextAwareToggle>
+
+                                    <Accordion.Collapse
+                                        eventKey={hit.id}
+                                        key={`_accordion_${hit.id}`}>
                                         <Card.Body>
                                             <div>{hit.text}</div>
                                         </Card.Body>
