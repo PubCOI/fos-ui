@@ -1,6 +1,6 @@
 import {useToasts} from "react-toast-notifications";
 import React, {useContext, useEffect, useState} from "react";
-import {PersonDAO} from "../../../interfaces/DAO/PersonDAO";
+import {PersonDTO} from "../../../interfaces/DTO/PersonDTO";
 import axios from "axios";
 import {Alert, Button, Col, Row} from "react-bootstrap";
 import {LoadingWrapper} from "../../LoadingWrapper";
@@ -15,7 +15,7 @@ export const RenderPersonMetadata = (props: { metadata: INodeMetadata }) => {
     const {addToast} = useToasts();
     const {setModalBody} = useContext(AppContext);
     const [loaded, setLoaded] = useState(false);
-    const [person, setPerson] = useState<PersonDAO>({
+    const [person, setPerson] = useState<PersonDTO>({
         id: "",
         ocId: "",
         commonName: "",
@@ -31,7 +31,7 @@ export const RenderPersonMetadata = (props: { metadata: INodeMetadata }) => {
     // to be honest, we could just pull this from the metadata client-side but
     // it's probably less brittle to just use the same pattern as elsewhere ...
     useEffect(() => {
-        axios.get<PersonDAO>(`/api/graphs/persons/${props.metadata.id}/metadata`)
+        axios.get<PersonDTO>(`/api/graphs/persons/${props.metadata.id}/metadata`)
             .then((response) => {
                 setLoaded(true);
                 setPerson(response.data)

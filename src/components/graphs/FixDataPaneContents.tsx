@@ -5,7 +5,7 @@ import {Alert, Button, Col, Form, Row} from "react-bootstrap";
 import {LoadingGrow} from "../LoadingGrow";
 import axios, {AxiosError, AxiosResponse} from "axios";
 import {useToasts} from "react-toast-notifications";
-import {CreateTaskRequestDAO, CreateTaskResponseDAO} from "../../interfaces/DAO/TaskDAO";
+import {CreateTaskRequestDTO, CreateTaskResponseDTO} from "../../interfaces/DTO/TaskDTO";
 import AppContext from "../core/AppContext";
 
 interface OptionItem {
@@ -40,13 +40,13 @@ export const FixDataPaneContents = (props: { type: DataTypeEnum, id: string }) =
     function doReport(e: FormEvent<HTMLFormElement>) {
         e.preventDefault();
         setIsSubmitting(true);
-        let data: CreateTaskRequestDAO = {
+        let data: CreateTaskRequestDTO = {
             type: props.type,
             id: props.id,
             errorType: errorType,
             notes: additionalNotes,
         };
-        axios.put<CreateTaskRequestDAO, AxiosResponse<CreateTaskResponseDAO>>("/api/ui/tasks", data,
+        axios.put<CreateTaskRequestDTO, AxiosResponse<CreateTaskResponseDTO>>("/api/ui/tasks", data,
             {
                 headers: {
                     authToken: authToken

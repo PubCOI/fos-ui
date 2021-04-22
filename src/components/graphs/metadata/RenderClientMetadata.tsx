@@ -1,9 +1,9 @@
 import React, {useContext, useEffect, useState} from "react";
-import {ClientNodeResponseDAO} from "../../../interfaces/ClientNodeResponseDAO";
+import {ClientNodeResponseDTO} from "../../../interfaces/ClientNodeResponseDTO";
 import {useToasts} from "react-toast-notifications";
 import axios from "axios";
 import {Button, ListGroup} from "react-bootstrap";
-import {NoticeResponseDAO} from "../../../interfaces/NoticeResponseDAO";
+import {NoticeResponseDTO} from "../../../interfaces/NoticeResponseDTO";
 import {MinMaxValueFormat} from "../../MinMaxValueFormat";
 import {INodeMetadata, NodeMetadataType} from "../../../interfaces/INodeMetadata";
 import FontAwesome from "react-fontawesome";
@@ -17,20 +17,20 @@ export const RenderClientMetadata = (
     }
 ) => {
     let baseURL = `/api/graphs/clients/${props.metadata.id}/metadata`;
-    const [client, setClient] = useState<ClientNodeResponseDAO>({
+    const [client, setClient] = useState<ClientNodeResponseDTO>({
         id: "",
         name: "",
         postCode: "",
         noticeCount: -1,
         normalisedPostCode: "",
-        notices: [] as NoticeResponseDAO[]
+        notices: [] as NoticeResponseDTO[]
     });
 
     const {addToast} = useToasts();
     const {setModalBody} = useContext(AppContext);
 
     useEffect(() => {
-        axios.get<ClientNodeResponseDAO>(baseURL).then(response => {
+        axios.get<ClientNodeResponseDTO>(baseURL).then(response => {
             // setClient(Object.assign(response.data, processResponse(response.data)));
             setClient(response.data)
         })

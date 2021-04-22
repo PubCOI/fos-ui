@@ -4,11 +4,11 @@ import {useToasts} from "react-toast-notifications";
 import {Alert, Button, ListGroup, Modal, OverlayTrigger} from "react-bootstrap";
 import FontAwesome from "react-fontawesome";
 import axios, {AxiosResponse} from "axios";
-import {VerifyCompanySearchResponse} from "../../../interfaces/DAO/VerifyCompanySearchResponse";
+import {VerifyCompanySearchResponse} from "../../../interfaces/DTO/VerifyCompanySearchResponse";
 import firebase from "firebase";
 import {LoadingWrapper} from "../../LoadingWrapper";
 import {FosTasksEnum} from "../../../interfaces/FosTasksEnum";
-import {OrganisationMetadataDAO} from "../../../interfaces/DAO/OrganisationMetadataDAO";
+import {OrganisationMetadataDTO} from "../../../interfaces/DTO/OrganisationMetadataDTO";
 import {DataTypeEnum} from "../FixDataIssueWidget";
 import {FixDataPaneContents} from "../FixDataPaneContents";
 import PaneContext from "../../core/PaneContext";
@@ -70,13 +70,13 @@ export const VerifyCompanyModal = (props: { id: string }) => {
         flagged: false
     }]);
 
-    const [recordMeta, setRecordMeta] = useState<OrganisationMetadataDAO>({
+    const [recordMeta, setRecordMeta] = useState<OrganisationMetadataDTO>({
         id: "",
         name: "",
         verified: false
     });
     useEffect(() => {
-        axios.get<string, AxiosResponse<OrganisationMetadataDAO>>(`/api/graphs/organisations/${props.id}/metadata`)
+        axios.get<string, AxiosResponse<OrganisationMetadataDTO>>(`/api/graphs/organisations/${props.id}/metadata`)
             .then((res) => {
                 setRecordMeta(res.data);
             })

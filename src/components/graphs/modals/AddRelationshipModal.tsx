@@ -6,7 +6,7 @@ import {INodeMetadata} from "../../../interfaces/INodeMetadata";
 import axios, {AxiosError, AxiosResponse} from "axios";
 import {GraphAutocompleteResult} from "../../../interfaces/GraphAutocompleteResult";
 import FontAwesome from "react-fontawesome";
-import {AddRelationshipDAO} from "../../../interfaces/DAO/AddRelationshipDAO";
+import {AddRelationshipDTO} from "../../../interfaces/DTO/AddRelationshipDTO";
 import firebase from "firebase";
 import {Menu, MenuItem, MenuProps, Typeahead, TypeaheadProps, TypeaheadResult} from "react-bootstrap-typeahead";
 import {RenderAutocompleteResults} from "../autocomplete/RenderAutocompleteResults";
@@ -286,7 +286,7 @@ export const AddRelationshipModal = (props: { metadata: INodeMetadata }) => {
 
         setValidated(true);
         setIsSubmitting(true);
-        let data: AddRelationshipDAO = {
+        let data: AddRelationshipDTO = {
             evidenceComments: (evidenceType === "comments"),
             evidenceFile: (evidenceType === "upload"),
             evidenceURL: evidenceURL,
@@ -298,7 +298,7 @@ export const AddRelationshipModal = (props: { metadata: INodeMetadata }) => {
             coiSubtype: relSubtypeSelect,
             comments: relComments,
         };
-        axios.put<AddRelationshipDAO, AxiosResponse<string>>(
+        axios.put<AddRelationshipDTO, AxiosResponse<string>>(
             `/api/graphs/${props.metadata.type}s/${props.metadata.id}/relationships`,
             data, {
                 headers: {

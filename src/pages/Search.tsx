@@ -37,10 +37,6 @@ export const Search = (
         }
     }, [props.searchParams, props.groupBy, props.searchType]);
 
-    useEffect(() => {
-        console.debug("Updated search type to", props.searchType);
-    }, [props.searchType]);
-
     function doContractSearch() {
         axios.post<AttachmentsSearchResultsWrapper>("/api/search/attachments", {
             q: props.searchParams,

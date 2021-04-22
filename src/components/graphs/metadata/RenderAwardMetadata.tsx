@@ -1,9 +1,9 @@
 import React, {useEffect, useState} from "react";
 import {useToasts} from "react-toast-notifications";
 import axios from "axios";
-import {NoticeResponseDAO} from "../../../interfaces/NoticeResponseDAO";
+import {NoticeResponseDTO} from "../../../interfaces/NoticeResponseDTO";
 import Moment from "react-moment";
-import {AwardDAO} from "../../../interfaces/DAO/AwardDAO";
+import {AwardDTO} from "../../../interfaces/DTO/AwardDTO";
 import {MinMaxValueFormat} from "../../MinMaxValueFormat";
 import {Alert, Badge, Button, ListGroup} from "react-bootstrap";
 import FontAwesome from "react-fontawesome";
@@ -13,7 +13,7 @@ import {AttachmentsAccordion} from "../AttachmentsAccordion";
 export const RenderAwardMetadata = (props: {id: string}) => {
     const {addToast} = useToasts();
 
-    const [award, setAward] = useState<AwardDAO>({
+    const [award, setAward] = useState<AwardDTO>({
         attachments: [],
         id: "",
         noticeId: "",
@@ -30,7 +30,7 @@ export const RenderAwardMetadata = (props: {id: string}) => {
     let baseURL = `/api/graphs/awards/${props.id}/metadata`;
 
     useEffect(() => {
-        axios.get<AwardDAO>(baseURL).then(response => {
+        axios.get<AwardDTO>(baseURL).then(response => {
             setAward(response.data);
         })
             .then(() => {

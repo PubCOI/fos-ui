@@ -1,6 +1,6 @@
-import {AwardDAO} from "./DAO/AwardDAO";
+import {AwardDTO} from "./DTO/AwardDTO";
 
-export interface NoticeResponseDAO {
+export interface NoticeResponseDTO {
     id: string,
     title: string,
     postedDT: string,
@@ -8,5 +8,5 @@ export interface NoticeResponseDAO {
     description: string,
     valueLow: number,
     valueHigh: number,
-    awards: AwardDAO[]
+    awards: AwardDTO[]
 }

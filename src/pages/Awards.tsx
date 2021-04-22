@@ -5,7 +5,7 @@ import {AlertWrapper} from "../components/AlertWrapper";
 import axios from "axios";
 import FontAwesome from "react-fontawesome";
 import {PageTitle} from "../components/PageTitle";
-import {AwardDAO} from "../interfaces/DAO/AwardDAO";
+import {AwardDTO} from "../interfaces/DTO/AwardDTO";
 import Datatable from 'react-bs-datatable';
 import {ContractValueFormat} from "../components/ContractValueFormat";
 import {css} from "@emotion/css";
@@ -16,7 +16,7 @@ import {renderTooltip} from "../hooks/Utils";
 export const Awards = () => {
 
     let url = "/api/awards";
-    const [awards, setAwardsList] = useState<AwardDAO[]>([]);
+    const [awards, setAwardsList] = useState<AwardDTO[]>([]);
     const [loaded, setLoaded] = useState(false);
     const [error, setError] = useState(false);
     const {setModalBody} = useContext(AppContext);
@@ -38,7 +38,7 @@ export const Awards = () => {
             {
                 title: '',
                 prop: '',
-                cell: (row: AwardDAO) => {
+                cell: (row: AwardDTO) => {
                     return <OverlayTrigger
                         placement="auto"
                         delay={{show: 100, hide: 250}}
@@ -51,7 +51,7 @@ export const Awards = () => {
                 title: 'Value',
                 prop: 'value',
                 sortable: true,
-                cell: (row: AwardDAO) => <ContractValueFormat award={row}/>
+                cell: (row: AwardDTO) => <ContractValueFormat award={row}/>
             }
         ];
     }
@@ -72,7 +72,7 @@ export const Awards = () => {
     };
 
     useEffect(() => {
-        axios.get<AwardDAO[]>(url).then(response => {
+        axios.get<AwardDTO[]>(url).then(response => {
             setAwardsList(response.data)
         })
             .then(() => setLoaded(true))

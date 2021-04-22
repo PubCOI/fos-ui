@@ -1,4 +1,4 @@
-export interface OrganisationMetadataDAO {
+export interface OrganisationMetadataDTO {
     id: string,
     name: string
     verified: boolean,

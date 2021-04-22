@@ -1,4 +1,4 @@
-export interface AttachmentDAO {
+export interface AttachmentDTO {
     id: string,
     noticeId: string,
     description: string,

@@ -2,11 +2,11 @@ import FontAwesome from "react-fontawesome";
 import NumberFormat from "react-number-format";
 import {MinMaxValueFormat} from "./MinMaxValueFormat";
 import React from "react";
-import {AwardDAO} from "../interfaces/DAO/AwardDAO";
+import {AwardDTO} from "../interfaces/DTO/AwardDTO";
 import {renderTooltip} from "../hooks/Utils";
 import {OverlayTrigger} from "react-bootstrap";
 
-export const ContractValueFormat = (props: { award: AwardDAO }) => {
+export const ContractValueFormat = (props: { award: AwardDTO }) => {
     if (0 === props.award.value && 0 === props.award.valueMin && 0 === props.award.valueMax) {
         return (<>[Data unavailable] <OverlayTrigger
             placement="auto"

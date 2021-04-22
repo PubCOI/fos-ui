@@ -1,4 +1,4 @@
-export interface AddRelationshipDAO {
+export interface AddRelationshipDTO {
     isNewObject: boolean,
     relId: string,
     relName: string,

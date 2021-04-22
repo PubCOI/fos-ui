@@ -4,7 +4,7 @@ import AppContext from "../components/core/AppContext";
 import {useToasts} from "react-toast-notifications";
 import axios, {AxiosResponse} from "axios";
 import firebase from "firebase";
-import {UpdateProfileRequestDAO, UpdateProfileResponseDAO} from "../interfaces/DAO/UserDAO";
+import {UpdateProfileRequestDTO, UpdateProfileResponseDTO} from "../interfaces/DTO/UserDTO";
 
 export const Profile = () => {
 
@@ -27,7 +27,7 @@ export const Profile = () => {
         let data = {
             displayName: displayName
         };
-        axios.put<UpdateProfileRequestDAO, AxiosResponse<UpdateProfileResponseDAO>>("/api/profile", data, {
+        axios.put<UpdateProfileRequestDTO, AxiosResponse<UpdateProfileResponseDTO>>("/api/profile", data, {
             headers: {
                 authToken: authToken
             }

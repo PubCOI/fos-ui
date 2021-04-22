@@ -3,13 +3,13 @@ import firebase from "firebase";
 import axios, {AxiosResponse} from "axios";
 import AppContext from "./core/AppContext";
 import {useToasts} from "react-toast-notifications";
-import {UpdateProfileRequestDAO, UpdateProfileResponseDAO} from "../interfaces/DAO/UserDAO";
+import {UpdateProfileRequestDTO, UpdateProfileResponseDTO} from "../interfaces/DTO/UserDTO";
 import {ApplicationConfig} from "../interfaces/ApplicationConfig";
 
 export const ContextPopulator = () => {
 
     const [globalIsSignedIn, setGlobalIsSignedIn] = useState(false);
-    const [fosUserInfo, setFosUserInfo] = useState<UpdateProfileResponseDAO>({displayName: "", uid: ""});
+    const [fosUserInfo, setFosUserInfo] = useState<UpdateProfileResponseDTO>({displayName: "", uid: ""});
     const {addToast} = useToasts();
     const appContext = useContext(AppContext);
 
@@ -20,7 +20,7 @@ export const ContextPopulator = () => {
     useEffect(() => {
         if (globalIsSignedIn) {
             firebase.auth().currentUser?.getIdToken(/* forceRefresh */ true).then(function (idToken) {
-                axios.post<UpdateProfileRequestDAO, AxiosResponse<UpdateProfileResponseDAO>>("/api/profile", {}, {
+                axios.post<UpdateProfileRequestDTO, AxiosResponse<UpdateProfileResponseDTO>>("/api/profile", {}, {
                     headers: {
                         authToken: idToken
                     }

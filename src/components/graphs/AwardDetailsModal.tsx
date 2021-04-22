@@ -1,7 +1,7 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {Modal} from "react-bootstrap";
 import axios from "axios";
-import {AwardDAO} from "../../interfaces/DAO/AwardDAO";
+import {AwardDTO} from "../../interfaces/DTO/AwardDTO";
 import {AwardDetailsModalBody} from "./AwardDetailsModalBody";
 import {DataTypeEnum, FixDataIssueWidget} from "./FixDataIssueWidget";
 import AppContext from "../core/AppContext";
@@ -11,10 +11,10 @@ export const AwardDetailsModal = (props: { id: string }) => {
 
     const {hideModal, showRightPane} = useContext(AppContext);
     const [loaded, setLoaded] = useState(false);
-    const [award, setAward] = useState<AwardDAO>();
+    const [award, setAward] = useState<AwardDTO>();
 
     useEffect(() => {
-        axios.get<AwardDAO>(`/api/graphs/awards/${props.id}/metadata`)
+        axios.get<AwardDTO>(`/api/graphs/awards/${props.id}/metadata`)
             .then(response => {
                 setAward(response.data);
                 setLoaded(true);

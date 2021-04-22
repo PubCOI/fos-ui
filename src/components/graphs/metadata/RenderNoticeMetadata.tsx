@@ -1,9 +1,9 @@
 import React, {useEffect, useState} from "react";
 import {useToasts} from "react-toast-notifications";
 import axios from "axios";
-import {NoticeResponseDAO} from "../../../interfaces/NoticeResponseDAO";
+import {NoticeResponseDTO} from "../../../interfaces/NoticeResponseDTO";
 import Moment from "react-moment";
-import {AwardDAO} from "../../../interfaces/DAO/AwardDAO";
+import {AwardDTO} from "../../../interfaces/DTO/AwardDTO";
 import {MinMaxValueFormat} from "../../MinMaxValueFormat";
 import {Button, ListGroup} from "react-bootstrap";
 import FontAwesome from "react-fontawesome";
@@ -12,7 +12,7 @@ import {ContractValueFormat} from "../../ContractValueFormat";
 export const RenderNoticeMetadata = (props: {id: string, awardDetailsCB: (id: string) => void}) => {
     const {addToast} = useToasts();
 
-    const [notice, setNotice] = useState<NoticeResponseDAO>({
+    const [notice, setNotice] = useState<NoticeResponseDTO>({
         id: "",
         title: "",
         description: "",
@@ -20,13 +20,13 @@ export const RenderNoticeMetadata = (props: {id: string, awardDetailsCB: (id: st
         postedDT: "",
         valueLow: 0.0,
         valueHigh: 0.0,
-        awards: [] as AwardDAO[]
+        awards: [] as AwardDTO[]
     });
 
     let baseURL = `/api/graphs/notices/${props.id}/metadata`;
 
     useEffect(() => {
-        axios.get<NoticeResponseDAO>(baseURL).then(response => {
+        axios.get<NoticeResponseDTO>(baseURL).then(response => {
             setNotice(response.data);
         })
             .then(() => {

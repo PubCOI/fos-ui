@@ -13,7 +13,7 @@ import {FosToastContainer} from "../FosToastContainer";
 import AppContext from "../core/AppContext";
 import {FosTasksEnum} from "../../interfaces/FosTasksEnum";
 
-interface ClientDetailsDAO {
+interface ClientDetailsDTO {
     id: string,
     name: string,
     canonical: boolean,
@@ -30,7 +30,7 @@ interface ClientSearchResponse {
 export const ResolveClientModal = (props: { id: string, taskId: string, removeTaskCB: (taskId: string) => void }) => {
     const {hideModal} = useContext(AppContext);
     const {addToast} = useToasts();
-    const [client, setClient] = useState<ClientDetailsDAO>({
+    const [client, setClient] = useState<ClientDetailsDTO>({
         id: "",
         name: "",
         canonical: false,
@@ -54,7 +54,7 @@ export const ResolveClientModal = (props: { id: string, taskId: string, removeTa
     }, [firebase.auth().currentUser]);
 
     useEffect(() => {
-        axios.get<ClientDetailsDAO>(statusURL).then(response => {
+        axios.get<ClientDetailsDTO>(statusURL).then(response => {
             setClient(response.data);
         })
             .then(() => setLoaded(true))
@@ -175,7 +175,7 @@ interface SetAsCanonicalResponse {
     response: string
 }
 
-const ActionsButtons = (props: { details: ClientDetailsDAO, taskId: string, removeTaskCallback: (taskId: string) => void }) => {
+const ActionsButtons = (props: { details: ClientDetailsDTO, taskId: string, removeTaskCallback: (taskId: string) => void }) => {
     const {hideModal} = useContext(AppContext);
     const {addToast} = useToasts();
 

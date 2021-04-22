@@ -5,7 +5,7 @@ import {INodeMetadata, NodeMetadataType} from "../interfaces/INodeMetadata";
 import {AwardDetailsModal} from "../components/graphs/AwardDetailsModal";
 import AppContext from "../components/core/AppContext";
 import axios, {AxiosResponse} from "axios";
-import {INode, IRef} from "../interfaces/DAO/GraphDAO";
+import {INode, IRef} from "../interfaces/DTO/GraphDTO";
 import {useToasts} from "react-toast-notifications";
 import moment from 'moment';
 import {TimebaseDataEnum} from "../components/graphs/preferences/TimebaseDataEnum";

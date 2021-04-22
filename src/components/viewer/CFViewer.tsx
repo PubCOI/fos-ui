@@ -6,7 +6,7 @@ import {useWindowSize} from "../../hooks/Utils";
 import FontAwesome from "react-fontawesome";
 import axios, {AxiosResponse} from "axios";
 import {useToasts} from "react-toast-notifications";
-import {AttachmentDAO} from "../../interfaces/AttachmentDAO";
+import {AttachmentDTO} from "../../interfaces/AttachmentDTO";
 
 export const CFViewer = (props: { attachment_id: string, page_number: string }) => {
     const {addToast} = useToasts();
@@ -20,10 +20,10 @@ export const CFViewer = (props: { attachment_id: string, page_number: string }) 
         canvasRef
     });
     const [showMetadata, setShowMetadata] = useState(false);
-    const [metadata, setMetadata] = useState<AttachmentDAO>();
+    const [metadata, setMetadata] = useState<AttachmentDTO>();
 
     useEffect(() => {
-        axios.get<string, AxiosResponse<AttachmentDAO>>(`/api/attachments/${props.attachment_id}/metadata`)
+        axios.get<string, AxiosResponse<AttachmentDTO>>(`/api/attachments/${props.attachment_id}/metadata`)
             .then(d => {
                     setMetadata(d.data)
                 }

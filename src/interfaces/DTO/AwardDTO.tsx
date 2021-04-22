@@ -1,6 +1,6 @@
-import {AttachmentDAO} from "../AttachmentDAO";
+import {AttachmentDTO} from "../AttachmentDTO";
 
-export interface AwardDAO {
+export interface AwardDTO {
     id: string,
     noticeId: string,
     noticeTitle: string,
@@ -11,5 +11,5 @@ export interface AwardDAO {
     valueMin: number,
     valueMax: number,
     group_award: boolean,
-    attachments: AttachmentDAO[]
+    attachments: AttachmentDTO[]
 }

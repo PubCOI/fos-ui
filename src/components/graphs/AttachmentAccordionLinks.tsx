@@ -1,11 +1,11 @@
-import {AttachmentDAO} from "../../interfaces/AttachmentDAO";
+import {AttachmentDTO} from "../../interfaces/AttachmentDTO";
 import {Button} from "react-bootstrap";
 import FontAwesome from "react-fontawesome";
 import React, {useContext} from "react";
 import PaneContext from "../core/PaneContext";
 import {CFViewer} from "../viewer/CFViewer";
 
-export const AttachmentAccordionLinks = (props: { attachment: AttachmentDAO }) => {
+export const AttachmentAccordionLinks = (props: { attachment: AttachmentDTO }) => {
 
     const {setPaneTitle, setPaneContents, openPane} = useContext(PaneContext);
 

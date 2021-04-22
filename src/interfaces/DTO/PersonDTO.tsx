@@ -1,14 +1,14 @@
-export interface CompanyPositionDAO {
+export interface CompanyPositionDTO {
     companyId: string,
     companyName: string,
     position: string,
 }
 
-export interface PersonDAO {
+export interface PersonDTO {
     id: string,
     ocId: string,
     commonName: string,
     occupation: string,
     nationality: string,
-    positions: CompanyPositionDAO[]
+    positions: CompanyPositionDTO[]
 }
