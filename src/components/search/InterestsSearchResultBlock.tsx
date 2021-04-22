@@ -1,11 +1,12 @@
 import {InterestsSearchResultsWrapper} from "./SearchInterfaces";
-import {Accordion, Alert, Card, ListGroup, OverlayTrigger} from "react-bootstrap";
+import {Accordion, Alert, Badge, Card, ListGroup, OverlayTrigger} from "react-bootstrap";
 import React, {useContext, useState} from "react";
 import FontAwesome from "react-fontawesome";
 import {ContextAwareToggle} from "../ContextAwareToggle";
 import {renderTooltip} from "../../hooks/Utils";
 import AppContext from "../core/AppContext";
 import {ViewAllInterestsModal} from "./modals/ViewAllInterestsModal";
+import NumberFormat from "react-number-format";
 
 export const InterestsSearchResultsBlock = (props: { data: InterestsSearchResultsWrapper }) => {
 
@@ -51,33 +52,44 @@ export const InterestsSearchResultsBlock = (props: { data: InterestsSearchResult
                                     <ContextAwareToggle
                                         key={`_hit_${hit.id}`} eventKey={hit.id}
                                         callback={setCurrentEventKey}>
-                                        <div className={"d-flex align-items-start"}>
-                                            <div className={"mr-2 text-nowrap"}>
-                                                <FontAwesome
-                                                    fixedWidth
-                                                    name={currentEventKey === `${hit.id}` ?
-                                                        "caret-down" : "caret-right"}/>{hit.registeredDate}
-                                            </div>
-                                            <div className={"text-muted"}>
-                                                {Boolean(hit.fragments.length > 0) && (
-                                                    <>
-                                                        {hit.fragments.map((fragment, fidx) => (
-                                                            <>
+                                        <div className={"d-flex justify-content-between align-items-top"}>
+                                            <div className={"d-flex align-items-start"}>
+                                                <div className={"mr-2 text-nowrap"}>
+                                                    <FontAwesome
+                                                        fixedWidth
+                                                        name={currentEventKey === `${hit.id}` ?
+                                                            "caret-down" : "caret-right"}/>{hit.registeredDate}
+                                                </div>
+                                                <div className={"text-muted"}>
+                                                    {Boolean(hit.fragments.length > 0) && (
+                                                        <>
+                                                            {hit.fragments.map((fragment, fidx) => (
+                                                                <>
                                                     <span key={`interest_hit-${hit.id}_fragment_${fidx}`}
                                                           dangerouslySetInnerHTML={{
                                                               __html: fragment
                                                           }}/>&#8230;
-                                                            </>
-                                                        ))}
-                                                    </>
-                                                )}
+                                                                </>
+                                                            ))}
+                                                        </>
+                                                    )}
 
-                                                {Boolean(hit.fragments.length === 0) && (
+                                                    {Boolean(hit.fragments.length === 0) && (
+                                                        <>
+                                                            [multiple hits within text, click for details]
+                                                        </>
+                                                    )}
+
+                                                </div>
+                                            </div>
+                                            <div>
+                                                {Boolean(hit.valueSum) && (
                                                     <>
-                                                        [multiple hits within text, click for details]
+                                                        <Badge variant={"secondary"}>
+                                                            <NumberFormat thousandSeparator decimalScale={2} fixedDecimalScale displayType={"text"} prefix={"~£"} value={hit.valueSum}/>
+                                                        </Badge>
                                                     </>
                                                 )}
-
                                             </div>
                                         </div>
                                     </ContextAwareToggle>
