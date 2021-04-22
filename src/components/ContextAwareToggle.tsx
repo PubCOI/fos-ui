@@ -20,7 +20,7 @@ export function ContextAwareToggle(
     const isCurrentEventKey = currentEventKey === props.eventKey;
 
     return (
-        <Card.Header className={props.className} onClick={decoratedOnClick}>
+        <Card.Header className={props.className} onClick={decoratedOnClick} role={"button"}>
             {props.children}
         </Card.Header>
     );

@@ -1,4 +1,4 @@
-import {AwardDTO} from "../../interfaces/DTO/AwardDTO";
+import {AwardMDBDTO} from "../../interfaces/DTO/AwardMDBDTO";
 import {Accordion, Alert, Card} from "react-bootstrap";
 import {GetOpenExtLink} from "../GetOpenExtLink";
 import FontAwesome from "react-fontawesome";
@@ -6,9 +6,9 @@ import React from "react";
 import {AttachmentAccordionLinks} from "./AttachmentAccordionLinks";
 import {DataTypeEnum, FixDataIssueWidget} from "./FixDataIssueWidget";
 
-export const AttachmentsAccordion = (props: { award: AwardDTO }) => {
+export const AttachmentsAccordion = (props: { award: AwardMDBDTO }) => {
 
-    const hasAttachment = (props: { award: AwardDTO }) => {
+    const hasAttachment = (props: { award: AwardMDBDTO }) => {
         return (!props.award?.attachments || props.award.attachments.length < 1)
     };
 

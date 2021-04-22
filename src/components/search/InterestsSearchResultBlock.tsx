@@ -85,9 +85,16 @@ export const InterestsSearchResultsBlock = (props: { data: InterestsSearchResult
                                             <div>
                                                 {Boolean(hit.valueSum) && (
                                                     <>
-                                                        <Badge variant={"secondary"}>
-                                                            <NumberFormat thousandSeparator decimalScale={2} fixedDecimalScale displayType={"text"} prefix={"~£"} value={hit.valueSum}/>
-                                                        </Badge>
+                                                        <OverlayTrigger
+                                                            placement="auto"
+                                                            delay={{show: 0, hide: 250}}
+                                                            overlay={renderTooltip({text: "Note this value is automatically extracted from the text: not guaranteed to be accurate"})}>
+                                                            <Badge variant={"secondary"}>
+                                                                <NumberFormat thousandSeparator decimalScale={2}
+                                                                              fixedDecimalScale displayType={"text"}
+                                                                              prefix={"£"} value={hit.valueSum}/>
+                                                            </Badge>
+                                                        </OverlayTrigger>
                                                     </>
                                                 )}
                                             </div>

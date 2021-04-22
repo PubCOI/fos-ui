@@ -1,4 +1,4 @@
-import {AwardDTO} from "../../interfaces/DTO/AwardDTO";
+import {AwardMDBDTO} from "../../interfaces/DTO/AwardMDBDTO";
 import {Col, Modal, OverlayTrigger, Row} from "react-bootstrap";
 import React, {useEffect, useState} from "react";
 import {ContractValueFormat} from "../ContractValueFormat";
@@ -6,7 +6,7 @@ import FontAwesome from "react-fontawesome";
 import {AttachmentsAccordion} from "./AttachmentsAccordion";
 import {renderTooltip} from "../../hooks/Utils";
 
-export const AwardDetailsModalBody = (props: { award: AwardDTO | undefined }) => {
+export const AwardDetailsModalBody = (props: { award: AwardMDBDTO | undefined }) => {
 
     const [noticeURL, setNoticeURL] = useState("");
     const [awardURL, setAwardURL] = useState("");

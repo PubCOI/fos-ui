@@ -1,6 +1,7 @@
 import {AttachmentDTO} from "../AttachmentDTO";
 
-export interface AwardDTO {
+// note this is returning award details straight from the MDB
+export interface AwardMDBDTO {
     id: string,
     noticeId: string,
     noticeTitle: string,

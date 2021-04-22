@@ -3,7 +3,7 @@ import {useToasts} from "react-toast-notifications";
 import axios from "axios";
 import {NoticeResponseDTO} from "../../../interfaces/NoticeResponseDTO";
 import Moment from "react-moment";
-import {AwardDTO} from "../../../interfaces/DTO/AwardDTO";
+import {AwardMDBDTO} from "../../../interfaces/DTO/AwardMDBDTO";
 import {MinMaxValueFormat} from "../../MinMaxValueFormat";
 import {Button, ListGroup} from "react-bootstrap";
 import FontAwesome from "react-fontawesome";
@@ -20,7 +20,7 @@ export const RenderNoticeMetadata = (props: {id: string, awardDetailsCB: (id: st
         postedDT: "",
         valueLow: 0.0,
         valueHigh: 0.0,
-        awards: [] as AwardDTO[]
+        awards: [] as AwardMDBDTO[]
     });
 
     let baseURL = `/api/graphs/notices/${props.id}/metadata`;

@@ -1,4 +1,4 @@
-import {AwardDTO} from "./DTO/AwardDTO";
+import {AwardMDBDTO} from "./DTO/AwardMDBDTO";
 
 export interface NoticeResponseDTO {
     id: string,
@@ -8,5 +8,5 @@ export interface NoticeResponseDTO {
     description: string,
     valueLow: number,
     valueHigh: number,
-    awards: AwardDTO[]
+    awards: AwardMDBDTO[]
 }

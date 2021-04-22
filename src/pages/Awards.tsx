@@ -5,18 +5,19 @@ import {AlertWrapper} from "../components/AlertWrapper";
 import axios from "axios";
 import FontAwesome from "react-fontawesome";
 import {PageTitle} from "../components/PageTitle";
-import {AwardDTO} from "../interfaces/DTO/AwardDTO";
+import {AwardMDBDTO} from "../interfaces/DTO/AwardMDBDTO";
 import Datatable from 'react-bs-datatable';
 import {ContractValueFormat} from "../components/ContractValueFormat";
 import {css} from "@emotion/css";
 import {AwardDetailsModal} from "../components/graphs/AwardDetailsModal";
 import AppContext from "../components/core/AppContext";
 import {renderTooltip} from "../hooks/Utils";
+import {AwardGraphDTO} from "../interfaces/DTO/AwardGraphDTO";
 
 export const Awards = () => {
 
     let url = "/api/awards";
-    const [awards, setAwardsList] = useState<AwardDTO[]>([]);
+    const [awards, setAwardsList] = useState<AwardGraphDTO[]>([]);
     const [loaded, setLoaded] = useState(false);
     const [error, setError] = useState(false);
     const {setModalBody} = useContext(AppContext);
@@ -25,33 +26,43 @@ export const Awards = () => {
         return [
             {
                 title: 'Organisation',
-                prop: 'organisation',
+                prop: 'client',
                 sortable: true,
                 filterable: true,
             },
             {
                 title: 'Supplier',
-                prop: 'supplierName',
+                prop: 'awardee',
                 sortable: true,
                 filterable: true,
             },
             {
+                title: 'Start',
+                prop: 'startDate',
+                sortable: true,
+            },
+            {
+                title: 'End',
+                prop: 'endDate',
+                sortable: true,
+            },
+            {
                 title: '',
                 prop: '',
-                cell: (row: AwardDTO) => {
+                cell: (row: AwardGraphDTO) => {
                     return <OverlayTrigger
                         placement="auto"
                         delay={{show: 100, hide: 250}}
                         overlay={renderTooltip(
                             {text: "Group award (ie multiple suppliers): only total contract value shown"}
-                        )}><FontAwesome name={"users"} className={"ml-2"} hidden={!row.group_award}/></OverlayTrigger>
+                        )}><FontAwesome name={"users"} className={"ml-2"} hidden={!row.groupAward}/></OverlayTrigger>
                 }
             },
             {
                 title: 'Value',
                 prop: 'value',
                 sortable: true,
-                cell: (row: AwardDTO) => <ContractValueFormat award={row}/>
+                cell: (row: AwardMDBDTO) => <ContractValueFormat award={row}/>
             }
         ];
     }
@@ -68,11 +79,19 @@ export const Awards = () => {
         }
         &:last-of-type {
           margin-left: 8px;
-        }`
+        }`,
+        tbodyCol: css`
+          &:nth-of-type(3) {
+            white-space: nowrap
+          }
+          &:nth-of-type(4) {
+            white-space: nowrap
+          }
+        `
     };
 
     useEffect(() => {
-        axios.get<AwardDTO[]>(url).then(response => {
+        axios.get<AwardGraphDTO[]>(url).then(response => {
             setAwardsList(response.data)
         })
             .then(() => setLoaded(true))
@@ -91,13 +110,7 @@ export const Awards = () => {
         <>
             <Container fluid className={"p-3"}>
 
-                <PageTitle title={"Contracts Finder: raw data"}/>
-
-                <Alert variant={"info"} className={"text-muted"}>
-                    These records have been pulled from the HMG Contracts Finder; note that these names are not
-                    'corrected'
-                    as on the graph(s)
-                </Alert>
+                <PageTitle title={"Contract Awards"}/>
 
                 <Datatable tableHeaders={getHeader()}
                            tableBody={awards}
