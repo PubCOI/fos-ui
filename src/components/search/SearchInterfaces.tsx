@@ -25,6 +25,7 @@ export interface InterestsSearchResultsWrapper {
 }
 
 export interface AggregatedInterestsResult {
+    mnisPersonId: number,
     personName: string,
     top_hits: InterestsSearchResult[]
 }

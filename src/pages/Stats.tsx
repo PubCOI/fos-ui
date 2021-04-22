@@ -7,6 +7,7 @@ import {AlertWrapper} from "../components/AlertWrapper";
 import FontAwesome from "react-fontawesome";
 import Moment from "react-moment";
 import {Link} from "react-router-dom";
+import { ContextAwareToggle } from "../components/ContextAwareToggle";
 
 enum BatchStatus {
     COMPLETED = "COMPLETED",
@@ -52,31 +53,6 @@ export const Stats = () => {
             .catch(() => setError(true));
     }, [startAt]);
 
-    function ContextAwareToggle(
-        props:
-            {
-                children: any,
-                eventKey: string,
-                callback: (eventKey: string) => void,
-                className?: string
-            }
-    ) {
-        const currentEventKey = useContext(AccordionContext);
-
-        const decoratedOnClick = useAccordionToggle(
-            props.eventKey,
-            () => props.callback && props.callback(props.eventKey),
-        );
-
-        const isCurrentEventKey = currentEventKey === props.eventKey;
-
-        return (
-            <Card.Header className={props.className} onClick={decoratedOnClick}>
-                {props.children}
-            </Card.Header>
-        );
-    }
-
     if (!loaded) return <LoadingWrapper/>;
     if (error) return <AlertWrapper text={"Unable to load stats data"}/>;
 
@@ -86,7 +62,7 @@ export const Stats = () => {
             <PageTitle title={"System stats"}/>
             <h3>Recent batch jobs</h3>
             <Accordion>
-                {executionData.map(job => (
+                {executionData.map((job) => (
                     <Card key={`_card_${job.jobId}`}>
                         <ContextAwareToggle
                             className={job.status === BatchStatus.FAILED ? "bg-danger" : ""}
@@ -104,7 +80,6 @@ export const Stats = () => {
                                     Completed in <Moment from={job.startTime} ago>{job.endTime}</Moment>
                                 </div>
                             </div>
-
                         </ContextAwareToggle>
                         <Accordion.Collapse eventKey={`${job.jobId}`} key={`_accordion_${job.jobId}`}>
                             <Card.Body>
@@ -116,7 +91,7 @@ export const Stats = () => {
 
                                 <ListGroup>
                                     {job.steps.map(step => (
-                                        <ListGroup.Item className={"d-flex justify-content-between align-items-center"}>
+                                        <ListGroup.Item className={"d-flex justify-content-between align-items-center"} key={step.id}>
                                             <div>
                                                 {step.id}: {step.stepName}
                                             </div>

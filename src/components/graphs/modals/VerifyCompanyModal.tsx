@@ -253,15 +253,15 @@ export const VerifyCompanyModal = (props: { id: string }) => {
                                 In some cases, such as when the wrong company name is used on a contract, the company
                                 cannot
                                 be resolved to a valid record. You have a couple of options:
-                                <div className={"mt-3"}>
+                                <div className={"mt-3 d-flex align-items-center"}>
                                     <Button variant={"primary"} className={"mr-3"} onClick={() => showPane()}>Report
-                                        issue</Button> if you want to
-                                    flag this record as needing another pair of eyes
+                                        issue</Button><div>if you want to
+                                    flag this record as needing another pair of eyes</div>
                                 </div>
-                                <div className={"my-3"}>
+                                <div className={"my-3 d-flex align-items-center"}>
                                     <Button variant={"outline-primary"} className={"mr-3"}
                                             onClick={() => manualDetails(props.id)}>Enter details
-                                        manually</Button> if you have found the company number elsewhere
+                                        manually</Button><div>if you have found the company number elsewhere</div>
                                 </div>
                             </div>
                         </Alert>
