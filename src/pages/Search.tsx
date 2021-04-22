@@ -2,9 +2,11 @@ import React, {useEffect, useState} from "react";
 import {SearchInfoBlock} from "../components/search/SearchInfoBlock";
 import axios from "axios";
 import {EmptyAttachmentSearchResponse} from "../components/search/EmptyAttachmentSearchResponse";
-import {AttachmentSearchResultWrapper} from "../components/search/SearchInterfaces";
+import {AttachmentsSearchResultsWrapper, InterestsSearchResultsWrapper} from "../components/search/SearchInterfaces";
 import {AttachmentSearchResultsBlock} from "../components/search/AttachmentSearchResultsBlock";
 import {useToasts} from "react-toast-notifications";
+import {InterestsSearchResultsBlock} from "../components/search/InterestsSearchResultBlock";
+import {EmptyInterestsSearchResponse} from "../components/search/EmptyInterestsSearchResponse";
 
 export const Search = (
     props: {
@@ -18,7 +20,8 @@ export const Search = (
     const [error, setError] = useState(false);
     // stops multiple toasts from appearing in event of error
     const [errToastShown, setErrToastShown] = useState(false);
-    const [attachmentSearchResults, setAttachmentResults] = useState<AttachmentSearchResultWrapper | undefined>(undefined);
+    const [attachmentsSearchResults, setAttachmentsResults] = useState<AttachmentsSearchResultsWrapper | undefined>(undefined);
+    const [interestsSearchResults, setInterestsResults] = useState<InterestsSearchResultsWrapper | undefined>(undefined);
 
     // store whether we've done any search at all ... if not just return generic info
     const [doneInitialSearch, setDoneInitialSearch] = useState(false);
@@ -39,12 +42,12 @@ export const Search = (
     }, [props.searchType]);
 
     function doContractSearch() {
-        axios.post<AttachmentSearchResultWrapper>("/api/search/attachments", {
+        axios.post<AttachmentsSearchResultsWrapper>("/api/search/attachments", {
             q: props.searchParams,
             groupResults: props.groupBy
         })
             .then(response => {
-                setAttachmentResults(response.data)
+                setAttachmentsResults(response.data)
             })
             .then(() => setLoaded(true))
             .catch(() => {
@@ -53,7 +56,16 @@ export const Search = (
     }
 
     function doInterestsSearch() {
-        console.log("would do interests");
+        axios.post<InterestsSearchResultsWrapper>("/api/search/interests", {
+            q: props.searchParams
+        })
+            .then(response => {
+                setInterestsResults(response.data)
+            })
+            .then(() => setLoaded(true))
+            .catch(() => {
+                showError();
+            });
     }
 
     function showError() {
@@ -74,15 +86,15 @@ export const Search = (
         <>
 
             {Boolean(doneInitialSearch && props.searchType === "contracts") && (
-                (undefined !== attachmentSearchResults && attachmentSearchResults?.count > 0) ?
-                    <AttachmentSearchResultsBlock data={attachmentSearchResults} aggregated={props.groupBy}/> :
+                (undefined !== attachmentsSearchResults && attachmentsSearchResults?.count > 0) ?
+                    <AttachmentSearchResultsBlock data={attachmentsSearchResults} aggregated={props.groupBy}/> :
                     <EmptyAttachmentSearchResponse/>
             )}
 
             {Boolean(doneInitialSearch && props.searchType === "interests") && (
-                <>
-                    would return interests
-                </>
+                (undefined !== interestsSearchResults && interestsSearchResults?.count > 0) ?
+                    <InterestsSearchResultsBlock data={interestsSearchResults}/> :
+                    <EmptyInterestsSearchResponse/>
             )}
 
             {Boolean(!doneInitialSearch) && (

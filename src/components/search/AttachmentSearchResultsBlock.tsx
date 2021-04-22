@@ -1,4 +1,4 @@
-import {BaseAttachmentSearchResult, AttachmentSearchResultWrapper} from "./SearchInterfaces";
+import {BaseAttachmentsSearchResult, AttachmentsSearchResultsWrapper} from "./SearchInterfaces";
 import {Badge, Button, Col, ListGroup, Media, OverlayTrigger, Row, Table} from "react-bootstrap";
 import React, {useContext, useEffect, useState} from "react";
 import Moment from "react-moment";
@@ -6,7 +6,7 @@ import FontAwesome from "react-fontawesome";
 import PaneContext from "../core/PaneContext";
 import {CFViewer} from "../viewer/CFViewer";
 
-export const AttachmentSearchResultsBlock = (props: { data: AttachmentSearchResultWrapper, aggregated: boolean }) => {
+export const AttachmentSearchResultsBlock = (props: { data: AttachmentsSearchResultsWrapper, aggregated: boolean }) => {
 
     const {setPaneTitle, setPaneContents, openPane} = useContext(PaneContext);
 
@@ -79,7 +79,7 @@ export const AttachmentSearchResultsBlock = (props: { data: AttachmentSearchResu
     )
 };
 
-const SearchMetadataBlock = (props: { item: BaseAttachmentSearchResult}) => {
+const SearchMetadataBlock = (props: { item: BaseAttachmentsSearchResult}) => {
     return (
         <>
             <SearchMetadataRow icon={"building-o"} label={"Purchaser"} value={props.item.client}/>
