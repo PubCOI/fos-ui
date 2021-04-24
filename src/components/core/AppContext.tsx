@@ -9,7 +9,8 @@ import {IGraphConfig} from "../graphs/preferences/IGraphConfig";
 const AppContext = React.createContext({
     config: {
         batch: false,
-        debug: false
+        debug: false,
+        standalone: false,
     },
     setApplicationConfig: (conf: ApplicationConfig) => {},
     displayName: "",

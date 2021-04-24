@@ -29,6 +29,8 @@ import {SearchBar} from "./components/search/SearchBar";
 import {INodeMetadata, NodeMetadataType} from "./interfaces/INodeMetadata";
 import {IGraphConfig} from "./components/graphs/preferences/IGraphConfig";
 import {TimebaseDataEnum} from "./components/graphs/preferences/TimebaseDataEnum";
+import {ApplicationConfig} from "./interfaces/ApplicationConfig";
+import {AddData} from "./pages/AddData";
 
 function App() {
 
@@ -48,7 +50,7 @@ function App() {
     const [showRightPane, setShowRightPane] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [modalBody, setModalBody] = useState(MODAL_EMPTY);
-    const [applicationConfig, setApplicationConfig] = useState({batch: false, debug: false});
+    const [applicationConfig, setApplicationConfig] = useState<ApplicationConfig>({batch: false, debug: false, standalone: false});
 
     const applicationSettings = {
         config: applicationConfig,
@@ -146,6 +148,7 @@ function App() {
                                 <Route exact path={"/tasks"} component={Tasks}/>
                                 <Route exact path={"/profile"} component={Profile}/>
                                 <Route exact path={"/data/upload"} component={Upload}/>
+                                <Route exact path={"/data/add"} component={AddData}/>
                                 <Route exact path={"/graph"} component={Graph}/>
                                 <Route exact path={"/search"} render={() => <Search groupBy={groupBy} searchParams={searchParams} searchType={searchType}/>}/>
                                 <Route exact path={"/stats"} component={Stats}/>

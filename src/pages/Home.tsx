@@ -54,7 +54,7 @@ export const Home = () => {
                                                   rel={"noreferrer"}>OpenCorporates <FontAwesome
                             name={"external-link"}/></a> for
                             access to their corporate info database. It makes cross-referencing data on Companies House
-                            (approximately) a 1&times;10<sup>6</sup> times easier.
+                            (approximately) a 6.022&times;10<sup>23</sup> times easier.
                         </p>
                     </Col>
                 </Row>

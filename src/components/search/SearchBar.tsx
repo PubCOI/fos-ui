@@ -1,7 +1,9 @@
-import {Button, Form, FormControl, InputGroup} from "react-bootstrap";
+import {Button, Form, FormControl, InputGroup, OverlayTrigger} from "react-bootstrap";
 import React, {FormEvent, MutableRefObject, useEffect, useState} from "react";
 import FontAwesome from "react-fontawesome";
 import {useForm} from "react-hook-form";
+import {renderTooltip} from "../../hooks/Utils";
+import moment from "moment";
 
 export const SearchBar =
     (props:
@@ -17,6 +19,21 @@ export const SearchBar =
         const [groupBy, setGroupBy] = useState(true);
         const [queryParams, setQueryParams] = useState<string>(props.initialParams.current);
         const [searchType, setSearchType] = useState("contracts");
+        const [helperTooltip, setHelperTooltip] = useState(false);
+
+        useEffect(() => {
+            const htDT_key = "htDT";
+            let htDT = localStorage.getItem(htDT_key);
+            if (null === htDT || moment(htDT).diff(new Date()) > 60*60*3*1000) {
+                setTimeout(() => {
+                    setHelperTooltip(true);
+                }, 500);
+                setTimeout(() => {
+                    setHelperTooltip(false);
+                }, 5000);
+                localStorage.setItem(htDT_key, new Date().toISOString());
+            }
+        }, []);
 
         useEffect(() => {
             props.setGroupByCallback(groupBy);
@@ -45,6 +62,11 @@ export const SearchBar =
                 <div className={"second-nav"}>
                     <Form onSubmit={props.doSubmitHandler} aria-autocomplete={"none"}>
                         <InputGroup>
+                            <OverlayTrigger
+                                placement="bottom"
+                                show={helperTooltip}
+                                delay={{show: 100, hide: 250}}
+                                overlay={renderTooltip({text: "Select type of record here: you can search members' interests as well as contract data"})}>
                             <InputGroup.Prepend>
                                 <Form.Control
                                     as="select"
@@ -55,6 +77,7 @@ export const SearchBar =
                                     <option value={"interests"}>MP/Lords Interests</option>
                                 </Form.Control>
                             </InputGroup.Prepend>
+                            </OverlayTrigger>
                             <FormControl
                                 aria-label="Search"
                                 placeholder={"Search term(s)"}

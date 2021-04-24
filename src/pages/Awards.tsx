@@ -1,4 +1,4 @@
-import {Alert, Container, OverlayTrigger} from "react-bootstrap";
+import {Container, OverlayTrigger} from "react-bootstrap";
 import React, {useContext, useEffect, useState} from "react";
 import {LoadingWrapper} from "../components/LoadingWrapper";
 import {AlertWrapper} from "../components/AlertWrapper";
@@ -35,6 +35,35 @@ export const Awards = () => {
                 prop: 'awardee',
                 sortable: true,
                 filterable: true,
+                cell: (row: AwardGraphDTO) => {
+                    return (
+                        // if there's an "aka" link, we want to render it below
+                        <>
+                            {Boolean(row.knownAs) && (
+                                <>
+                                    <div>
+                                        {row.awardee}
+                                    </div>
+                                    <OverlayTrigger
+                                        placement="left"
+                                        delay={{show: 100, hide: 200}}
+                                        overlay={renderTooltip(
+                                            {text: `Company is known as ${row.knownAs.name}`}
+                                        )}>
+                                        <div
+                                            className={"d-flex justify-items-start align-items-center text-muted font-italic"}>
+                                            <FontAwesome name={"long-arrow-right"} fixedWidth/>
+                                            <div>{row.knownAs.name}</div>
+                                        </div>
+                                    </OverlayTrigger>
+                                </>
+                            )}
+                            {Boolean(!row.knownAs) && (
+                                row.awardee
+                            )}
+                        </>
+                    )
+                }
             },
             {
                 title: 'Start',
@@ -73,20 +102,23 @@ export const Awards = () => {
 
     const tableClasses = {
         table: `table-striped table-hover mt-3`,
+        tbodyRow: css`
+            cursor: pointer
+        `,
         paginationOptsFormText: css`
         &:first-of-type {
-          margin-right: 8px;
+            margin-right: 8px;
         }
         &:last-of-type {
-          margin-left: 8px;
+            margin-left: 8px;
         }`,
         tbodyCol: css`
-          &:nth-of-type(3) {
-            white-space: nowrap
-          }
-          &:nth-of-type(4) {
-            white-space: nowrap
-          }
+            &:nth-of-type(3) {
+                white-space: nowrap
+            }
+            &:nth-of-type(4) {
+                white-space: nowrap
+            }
         `
     };
 

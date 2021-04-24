@@ -15,4 +15,10 @@ export interface AwardGraphDTO {
     awardDate: string,
     startDate: string,
     endDate: string,
+    knownAs: KnownAs
+}
+
+export interface KnownAs {
+    id: string,
+    name: string
 }

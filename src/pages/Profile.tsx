@@ -53,10 +53,10 @@ export const Profile = () => {
         <>
             <Row className={"mt-3"}>
                 <Col md={8} className={"offset-md-2"}>
-                    <h3>Profile</h3>
+                    <h3>Settings</h3>
                 </Col>
             </Row>
-            <Row>
+            <Row className={"mt-md-3"}>
                 <Col md={8} className={"offset-md-2 shadow p-3"}>
                     <Form onSubmit={handleSubmit}>
 

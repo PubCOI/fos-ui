@@ -8,6 +8,7 @@ import FontAwesome from "react-fontawesome";
 
 export const Header = () => {
 
+    const {config} = useContext(AppContext);
     const [authenticated, setAuthenticated] = useState(false);
     useEffect(() => {
         setAuthenticated(null !== firebase.auth().currentUser);
@@ -46,18 +47,23 @@ export const Header = () => {
                                               disabled
                                               data-toggle={"collapse"}>Officers</NavDropdown.Item>
                             <NavDropdown.Divider className={authenticated ? "" : "d-none"}/>
-                            <NavDropdown.Item as={NavLink} to={"/data/upload"} className={authenticated ? "" : "d-none"}
+                            <NavDropdown.Item as={NavLink} to={"/data/add"}
+                                              className={(authenticated && !config.standalone) ? "" : "d-none"}
                                               activeClassName={"active"}
-                                              data-toggle={"collapse"}><FontAwesome name={"upload"} className={"mr-1"}/> Upload data</NavDropdown.Item>
+                                              data-toggle={"collapse"}><FontAwesome name={"plus"}
+                                                                                    className={"mr-1"}/> Add
+                                data</NavDropdown.Item>
+                            <NavDropdown.Item as={NavLink} to={"/data/upload"}
+                                              className={config.standalone ? "" : "d-none"}
+                                              activeClassName={"active"}
+                                              data-toggle={"collapse"}><FontAwesome name={"upload"}
+                                                                                    className={"mr-1"}/> Upload
+                                data</NavDropdown.Item>
                         </NavDropdown>
                         <Nav.Link as={NavLink} to={"/graph"} data-toggle={"collapse"}
                                   activeClassName={"active"}
                                   active={pathname.includes("/graph")}
                                   eventKey={4}>Graph</Nav.Link>
-                        <Nav.Link as={NavLink} to={"/tasks"} data-toggle={"collapse"}
-                                  activeClassName={"active"}
-                                  active={pathname.includes("/tasks")}
-                                  eventKey={5}>Tasks</Nav.Link>
                         <Nav.Link as={NavLink} to={"/search"} data-toggle={"collapse"}
                                   activeClassName={"active"}
                                   active={pathname.includes("/search")}
@@ -97,22 +103,45 @@ const LoginNavbar = () => {
                                          id="basic-nav-dropdown"
                                          data-toggle={"collapse"}
                                          alignRight>
+                                <NavDropdown.Item as={Link} to={"/tasks"}
+                                                  data-toggle={"collapse"}
+                                                  active={pathname.includes("/tasks")}>
+                                    <DropdownPair text={"Tasks"} icon={"check"}/>
+                                </NavDropdown.Item>
                                 <NavDropdown.Item as={Link} to={"/profile"}
-                                                  data-toggle={"collapse"}>Settings</NavDropdown.Item>
+                                                  data-toggle={"collapse"}>
+                                    <DropdownPair text={"Settings"} icon={"gears"}/>
+                                </NavDropdown.Item>
                                 <NavDropdown.Item as={Link} to={"/"} data-toggle={"collapse"} onClick={() => {
                                     firebase.auth().signOut().then(r => {
                                         history.push("/");
                                     });
-                                }}>Logout</NavDropdown.Item>
+                                }}>
+                                    <DropdownPair text={"Logout"} icon={"power-off"}/>
+                                </NavDropdown.Item>
                             </NavDropdown>
                         </>
                     );
                 } else {
                     return (<>
-                        <Nav.Link as={Link} to={"/login"} className={(pathname.includes("/login")) ? "d-none" : undefined}>Log in</Nav.Link>
+                        <Nav.Link as={Link} to={"/login"}
+                                  className={(pathname.includes("/login")) ? "d-none" : undefined}>Log in</Nav.Link>
                     </>);
                 }
             }}
         </FirebaseAuthConsumer>
+    )
+};
+
+export const DropdownPair = (props: {text: string, icon: string}) => {
+    return (
+        <div className={"d-flex justify-content-between"}>
+            <div>
+                {props.text}
+            </div>
+            <div>
+                <FontAwesome name={props.icon} fixedWidth/>
+            </div>
+        </div>
     )
 }
