@@ -1,6 +1,5 @@
 /* tslint:disable */
 /* eslint-disable */
-// Generated using typescript-generator version 2.30.840 on 2021-04-24 20:20:29.
 
 export interface NoticeSearchResponse {
     byRegion?: ByRegion;
@@ -85,4 +84,5 @@ export interface NoticeIndex {
     awardedToSme?: boolean;
     awardedToVcse?: boolean;
     cpvCodesExtended?: string[];
+    alreadyLoaded?: boolean;
 }
