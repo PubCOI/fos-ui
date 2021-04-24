@@ -1,9 +1,10 @@
 import {Button, Col, Form, InputGroup, ToggleButton, ToggleButtonGroup} from "react-bootstrap";
 import React, {Dispatch, FormEvent, SetStateAction, useState} from "react";
 import FontAwesome from "react-fontawesome";
-import axios, {AxiosResponse} from "axios";
+import axios, {AxiosError, AxiosResponse} from "axios";
 import {useToasts} from "react-toast-notifications";
-import {CFSearchRequest, CFSearchResponse} from "./AddDataInterfaces";
+import {CFSearchRequest} from "./AddDataInterfaces";
+import {NoticeSearchResponse} from "../../generated/NoticeSearchResponse";
 
 enum SearchBy {
     fieldName = "searchBy",
@@ -11,8 +12,13 @@ enum SearchBy {
 }
 
 
-
-export const AddDataForm = (props: {setSearchResponseCallback: Dispatch<SetStateAction<CFSearchResponse>>}) => {
+export const AddDataForm = (
+    props: {
+        doingSearch: boolean,
+        setSearchResponseCallback: Dispatch<SetStateAction<NoticeSearchResponse | undefined>>,
+        setDoingSearchCallback: Dispatch<SetStateAction<boolean>>
+    }
+) => {
 
     const {addToast} = useToasts();
     const [dateType, setDateType] = useState(SearchBy.published.toString());
@@ -21,20 +27,29 @@ export const AddDataForm = (props: {setSearchResponseCallback: Dispatch<SetState
 
     function handleSubmit(e: FormEvent) {
         e.preventDefault();
-        axios.post<CFSearchRequest, AxiosResponse<CFSearchResponse>>(
+        props.setDoingSearchCallback(true);
+        axios.post<CFSearchRequest, AxiosResponse<NoticeSearchResponse>>(
             "/api/search/contract-finder", {
                 dateRange: dateRange,
                 dateType: dateType,
                 query: searchTerms
-            }
-        ).then((res) => {
-            props.setSearchResponseCallback(res.data);
-        });
+            })
+            .then((res) => {
+                props.setSearchResponseCallback(res.data);
+            })
+            .catch((e: AxiosError) => {
+                addToast(`Error performing search ${e.message}`, {
+                    autoDismiss: true,
+                    appearance: "error"
+                })
+            })
+            .then(() => {
+                props.setDoingSearchCallback(false);
+            });
     }
 
     return (
         <Form onSubmit={handleSubmit}>
-
             <Form.Row>
                 <Form.Group as={Col} md="6" controlId={SearchBy.fieldName}>
                     <Form.Label>Find contracts where the:</Form.Label>
@@ -68,12 +83,11 @@ export const AddDataForm = (props: {setSearchResponseCallback: Dispatch<SetState
                         </ToggleButtonGroup>
                     </div>
                 </Form.Group>
-
                 <Form.Group as={Col} md="6" controlId="dateRange">
                     <Form.Label>is within:</Form.Label>
                     <Form.Control
                         as="select"
-                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setDateRange(e.target.value) }>
+                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setDateRange(e.target.value)}>
                         <option value={"_3m"}>Last three months</option>
                         <option value={"_6m"}>Last six months</option>
                         <option value={"_1y"}>Last year</option>
@@ -82,7 +96,6 @@ export const AddDataForm = (props: {setSearchResponseCallback: Dispatch<SetState
                         <option value={"_10y"}>Last ten years</option>
                     </Form.Control>
                 </Form.Group>
-
             </Form.Row>
             <Form.Row>
                 <Form.Group as={Col} controlId="validationCustom01">
@@ -96,8 +109,8 @@ export const AddDataForm = (props: {setSearchResponseCallback: Dispatch<SetState
                             }}
                         />
                         <InputGroup.Append>
-                            <Button variant={"outline-success"} type={"submit"}><FontAwesome name={"search"}
-                                                                                             className={"mr-1"}/> Search</Button>
+                            <Button variant={"outline-success"} type={"submit"} disabled={props.doingSearch}>
+                                <FontAwesome name={"search"} className={"mr-1"}/> Search</Button>
                         </InputGroup.Append>
                     </InputGroup>
                     <Form.Control.Feedback type="invalid">
@@ -107,4 +120,4 @@ export const AddDataForm = (props: {setSearchResponseCallback: Dispatch<SetState
             </Form.Row>
         </Form>
     );
-}
+};

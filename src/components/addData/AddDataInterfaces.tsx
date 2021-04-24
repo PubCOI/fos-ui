@@ -3,7 +3,3 @@ export interface CFSearchRequest {
     dateRange: string,
     terms: string,
 }
-
-export interface CFSearchResponse {
-
-}
