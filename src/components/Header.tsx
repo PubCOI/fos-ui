@@ -54,7 +54,7 @@ export const Header = () => {
                                                                                     className={"mr-1"}/> Add
                                 data</NavDropdown.Item>
                             <NavDropdown.Item as={NavLink} to={"/data/upload"}
-                                              className={config.standalone ? "" : "d-none"}
+                                              className={(config.standalone || config.debug) ? "" : "d-none"}
                                               activeClassName={"active"}
                                               data-toggle={"collapse"}><FontAwesome name={"upload"}
                                                                                     className={"mr-1"}/> Upload
@@ -144,4 +144,4 @@ export const DropdownPair = (props: {text: string, icon: string}) => {
             </div>
         </div>
     )
-}
+};

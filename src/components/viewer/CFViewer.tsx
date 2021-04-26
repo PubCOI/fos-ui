@@ -120,4 +120,4 @@ const MetadataRow = (props: { label: string, value: string | undefined }) => {
             </Row>
         </>
     )
-}
+};

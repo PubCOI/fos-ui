@@ -4,7 +4,7 @@ import AppContext from "../components/core/AppContext";
 import {useToasts} from "react-toast-notifications";
 import axios, {AxiosResponse} from "axios";
 import firebase from "firebase";
-import {UpdateProfileRequestDTO, UpdateProfileResponseDTO} from "../interfaces/DTO/UserDTO";
+import {UpdateProfileRequestDTO, UpdateProfileResponseDTO} from "../generated/FosTypes";
 
 export const Profile = () => {
 

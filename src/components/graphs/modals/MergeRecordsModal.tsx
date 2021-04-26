@@ -162,4 +162,4 @@ export const MergeRecordsModal = (props: { id: string }) => {
             </Modal>
         </>
     )
-}
+};

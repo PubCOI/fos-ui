@@ -6,10 +6,10 @@ import {INodeMetadata} from "../../../interfaces/INodeMetadata";
 import axios, {AxiosError, AxiosResponse} from "axios";
 import {GraphAutocompleteResult} from "../../../interfaces/GraphAutocompleteResult";
 import FontAwesome from "react-fontawesome";
-import {AddRelationshipDTO} from "../../../interfaces/DTO/AddRelationshipDTO";
 import firebase from "firebase";
-import {Menu, MenuItem, MenuProps, Typeahead, TypeaheadProps, TypeaheadResult} from "react-bootstrap-typeahead";
+import {Typeahead, TypeaheadProps} from "react-bootstrap-typeahead";
 import {RenderAutocompleteResults} from "../autocomplete/RenderAutocompleteResults";
+import {AddRelationshipDTO, AddRelCoiSubtypeEnum, AddRelCoiTypeEnum, AddRelTypeEnum} from "../../../generated/FosTypes";
 
 interface SelectOptions {
     direct_financial: SelectOption[]
@@ -127,10 +127,10 @@ export const AddRelationshipModal = (props: { metadata: INodeMetadata }) => {
     const [relName, setRelName] = useState("");
     const [relId, setRelId] = useState("");
     // relType is either person or organisation ... possibly not required
-    const [relType, setRelType] = useState("");
+    const [relType, setRelType] = useState(AddRelTypeEnum.person);
 
-    const [relTypeSelect, setRelTypeSelect] = useState("direct_financial");
-    const [relSubtypeSelect, setRelSubtypeSelect] = useState("director");
+    const [relTypeSelect, setRelTypeSelect] = useState(AddRelCoiTypeEnum.direct_financial);
+    const [relSubtypeSelect, setRelSubtypeSelect] = useState(AddRelCoiSubtypeEnum.director);
     const [relComments, setRelComments] = useState("");
     const [evidenceType, setEvidenceType] = useState("comments");
     const [evidenceURL, setEvidenceURL] = useState("");
@@ -260,7 +260,7 @@ export const AddRelationshipModal = (props: { metadata: INodeMetadata }) => {
         setDirect(parentType === "organisation");
     }, [parentType]);
     useEffect(() => {
-        setRelTypeSelect(direct ? "direct_financial" : "indirect_financial");
+        setRelTypeSelect(direct ? AddRelCoiTypeEnum.direct_financial : AddRelCoiTypeEnum.indirect_financial);
     }, [direct]);
     useEffect(() => {
         setStep2Opts(allOptions.get(relTypeSelect) || [{value: "", text: ""}]);
@@ -290,7 +290,7 @@ export const AddRelationshipModal = (props: { metadata: INodeMetadata }) => {
             evidenceComments: (evidenceType === "comments"),
             evidenceFile: (evidenceType === "upload"),
             evidenceURL: evidenceURL,
-            isNewObject: relObjIsNew,
+            newObject: relObjIsNew,
             relId: relId,
             relName: relName,
             relType: relType,
@@ -438,7 +438,7 @@ export const AddRelationshipModal = (props: { metadata: INodeMetadata }) => {
                                           onChange={(
                                               e: React.ChangeEvent<HTMLSelectElement>
                                           ): void => {
-                                              setRelTypeSelect(e.target.value);
+                                              setRelTypeSelect(AddRelCoiTypeEnum[e.target.value as keyof typeof AddRelCoiTypeEnum]);
                                           }}>
                                 {/*{Boolean(direct) && (*/}
                                     <>
@@ -463,7 +463,7 @@ export const AddRelationshipModal = (props: { metadata: INodeMetadata }) => {
                                           onChange={(
                                               e: React.ChangeEvent<HTMLSelectElement>
                                           ): void => {
-                                              setRelSubtypeSelect(e.target.value);
+                                              setRelSubtypeSelect(AddRelCoiSubtypeEnum[e.target.value as keyof typeof AddRelCoiSubtypeEnum]);
                                           }}>
                                 {step2Opts.map(opt => (
                                     <option value={opt.value} key={`opt_${opt.value}`}>{opt.text}</option>

@@ -10,6 +10,28 @@ export interface NoticeSearchResponse {
     noticeList?: NoticeList;
 }
 
+export interface AddRelationshipDTO {
+    relId?: string;
+    relName?: string;
+    relType?: AddRelTypeEnum;
+    coiType?: AddRelCoiTypeEnum;
+    coiSubtype?: AddRelCoiSubtypeEnum;
+    comments?: string;
+    evidenceComments?: boolean;
+    evidenceFile?: boolean;
+    evidenceURL?: string;
+    newObject?: boolean;
+}
+
+export interface UpdateProfileResponseDTO {
+    displayName?: string;
+    uid?: string;
+}
+
+export interface UpdateProfileRequestDTO {
+    displayName?: string;
+}
+
 export interface ByRegion {
     items?: RegionItems;
     other?: number;
@@ -26,19 +48,19 @@ export interface ByType {
 }
 
 export interface NoticeList {
-    hitOfNoticeIndex?: NoticeHitType[];
+    hitOfNoticeIndices?: NoticeHitType[];
 }
 
 export interface RegionItems {
-    keyValuePairOfstringlong?: KVPType[];
+    keyValuePairOfstringlongs?: KVPType[];
 }
 
 export interface StatusItems {
-    keyValuePairOfNullableOfNoticeStatus?: KVPType[];
+    keyValuePairOfNullableOfNoticeStatuses?: KVPType[];
 }
 
 export interface TypeItems {
-    keyValuePairOfNullableOfNoticeType?: KVPType[];
+    keyValuePairOfNullableOfNoticeTypes?: KVPType[];
 }
 
 export interface NoticeHitType {
@@ -83,6 +105,37 @@ export interface NoticeIndex {
     isSubNotice?: boolean;
     awardedToSme?: boolean;
     awardedToVcse?: boolean;
-    cpvCodesExtended?: string[];
+    cpvCodesExtendeds?: string[];
     alreadyLoaded?: boolean;
+}
+
+export enum AddRelTypeEnum {
+    person = "person",
+    organisation = "organisation",
+}
+
+export enum AddRelCoiTypeEnum {
+    direct_financial = "direct_financial",
+    indirect_financial = "indirect_financial",
+    non_financial_professional = "non_financial_professional",
+    non_financial_personal = "non_financial_personal",
+    indirect = "indirect",
+}
+
+export enum AddRelCoiSubtypeEnum {
+    director = "director",
+    shareholder = "shareholder",
+    management_consultant = "management_consultant",
+    secondary_income = "secondary_income",
+    expenses = "expenses",
+    spouse = "spouse",
+    relative = "relative",
+    friend = "friend",
+    financial = "financial",
+    business_partner = "business_partner",
+    lobbying = "lobbying",
+    advocate = "advocate",
+    professional_body = "professional_body",
+    voluntary = "voluntary",
+    trustee = "trustee",
 }

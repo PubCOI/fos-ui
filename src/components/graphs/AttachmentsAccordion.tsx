@@ -82,4 +82,4 @@ const RenderMime = (props: { type: string }) => {
             <FontAwesome name={icon} fixedWidth/>
         </>
     )
-}
+};

@@ -4,7 +4,7 @@ import FontAwesome from "react-fontawesome";
 import axios, {AxiosError, AxiosResponse} from "axios";
 import {useToasts} from "react-toast-notifications";
 import {CFSearchRequest} from "./AddDataInterfaces";
-import {NoticeSearchResponse} from "../../generated/NoticeSearchResponse";
+import {NoticeSearchResponse} from "../../generated/FosTypes";
 
 enum SearchBy {
     fieldName = "searchBy",

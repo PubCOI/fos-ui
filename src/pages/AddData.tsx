@@ -1,13 +1,15 @@
 import React, {useEffect, useState} from "react";
 import {Alert, Button, Col, Container} from "react-bootstrap";
 import {AddDataForm} from "../components/addData/AddDataForm";
-import {NoticeIndex, NoticeSearchResponse} from "../generated/NoticeSearchResponse";
 import {LoadingWrapper} from "../components/LoadingWrapper";
 import {css} from "@emotion/css";
 import Datatable from 'react-bs-datatable';
 import Moment from "react-moment";
 import FontAwesome from "react-fontawesome";
 import {useToasts} from "react-toast-notifications";
+import axios, {AxiosError} from "axios";
+import firebase from "firebase";
+import {NoticeHitType, NoticeIndex, NoticeSearchResponse} from "../generated/FosTypes";
 
 export const AddData = () => {
 
@@ -25,7 +27,7 @@ export const AddData = () => {
     useEffect(() => {
         // if we were being clever about this, we'd do it as a map reduce
         let objmap: NoticeIndex[] = [] as NoticeIndex[];
-        searchResponse?.noticeList?.hitOfNoticeIndex?.forEach((hit) => {
+        searchResponse?.noticeList?.hitOfNoticeIndices?.forEach((hit: NoticeHitType) => {
             if (undefined !== hit.item) objmap.push(hit.item);
         });
         setSearchResponseItems(objmap);
@@ -76,11 +78,6 @@ export const RenderNoticesSearchResponse = (
         resetSearchCallback: () => void,
     }
 ) => {
-
-    useEffect(() => {
-        console.log(props.wrapper?.noticeList)
-    }, []);
-
     return (
         <>
             {Boolean(props.wrapper?.hitCount) && (
@@ -96,7 +93,6 @@ export const RenderNoticesSearchResponse = (
                     </div>
                 </Alert>
             )}
-
             <RenderResponseTable data={props.data}/>
         </>
     )
@@ -106,14 +102,38 @@ const RenderResponseTable = (props: { data: NoticeIndex[] | undefined }) => {
 
     const {addToast} = useToasts();
 
+    // auth
+    const [authToken, setAuthToken] = useState("");
+    useEffect(() => {
+        firebase.auth().currentUser?.getIdToken(/* forceRefresh */ true).then(function (idToken) {
+            setAuthToken(idToken);
+        })
+    }, [firebase.auth().currentUser]);
+
     // adding notices should be done from this component
-    function addNotice(id: string) {
-        console.log("doing add for ID", id);
-        addToast(`Adding award ${id} to the system`, {
+    async function addNotice(id: string) {
+        if (!authToken) {
+            addToast(`Cannot add notice: you must be logged in`, {
+                appearance: "error",
+                autoDismiss: true
+            });
+            return;
+        }
+        console.log("Adding notice ID", id);
+        addToast(`Adding notice ${id} to the system`, {
             appearance: "info",
             autoDismiss: true
         });
-        return 0;
+        return await axios.put(`/api/notices/${id}`, null,
+            {
+                headers: {
+                    authToken: authToken
+                }
+            })
+            .then(() => {
+                return 0;
+            });
+        // return 0;
     }
 
     function getHeader() {
@@ -197,8 +217,9 @@ const RenderResponseTable = (props: { data: NoticeIndex[] | undefined }) => {
     )
 };
 
-const FetchAddButton = (props: { row: NoticeIndex, addNoticeCallback: (id: string) => number }) => {
+const FetchAddButton = (props: { row: NoticeIndex, addNoticeCallback: (id: string) => Promise<number | undefined> }) => {
 
+    const {addToast} = useToasts();
     const [icon, setIcon] = useState((props.row.alreadyLoaded) ? "check" : "plus");
     const [doingUpdate, setDoingUpdate] = useState(false);
     const [response, setResponse] = useState(-1);
@@ -217,7 +238,16 @@ const FetchAddButton = (props: { row: NoticeIndex, addNoticeCallback: (id: strin
         setDisabled(true);
         setIcon("spinner");
         setDoingUpdate(true);
-        setResponse(props.addNoticeCallback(id));
+        props.addNoticeCallback(id).then((response) => {
+            setResponse((response) ? response : -1);
+        }).catch((err: AxiosError) => {
+            addToast(`Error: ${err.message}`, {
+                autoDismiss: true,
+                appearance: "error"
+            });
+            setDoingUpdate(false);
+            setIcon("frown-o");
+        });
     }
 
     return (

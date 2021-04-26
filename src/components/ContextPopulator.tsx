@@ -3,8 +3,8 @@ import firebase from "firebase";
 import axios, {AxiosResponse} from "axios";
 import AppContext from "./core/AppContext";
 import {useToasts} from "react-toast-notifications";
-import {UpdateProfileRequestDTO, UpdateProfileResponseDTO} from "../interfaces/DTO/UserDTO";
 import {ApplicationConfig} from "../interfaces/ApplicationConfig";
+import {UpdateProfileRequestDTO, UpdateProfileResponseDTO} from "../generated/FosTypes";
 
 export const ContextPopulator = () => {
 
@@ -47,7 +47,7 @@ export const ContextPopulator = () => {
     }, [globalIsSignedIn]);
 
     useEffect(() => {
-        appContext.setDisplayName(fosUserInfo.displayName);
+        appContext.setDisplayName((fosUserInfo.displayName) ? fosUserInfo.displayName : "");
     }, [fosUserInfo]);
 
     useEffect(() => {

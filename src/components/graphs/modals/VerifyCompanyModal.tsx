@@ -349,4 +349,4 @@ const OCSearchResponseItem = (props: {
             </div>
         </ListGroup.Item>
     )
-}
+};

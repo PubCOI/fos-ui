@@ -109,4 +109,4 @@ export const FosDropZone = () => {
         </Alert>
         </>
     )
-}
+};
