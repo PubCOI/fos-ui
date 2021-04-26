@@ -5,9 +5,9 @@ import AppContext from "../../core/AppContext";
 import {useToasts} from "react-toast-notifications";
 import firebase from "firebase";
 import axios from "axios";
-import {GraphAutocompleteResult} from "../../../interfaces/GraphAutocompleteResult";
 import {Typeahead, TypeaheadProps} from "react-bootstrap-typeahead";
 import {RenderAutocompleteResults} from "../autocomplete/RenderAutocompleteResults";
+import {GraphDetailedSearchResponseDTO} from "../../../generated/FosTypes";
 
 export const MergeRecordsModal = (props: { id: string }) => {
 
@@ -40,14 +40,14 @@ export const MergeRecordsModal = (props: { id: string }) => {
 
     const [personSearchTerms, setPersonSearchTerms] = useState("");
     const [doingPersonSearch, setDoingPersonSearch] = useState(false);
-    const [acPersonResults, setAcPersonResults] = useState([] as GraphAutocompleteResult[]);
+    const [acPersonResults, setAcPersonResults] = useState([] as GraphDetailedSearchResponseDTO[]);
     useEffect(() => {
         if (personSearchTerms.length < 2) {
             setDoingPersonSearch(false);
             return;
         }
         setDoingPersonSearch(true);
-        axios.get<GraphAutocompleteResult[]>("/api/graphs/_search/persons", {
+        axios.get<GraphDetailedSearchResponseDTO[]>("/api/graphs/_search/persons", {
             params: {
                 query: encodeURIComponent(personSearchTerms),
                 _t: Date.now(),

@@ -1,34 +1,23 @@
 import Dropzone, {IFileWithMeta} from "react-dropzone-uploader";
-import React, {useEffect, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import {StatusValue} from "react-dropzone-uploader/dist/Dropzone";
 import {useToasts} from "react-toast-notifications";
 import firebase from "firebase";
 import {LoadingWrapper} from "./LoadingWrapper";
 import {Alert} from "react-bootstrap";
 import FontAwesome from "react-fontawesome";
+import AppContext from "./core/AppContext";
 
 export const FosDropZone = () => {
     const {addToast} = useToasts();
 
-    const [authToken, setAuthToken] = useState("");
-    const [loaded, setLoaded] = useState(false);
+    const {config} = useContext(AppContext);
+
     const [success, setSuccess] = useState(false);
-
-    useEffect(() => {
-        firebase.auth().currentUser?.getIdToken(/* forceRefresh */ true).then(function (idToken) {
-            setAuthToken(idToken);
-        });
-    }, [firebase.auth().currentUser]);
-
-    useEffect(() => {
-        setLoaded(authToken !== "");
-    }, [authToken]);
 
     const getUploadParams = () => {
         const url = "/api/contracts";
-        const fields = {
-            authToken: authToken
-        };
+        const fields = {};
         return {url, fields}
     };
 
@@ -75,8 +64,13 @@ export const FosDropZone = () => {
         allFiles.forEach(f => f.remove());
     };
 
-    if (!loaded) {
-        return <LoadingWrapper/>
+    if (!config.standalone) {
+        return (
+            <Alert variant={"danger"}>
+                <h4><FontAwesome name={"cross"}/> Error</h4>
+                <div>Uploading items is only possible when system is in 'standalone' mode</div>
+            </Alert>
+        )
     }
 
     return (

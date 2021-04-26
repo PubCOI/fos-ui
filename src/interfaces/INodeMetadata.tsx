@@ -1,14 +1,9 @@
-export enum NodeMetadataType {
-    client = "client",
-    notice = "notice",
-    award = "award",
-    organisation = "organisation",
-    person = "person",
-}
+import {NodeTypeEnum} from "../generated/FosTypes";
+
 
 export interface INodeMetadata {
-    id: string,
-    type: NodeMetadataType,
+    fosId: string,
+    type: NodeTypeEnum,
     neo4j_id: string,
     clear_graph: boolean,
 }

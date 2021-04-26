@@ -1,8 +1,9 @@
 import {Menu, MenuItem, MenuProps, TypeaheadResult} from "react-bootstrap-typeahead";
-import {GraphAutocompleteResult} from "../../../interfaces/GraphAutocompleteResult";
-import React from "react";
 
-export const RenderAutocompleteResults = (props: { results: Array<TypeaheadResult<GraphAutocompleteResult>>, menuProps: MenuProps }) => {
+import React from "react";
+import {GraphDetailedSearchResponseDTO} from "../../../generated/FosTypes";
+
+export const RenderAutocompleteResults = (props: { results: Array<TypeaheadResult<GraphDetailedSearchResponseDTO>>, menuProps: MenuProps }) => {
     return (
         <Menu {...props.menuProps} className={"typeahead-pos-normal"}>
             {props.results.map((result, index) => (
@@ -14,7 +15,7 @@ export const RenderAutocompleteResults = (props: { results: Array<TypeaheadResul
                             <div>
                                 <small className={"text-muted"}>Associated with </small>
                                 <small className={"text-muted"}>
-                                    {result.details.map((detail, index) => (
+                                    {result.details?.map((detail, index) => (
                                         <span key={`result_detail_${index}`}>{detail}</span>
                                     ))}
                                 </small>

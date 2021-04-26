@@ -1,7 +1,7 @@
 import React, {useContext, useEffect, useRef, useState} from 'react';
 import cytoscape, {ElementDefinition} from "cytoscape";
 import {NodeMetadata} from "../components/NodeMetadata";
-import {INodeMetadata, NodeMetadataType} from "../interfaces/INodeMetadata";
+import {INodeMetadata} from "../interfaces/INodeMetadata";
 import {AwardDetailsModal} from "../components/graphs/AwardDetailsModal";
 import AppContext from "../components/core/AppContext";
 import axios, {AxiosResponse} from "axios";
@@ -22,6 +22,7 @@ import imgUser from '../img/graph-user.svg';
 import imgUserFormer from '../img/graph-user-former.svg';
 import imgOrgVerified from '../img/graph-org-verified.svg';
 import imgOrgUnverified from '../img/graph-org-unverified.svg';
+import {NodeTypeEnum} from "../generated/FosTypes";
 
 // import ctxAdd from '../img/graph-context-add.svg';
 // image: {src: ctxAdd, width: 12, height: 12, x: 6, y: 4},
@@ -41,18 +42,18 @@ export const Graph = (props: { location: Location }) => {
     const [showMetadata, setShowMetadata] = useState(false);
 
     useEffect(() => {
-        if (undefined !== graphMetadata.type && undefined !== graphMetadata.id && graphMetadata.id !== "") {
+        if (undefined !== graphMetadata.type && undefined !== graphMetadata.fosId && graphMetadata.fosId !== "") {
             setShowMetadata(true);
-            if (graphMetadata.type === NodeMetadataType.notice) {
+            if (graphMetadata.type === NodeTypeEnum.notice) {
                 getNoticeNodes(graphMetadata);
             }
-            if (graphMetadata.type === NodeMetadataType.award) {
+            if (graphMetadata.type === NodeTypeEnum.award) {
                 getAwardNodes(graphMetadata);
             }
-            if (graphMetadata.type === NodeMetadataType.organisation) {
+            if (graphMetadata.type === NodeTypeEnum.organisation) {
                 getOrgNodes(graphMetadata);
             }
-            if (graphMetadata.type === NodeMetadataType.person) {
+            if (graphMetadata.type === NodeTypeEnum.person) {
                 getPersonNodes(graphMetadata);
             }
         }
@@ -82,7 +83,7 @@ export const Graph = (props: { location: Location }) => {
             console.debug("Cytoscape not yet initialised");
             return;
         }
-        if (graphMetadata.type === undefined || graphMetadata.id === "") return;
+        if (graphMetadata.type === undefined || graphMetadata.fosId === "") return;
         console.debug("Got update", graphMetadata);
         if (graphMetadata.clear_graph) {
             console.debug("clearing graph");
@@ -91,14 +92,14 @@ export const Graph = (props: { location: Location }) => {
             nodes.removeData('hasListener');
             cy.remove(cy.$("*"));
         }
-        if (graphMetadata.type as NodeMetadataType === NodeMetadataType.client) {
+        if (graphMetadata.type as NodeTypeEnum === NodeTypeEnum.client) {
             // get notices
             axios.get<string, AxiosResponse<{
                 c: INode,
                 n: INode,
                 ref: IRef,
             }[]>>(
-                `/api/graphs/clients/${graphMetadata.id}`
+                `/api/graphs/clients/${graphMetadata.fosId}`
             ).then((r) => {
                 if (r.data.length > 0) {
                     r.data.forEach(res => {
@@ -115,7 +116,7 @@ export const Graph = (props: { location: Location }) => {
                 p: INode,
                 ref: IRef,
             }[]>>(
-                `/api/graphs/clients/${graphMetadata.id}/relationships`
+                `/api/graphs/clients/${graphMetadata.fosId}/relationships`
             ).then((r) => {
                 if (r.data.length > 0) {
                     r.data.forEach(res => {
@@ -128,13 +129,13 @@ export const Graph = (props: { location: Location }) => {
             });
 
         }
-        if (graphMetadata.type as NodeMetadataType === NodeMetadataType.organisation) {
+        if (graphMetadata.type as NodeTypeEnum === NodeTypeEnum.organisation) {
             axios.get<string, AxiosResponse<{
                 o: INode,
                 a: INode,
                 ref: IRef,
             }[]>>(
-                `/api/graphs/organisations/${graphMetadata.id}`
+                `/api/graphs/organisations/${graphMetadata.fosId}`
             ).then((r) => {
                 if (r.data.length > 0) {
                     r.data.forEach(res => {
@@ -153,7 +154,7 @@ export const Graph = (props: { location: Location }) => {
     }, [graphMetadata]);
 
     function setMetadataViaCallback(data: INodeMetadata) {
-        let ele = `node[fos_id="${data.id}"]`;
+        let ele = `node[fos_id="${data.fosId}"]`;
         console.debug("Updating node", ele);
         cy.elements(ele).flashClass("highlight", 1500);
         setGraphMetadata(data);
@@ -169,14 +170,14 @@ export const Graph = (props: { location: Location }) => {
     }
 
     function getNoticeNodes(metadata: INodeMetadata) {
-        console.debug("getNoticeNodes: Requesting children of", metadata.id);
+        console.debug("getNoticeNodes: Requesting children of", metadata.fosId);
         let dataAdded = false;
         axios.get<string, AxiosResponse<{
             a: INode,
             n: INode,
             ref: IRef,
         }[]>>(
-            `/api/graphs/notices/${metadata.id}/children`,
+            `/api/graphs/notices/${metadata.fosId}/children`,
             {
                 params: {
                     max: 25
@@ -191,7 +192,7 @@ export const Graph = (props: { location: Location }) => {
                         dataAdded = addEdge(res.ref) || dataAdded;
                     });
                 } else {
-                    addToast(`No awards found on notice ${metadata.id}`, {
+                    addToast(`No awards found on notice ${metadata.fosId}`, {
                         appearance: "warning",
                         autoDismiss: true,
                     })
@@ -203,7 +204,7 @@ export const Graph = (props: { location: Location }) => {
                     n: INode,
                     ref: IRef,
                 }[]>>(
-                    `/api/graphs/notices/${metadata.id}/parents`,
+                    `/api/graphs/notices/${metadata.fosId}/parents`,
                     {
                         params: {
                             max: 25
@@ -217,7 +218,7 @@ export const Graph = (props: { location: Location }) => {
                             dataAdded = addEdge(res.ref) || dataAdded;
                         });
                     } else {
-                        addToast(`No clients found on notice ${metadata.id}`, {
+                        addToast(`No clients found on notice ${metadata.fosId}`, {
                             appearance: "warning",
                             autoDismiss: true,
                         })
@@ -233,14 +234,14 @@ export const Graph = (props: { location: Location }) => {
     }
 
     function getAwardNodes(metadata: INodeMetadata) {
-        console.debug("getAwardNodes: Requesting children of", metadata.id);
+        console.debug("getAwardNodes: Requesting children of", metadata.fosId);
         let dataAdded = false;
         axios.get<string, AxiosResponse<{
             a: INode,
             o: INode,
             ref: IRef,
         }[]>>(
-            `/api/graphs/awards/${metadata.id}/children`,
+            `/api/graphs/awards/${metadata.fosId}/children`,
             {
                 params: {
                     max: 25
@@ -254,19 +255,19 @@ export const Graph = (props: { location: Location }) => {
                     dataAdded = addEdge(res.ref) || dataAdded;
                 });
             } else {
-                addToast(`No org data found on notice ${metadata.id}`, {
+                addToast(`No org data found on notice ${metadata.fosId}`, {
                     appearance: "warning",
                     autoDismiss: true,
                 })
             }
         }).then(() => {
-            console.debug("Requesting parents of", metadata.id);
+            console.debug("Requesting parents of", metadata.fosId);
             return axios.get<string, AxiosResponse<{
                 a: INode,
                 n: INode,
                 ref: IRef,
             }[]>>(
-                `/api/graphs/awards/${metadata.id}/parents`
+                `/api/graphs/awards/${metadata.fosId}/parents`
             ).then((r) => {
                 if (r.data.length > 0) {
                     r.data.forEach(res => {
@@ -276,7 +277,7 @@ export const Graph = (props: { location: Location }) => {
                         dataAdded = addEdge(res.ref) || dataAdded;
                     });
                 } else {
-                    addToast(`No notice data found on award ${metadata.id}`, {
+                    addToast(`No notice data found on award ${metadata.fosId}`, {
                         appearance: "warning",
                         autoDismiss: true,
                     })
@@ -292,13 +293,13 @@ export const Graph = (props: { location: Location }) => {
     }
 
     function getOrgNodes(metadata: INodeMetadata) {
-        console.debug("getOrgNodes: requesting relationships for", metadata.id);
+        console.debug("getOrgNodes: requesting relationships for", metadata.fosId);
         let dataAdded = false;
         axios.get<string, AxiosResponse<{
             o: INode,
             p: INode,
             ref: IRef
-        }[]>>(`/api/graphs/organisations/${metadata.id}/relationships`, {params: {max: 50}})
+        }[]>>(`/api/graphs/organisations/${metadata.fosId}/relationships`, {params: {max: 50}})
             .then((r) => {
                 if (r.data.length > 0) {
                     r.data.forEach(res => {
@@ -310,7 +311,7 @@ export const Graph = (props: { location: Location }) => {
                         dataAdded = addEdge(res.ref) || dataAdded;
                     });
                 } else {
-                    addToast(`No relationships found for organisation ${metadata.id}`, {
+                    addToast(`No relationships found for organisation ${metadata.fosId}`, {
                         appearance: "warning",
                         autoDismiss: true,
                     })
@@ -364,14 +365,14 @@ export const Graph = (props: { location: Location }) => {
     }
 
     function getPersonNodes(metadata: INodeMetadata) {
-        console.debug("getPersonNodes: Requesting relationships for", metadata.id);
+        console.debug("getPersonNodes: Requesting relationships for", metadata.fosId);
         let dataAdded = false;
         axios.get<string, AxiosResponse<{
             p: INode,
             o: INode,
             ref: IRef,
         }[]>>(
-            `/api/graphs/persons/${metadata.id}/relationships`, {
+            `/api/graphs/persons/${metadata.fosId}/relationships`, {
                 params: {
                     max: 50,
                     reqType: "org"
@@ -393,7 +394,7 @@ export const Graph = (props: { location: Location }) => {
                     c: INode,
                     ref: IRef,
                 }[]>>(
-                    `/api/graphs/persons/${metadata.id}/relationships`, {
+                    `/api/graphs/persons/${metadata.fosId}/relationships`, {
                         params: {
                             max: 50,
                             reqType: "client"
@@ -436,7 +437,7 @@ export const Graph = (props: { location: Location }) => {
                     },
                 },
                 {
-                    selector: 'node[fos_type="client"]',
+                    selector: 'node[type="client"]',
                     style: {
                         "label": "data(name)",
                         "ghost": "yes",
@@ -449,48 +450,48 @@ export const Graph = (props: { location: Location }) => {
                     },
                 },
                 {
-                    selector: 'node[fos_type="notice"]',
+                    selector: 'node[type="notice"]',
                     style: {
                         "label": "Notice",
                         "background-image": imgNotice
                     },
                 },
                 {
-                    selector: 'node[fos_type="notice"][!has_awards]',
+                    selector: 'node[type="notice"][!has_awards]',
                     style: {
                         "background-image": imgNoticeWarning
                     },
                 },
                 {
-                    selector: 'node[fos_type="award"]',
+                    selector: 'node[type="award"]',
                     style: {
                         "label": "Award",
                         "background-image": "url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMHB4IiBoZWlnaHQ9IjIwcHgiIHZpZXdCb3g9IjAgMCAyMzA0IDE3OTIiPjxwYXRoIGZpbGw9InJnYigxMTEsNTksMTI3KSIgZD0iTTE5MiAxMTUycTQwIDAgNTYtMzJ0MC02NC01Ni0zMi01NiAzMiAwIDY0IDU2IDMyek0xNjY1IDEwOTRxLTEwLTEzLTM4LjUtNTB0LTQxLjUtNTQtMzgtNDktNDIuNS01My00MC41LTQ3LTQ1LTQ5bC0xMjUgMTQwcS04MyA5NC0yMDguNSA5MnQtMjA1LjUtOThxLTU3LTY5LTU2LjUtMTU4dDU4LjUtMTU3bDE3Ny0yMDZxLTIyLTExLTUxLTE2LjV0LTQ3LjUtNi01Ni41IDAuNS00OSAxcS05MiAwLTE1OCA2NmwtMTU4IDE1OGgtMTU1djU0NHE1IDAgMjEtMC41dDIyIDAgMTkuNSAyIDIwLjUgNC41IDE3LjUgOC41IDE4LjUgMTMuNWwyOTcgMjkycTExNSAxMTEgMjI3IDExMSA3OCAwIDEyNS00NyA1NyAyMCAxMTIuNS04dDcyLjUtODVxNzQgNiAxMjctNDQgMjAtMTggMzYtNDUuNXQxNC01MC41cTEwIDEwIDQzIDEwIDQzIDAgNzctMjF0NDkuNS01MyAxMi03MS41LTMwLjUtNzMuNXpNMTgyNCAxMTUyaDk2di01MTJoLTkzbC0xNTctMTgwcS02Ni03Ni0xNjktNzZoLTE2N3EtODkgMC0xNDYgNjdsLTIwOSAyNDNxLTI4IDMzLTI4IDc1dDI3IDc1cTQzIDUxIDExMCA1MnQxMTEtNDlsMTkzLTIxOHEyNS0yMyA1My41LTIxLjV0NDcgMjcgOC41IDU2LjVxMTYgMTkgNTYgNjN0NjAgNjhxMjkgMzYgODIuNSAxMDUuNXQ2NC41IDg0LjVxNTIgNjYgNjAgMTQwek0yMTEyIDExNTJxNDAgMCA1Ni0zMnQwLTY0LTU2LTMyLTU2IDMyIDAgNjQgNTYgMzJ6TTIzMDQgNTc2djY0MHEwIDI2LTE5IDQ1dC00NSAxOWgtNDM0cS0yNyA2NS04MiAxMDYuNXQtMTI1IDUxLjVxLTMzIDQ4LTgwLjUgODEuNXQtMTAyLjUgNDUuNXEtNDIgNTMtMTA0LjUgODEuNXQtMTI4LjUgMjQuNXEtNjAgMzQtMTI2IDM5LjV0LTEyNy41LTE0LTExNy01My41LTEwMy41LTgxbC0yODctMjgyaC0zNThxLTI2IDAtNDUtMTl0LTE5LTQ1di02NzJxMC0yNiAxOS00NXQ0NS0xOWg0MjFxMTQtMTQgNDctNDh0NDcuNS00OCA0NC00MCA1MC41LTM3LjUgNTEtMjUuNSA2Mi0xOS41IDY4LTUuNWgxMTdxOTkgMCAxODEgNTYgODItNTYgMTgxLTU2aDE2N3EzNSAwIDY3IDZ0NTYuNSAxNC41IDUxLjUgMjYuNSA0NC41IDMxIDQzIDM5LjUgMzkgNDIgNDEgNDggNDEuNSA0OC41aDM1NXEyNiAwIDQ1IDE5dDE5IDQ1eiIvPjwvc3ZnPg==)",
                     }
                 },
                 {
-                    selector: 'node[fos_type="organisation"][verified]',
+                    selector: 'node[type="organisation"][verified]',
                     style: {
                         "label": "data(name)",
                         "background-image": imgOrgVerified
                     }
                 },
                 {
-                    selector: 'node[fos_type="organisation"][!verified]',
+                    selector: 'node[type="organisation"][!verified]',
                     style: {
                         "label": "data(name)",
                         "background-image": imgOrgUnverified
                     }
                 },
                 {
-                    selector: 'node[fos_type="person"]',
+                    selector: 'node[type="person"]',
                     style: {
                         "label": "data(commonName)",
                         "background-image": imgUserFormer
                     }
                 },
                 {
-                    selector: 'node[fos_type="person"][hasTimeFilter][timeFilter_numeric > 50]',
+                    selector: 'node[type="person"][hasTimeFilter][timeFilter_numeric > 50]',
                     style: {
                         "label": "data(commonName)",
                         "background-image": imgUser
@@ -594,12 +595,12 @@ export const Graph = (props: { location: Location }) => {
                 id: "node_" + node.neo4j_id,
                 neo4j_id: node.neo4j_id,
                 neo4j_label: node.labels.join(),
-                fos_type: type || node.labels[0].toLowerCase()
+                type: type || node.labels[0].toLowerCase()
             };
 
             Object.keys(node.properties).forEach(key => {
                 if (key === "id") {
-                    output["fos_id"] = node.properties[key];
+                    output["fosId"] = node.properties[key];
                 } else {
                     output[key] = node.properties[key];
                 }
@@ -698,12 +699,12 @@ export const Graph = (props: { location: Location }) => {
         // console.log(`${nodes.size()} nodes match [!hasListener]`);
         nodes.on('tap', function (evt: {
             target: {
-                data: () => { fos_id: string, fos_type: NodeMetadataType, neo4j_id: string }
+                data: () => { fosId: string, type: NodeTypeEnum, neo4j_id: string }
             }
         }) {
             let metadata = {
-                type: evt.target.data().fos_type,
-                id: evt.target.data().fos_id,
+                type: evt.target.data().type,
+                fosId: evt.target.data().fosId,
                 neo4j_id: evt.target.data().neo4j_id,
                 clear_graph: false,
             };

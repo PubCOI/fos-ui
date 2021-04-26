@@ -31,21 +31,21 @@ export const RenderPersonMetadata = (props: { metadata: INodeMetadata }) => {
     // to be honest, we could just pull this from the metadata client-side but
     // it's probably less brittle to just use the same pattern as elsewhere ...
     useEffect(() => {
-        axios.get<PersonDTO>(`/api/graphs/persons/${props.metadata.id}/metadata`)
+        axios.get<PersonDTO>(`/api/graphs/persons/${props.metadata.fosId}/metadata`)
             .then((response) => {
                 setLoaded(true);
                 setPerson(response.data)
             })
             .catch((err) => {
-                addToast(`Unable to load data for person ID ${props.metadata.id}`, {
+                addToast(`Unable to load data for person ID ${props.metadata.fosId}`, {
                     appearance: "error",
                     autoDismiss: true,
                 })
             })
-    }, [props.metadata.id]);
+    }, [props.metadata.fosId]);
 
     function mergeRecordsModal(metadata: INodeMetadata) {
-        setModalBody(<MergeRecordsModal id={metadata.id}/>);
+        setModalBody(<MergeRecordsModal id={metadata.fosId}/>);
     }
 
     function addRelationshipModal(metadata: INodeMetadata) {

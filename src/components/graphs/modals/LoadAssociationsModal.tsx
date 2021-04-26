@@ -82,7 +82,7 @@ export const LoadAssociationsModal = (props: {metadata: INodeMetadata}) => {
                             onClick={() => hideModal()}>
                             Cancel
                         </Button>
-                        <Button variant="success" disabled={!authToken} onClick={() => doLoad(props.metadata.id)}>
+                        <Button variant="success" disabled={!authToken} onClick={() => doLoad(props.metadata.fosId)}>
                             Begin data load
                         </Button>
                     </Modal.Footer>

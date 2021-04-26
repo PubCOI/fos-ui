@@ -26,11 +26,12 @@ import PaneContext from "./components/core/PaneContext";
 import {ModalContainer} from "./components/ModalContainer";
 import {GraphFilterBar} from "./components/graphs/GraphFilterBar";
 import {SearchBar} from "./components/search/SearchBar";
-import {INodeMetadata, NodeMetadataType} from "./interfaces/INodeMetadata";
 import {IGraphConfig} from "./components/graphs/preferences/IGraphConfig";
 import {TimebaseDataEnum} from "./components/graphs/preferences/TimebaseDataEnum";
 import {ApplicationConfig} from "./interfaces/ApplicationConfig";
 import {AddData} from "./pages/AddData";
+import {INodeMetadata} from "./interfaces/INodeMetadata";
+import {NodeTypeEnum} from "./generated/FosTypes";
 
 function App() {
 
@@ -41,7 +42,7 @@ function App() {
     }
 
     // ***** graph settings *****
-    const [graphMetadata, setGraphMetadata] = useState<INodeMetadata>({type: NodeMetadataType.client, id: "", neo4j_id: "", clear_graph: false});
+    const [graphMetadata, setGraphMetadata] = useState<INodeMetadata>({type: NodeTypeEnum.client, fosId: "", neo4j_id: "", clear_graph: false});
     const [graphConfig, setGraphConfig] = useState<IGraphConfig>({show_timebase_data: TimebaseDataEnum.recent});
     // ***** end graph settings *****
 

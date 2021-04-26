@@ -32,6 +32,16 @@ export interface UpdateProfileRequestDTO {
     displayName?: string;
 }
 
+export interface GraphDetailedSearchResponseDTO extends GraphSearchResponseDTO {
+    details?: string[];
+}
+
+export interface OrganisationDTO {
+    fosId?: string;
+    name?: string;
+    verified?: boolean;
+}
+
 export interface ByRegion {
     items?: RegionItems;
     other?: number;
@@ -51,6 +61,10 @@ export interface NoticeList {
     hitOfNoticeIndices?: NoticeHitType[];
 }
 
+export interface GraphSearchResponseDTO extends GenericIDNameFTSResponse {
+    type?: NodeTypeEnum;
+}
+
 export interface RegionItems {
     keyValuePairOfstringlongs?: KVPType[];
 }
@@ -66,6 +80,12 @@ export interface TypeItems {
 export interface NoticeHitType {
     score?: number;
     item?: NoticeIndex;
+}
+
+export interface GenericIDNameFTSResponse {
+    id?: string;
+    name?: string;
+    score?: number;
 }
 
 export interface KVPType {
@@ -138,4 +158,12 @@ export enum AddRelCoiSubtypeEnum {
     professional_body = "professional_body",
     voluntary = "voluntary",
     trustee = "trustee",
+}
+
+export enum NodeTypeEnum {
+    client = "client",
+    organisation = "organisation",
+    person = "person",
+    notice = "notice",
+    award = "award",
 }

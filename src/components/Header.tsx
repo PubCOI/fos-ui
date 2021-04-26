@@ -96,7 +96,7 @@ const LoginNavbar = () => {
     return (
         <FirebaseAuthConsumer>
             {({isSignedIn}) => {
-                if (isSignedIn) {
+                if (isSignedIn || appContext.config.standalone) {
                     return (
                         <>
                             <NavDropdown title={displayName}

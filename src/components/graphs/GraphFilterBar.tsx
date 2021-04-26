@@ -4,16 +4,15 @@ import FontAwesome from "react-fontawesome";
 import {Menu, MenuItem, MenuProps, Typeahead, TypeaheadProps, TypeaheadResult} from "react-bootstrap-typeahead";
 import axios from "axios";
 import {useToasts} from "react-toast-notifications";
-import {NodeMetadataType} from "../../interfaces/INodeMetadata";
 import AppContext from "../core/AppContext";
 import {SetPrefsModal} from "./preferences/SetPrefsModal";
-import {GraphAutocompleteResult} from "../../interfaces/GraphAutocompleteResult";
+import {GraphDetailedSearchResponseDTO, NodeTypeEnum} from "../../generated/FosTypes";
 
 export const GraphFilterBar = () => {
 
     const {addToast} = useToasts();
     const [searchTerms, setSearchTerms] = useState("");
-    const [autocompleteResults, setAutocompleteResults] = useState([] as GraphAutocompleteResult[]);
+    const [autocompleteResults, setAutocompleteResults] = useState([] as GraphDetailedSearchResponseDTO[]);
     const [doingRequest, setDoingRequest] = useState(false);
     const {setGraphMetadata, setGraphConfig, setModalBody, hideModal} = useContext(AppContext);
 
@@ -30,22 +29,22 @@ export const GraphFilterBar = () => {
             if (!node) return;
             setGraphMetadata({
                 type: node.type,
-                id: node.id,
+                fosId: node.id,
                 neo4j_id: node.neo4j_id,
                 clear_graph: true,
             })
         }
     };
 
-    const renderMenu = (results: Array<TypeaheadResult<GraphAutocompleteResult>>, menuProps: MenuProps) => (
+    const renderMenu = (results: Array<TypeaheadResult<GraphDetailedSearchResponseDTO>>, menuProps: MenuProps) => (
         <Menu {...menuProps} className={"typeahead-pos-right"}>
             {results.map((result, index) => (
                 <MenuItem option={result} position={index} key={"graph_result_" + index}>
                     <div className={"d-flex justify-content-left align-items-center"}>
                         <div className={"mr-4"}>
-                            {(result.type === NodeMetadataType.organisation) ?
+                            {(result.type === NodeTypeEnum.organisation) ?
                                 <FontAwesome name={"building-o"} fixedWidth/> :
-                                (result.type === NodeMetadataType.person) ? <FontAwesome name={"user"} fixedWidth/> :
+                                (result.type === NodeTypeEnum.person) ? <FontAwesome name={"user"} fixedWidth/> :
                                     <FontAwesome name={"users"} fixedWidth/>}
                         </div>
                         <div>
@@ -55,7 +54,7 @@ export const GraphFilterBar = () => {
                                 <div>
                                     <small className={"text-muted"}>Associated with </small>
                                     <small className={"text-muted"}>
-                                        {result.details.map((detail, index) => (
+                                        {result.details?.map((detail: string, index: number) => (
                                             <span key={`result_detail_${index}`}>{detail}</span>
                                         ))}
                                     </small>
@@ -75,7 +74,7 @@ export const GraphFilterBar = () => {
             return;
         }
         setDoingRequest(true);
-        axios.get<GraphAutocompleteResult[]>("/api/graphs/_search", {
+        axios.get<GraphDetailedSearchResponseDTO[]>("/api/graphs/_search", {
             params: {
                 query: encodeURIComponent(searchTerms),
                 _t: Date.now()

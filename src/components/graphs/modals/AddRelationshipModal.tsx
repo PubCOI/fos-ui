@@ -4,12 +4,17 @@ import {useToasts} from "react-toast-notifications";
 import {Alert, Button, Form, InputGroup, Modal, ToggleButton, ToggleButtonGroup} from "react-bootstrap";
 import {INodeMetadata} from "../../../interfaces/INodeMetadata";
 import axios, {AxiosError, AxiosResponse} from "axios";
-import {GraphAutocompleteResult} from "../../../interfaces/GraphAutocompleteResult";
 import FontAwesome from "react-fontawesome";
 import firebase from "firebase";
 import {Typeahead, TypeaheadProps} from "react-bootstrap-typeahead";
 import {RenderAutocompleteResults} from "../autocomplete/RenderAutocompleteResults";
-import {AddRelationshipDTO, AddRelCoiSubtypeEnum, AddRelCoiTypeEnum, AddRelTypeEnum} from "../../../generated/FosTypes";
+import {
+    AddRelationshipDTO,
+    AddRelCoiSubtypeEnum,
+    AddRelCoiTypeEnum,
+    AddRelTypeEnum,
+    GraphDetailedSearchResponseDTO
+} from "../../../generated/FosTypes";
 
 interface SelectOptions {
     direct_financial: SelectOption[]
@@ -154,7 +159,7 @@ export const AddRelationshipModal = (props: { metadata: INodeMetadata }) => {
     // autocompletes >>> *** person search
     const [personSearchTerms, setPersonSearchTerms] = useState("");
     const [doingPersonSearch, setDoingPersonSearch] = useState(false);
-    const [acPersonResults, setAcPersonResults] = useState([] as GraphAutocompleteResult[]);
+    const [acPersonResults, setAcPersonResults] = useState([] as GraphDetailedSearchResponseDTO[]);
     const personAcOpts: TypeaheadProps<any> = {
         id: "search_persons",
         options: acPersonResults,
@@ -179,7 +184,7 @@ export const AddRelationshipModal = (props: { metadata: INodeMetadata }) => {
             return;
         }
         setDoingPersonSearch(true);
-        axios.get<GraphAutocompleteResult[]>("/api/graphs/_search/persons", {
+        axios.get<GraphDetailedSearchResponseDTO[]>("/api/graphs/_search/persons", {
             params: {
                 query: encodeURIComponent(personSearchTerms),
                 _t: Date.now()
@@ -205,7 +210,7 @@ export const AddRelationshipModal = (props: { metadata: INodeMetadata }) => {
     // autocompletes >>> *** org search
     const [orgSearchTerms, setOrgSearchTerms] = useState("");
     const [doingOrgSearch, setDoingOrgSearch] = useState(false);
-    const [acOrgResults, setAcOrgResults] = useState([] as GraphAutocompleteResult[]);
+    const [acOrgResults, setAcOrgResults] = useState([] as GraphDetailedSearchResponseDTO[]);
     const orgAcOpts: TypeaheadProps<any> = {
         id: "search_organisations",
         options: acOrgResults,
@@ -231,7 +236,7 @@ export const AddRelationshipModal = (props: { metadata: INodeMetadata }) => {
             return;
         }
         setDoingOrgSearch(true);
-        axios.get<GraphAutocompleteResult[]>("/api/graphs/_search/organisations", {
+        axios.get<GraphDetailedSearchResponseDTO[]>("/api/graphs/_search/organisations", {
             params: {
                 query: encodeURIComponent(orgSearchTerms),
                 _t: Date.now()
@@ -299,7 +304,7 @@ export const AddRelationshipModal = (props: { metadata: INodeMetadata }) => {
             comments: relComments,
         };
         axios.put<AddRelationshipDTO, AxiosResponse<string>>(
-            `/api/graphs/${props.metadata.type}s/${props.metadata.id}/relationships`,
+            `/api/graphs/${props.metadata.type}s/${props.metadata.fosId}/relationships`,
             data, {
                 headers: {
                     authToken: authToken
@@ -335,7 +340,7 @@ export const AddRelationshipModal = (props: { metadata: INodeMetadata }) => {
                     <Modal.Body>
 
                         <Alert variant={"secondary"} className={"small"}>
-                            Adding relationship for {props.metadata.type} {props.metadata.id}
+                            Adding relationship for {props.metadata.type} {props.metadata.fosId}
                         </Alert>
 
                         {/*cards*/}

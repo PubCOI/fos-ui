@@ -8,12 +8,11 @@ import {VerifyCompanySearchResponse} from "../../../interfaces/DTO/VerifyCompany
 import firebase from "firebase";
 import {LoadingWrapper} from "../../LoadingWrapper";
 import {FosTasksEnum} from "../../../interfaces/FosTasksEnum";
-import {OrganisationMetadataDTO} from "../../../interfaces/DTO/OrganisationMetadataDTO";
 import {DataTypeEnum} from "../FixDataIssueWidget";
 import {FixDataPaneContents} from "../FixDataPaneContents";
 import PaneContext from "../../core/PaneContext";
 import {renderTooltip} from "../../../hooks/Utils";
-import {NodeMetadataType} from "../../../interfaces/INodeMetadata";
+import {NodeTypeEnum, OrganisationDTO} from "../../../generated/FosTypes";
 
 interface VerifyCompanyResponse {
     response: string
@@ -70,13 +69,13 @@ export const VerifyCompanyModal = (props: { id: string }) => {
         flagged: false
     }]);
 
-    const [recordMeta, setRecordMeta] = useState<OrganisationMetadataDTO>({
-        id: "",
+    const [recordMeta, setRecordMeta] = useState<OrganisationDTO>({
+        fosId: "",
         name: "",
         verified: false
     });
     useEffect(() => {
-        axios.get<string, AxiosResponse<OrganisationMetadataDTO>>(`/api/graphs/organisations/${props.id}/metadata`)
+        axios.get<string, AxiosResponse<OrganisationDTO>>(`/api/graphs/organisations/${props.id}/metadata`)
             .then((res) => {
                 setRecordMeta(res.data);
             })
@@ -137,7 +136,7 @@ export const VerifyCompanyModal = (props: { id: string }) => {
 
     function setFlag(flagStatus: boolean, itemId: string) {
         if (flagStatus) {
-            axios.put(`/api/ui/flags/${NodeMetadataType.organisation}/${itemId}`, null, {
+            axios.put(`/api/ui/flags/${NodeTypeEnum.organisation}/${itemId}`, null, {
                 headers: {
                     authToken: authToken
                 }
@@ -155,7 +154,7 @@ export const VerifyCompanyModal = (props: { id: string }) => {
                     })
                 })
         } else {
-            axios.delete(`/api/ui/flags/${NodeMetadataType.organisation}/${itemId}`, {
+            axios.delete(`/api/ui/flags/${NodeTypeEnum.organisation}/${itemId}`, {
                 headers: {
                     authToken: authToken
                 }
@@ -197,7 +196,7 @@ export const VerifyCompanyModal = (props: { id: string }) => {
                     </Alert>
                     <p>The records we are trying to match are for the following company</p>
                     <Alert variant={"secondary"}>
-                        <div className={"small text-monospace"}>{recordMeta.id}</div>
+                        <div className={"small text-monospace"}>{recordMeta.fosId}</div>
                         <div className={"small text-monospace"}>{recordMeta.name}</div>
                     </Alert>
 

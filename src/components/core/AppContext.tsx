@@ -1,8 +1,9 @@
 import React from "react";
 import {ApplicationConfig} from "../../interfaces/ApplicationConfig";
-import {INodeMetadata, NodeMetadataType} from "../../interfaces/INodeMetadata";
+import {INodeMetadata} from "../../interfaces/INodeMetadata";
 import {TimebaseDataEnum} from "../graphs/preferences/TimebaseDataEnum";
 import {IGraphConfig} from "../graphs/preferences/IGraphConfig";
+import {NodeTypeEnum} from "../../generated/FosTypes";
 
 // pattern shamelessly copied from https://www.savaslabs.com/blog/using-react-global-state-hooks-and-context
 
@@ -21,8 +22,8 @@ const AppContext = React.createContext({
     setModalBody: (body: any) => {},
     hideModal: () => {},
     graphMetadata: {
-        type: NodeMetadataType.client,
-        id: "",
+        type: NodeTypeEnum.client,
+        fosId: "",
         neo4j_id: "",
         clear_graph: false,
     },

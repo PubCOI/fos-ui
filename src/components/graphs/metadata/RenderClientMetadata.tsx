@@ -5,10 +5,11 @@ import axios from "axios";
 import {Button, ListGroup} from "react-bootstrap";
 import {NoticeResponseDTO} from "../../../interfaces/NoticeResponseDTO";
 import {MinMaxValueFormat} from "../../MinMaxValueFormat";
-import {INodeMetadata, NodeMetadataType} from "../../../interfaces/INodeMetadata";
 import FontAwesome from "react-fontawesome";
 import AppContext from "../../core/AppContext";
 import {AddRelationshipModal} from "../modals/AddRelationshipModal";
+import {NodeTypeEnum} from "../../../generated/FosTypes";
+import {INodeMetadata} from "../../../interfaces/INodeMetadata";
 
 export const RenderClientMetadata = (
     props: {
@@ -16,7 +17,7 @@ export const RenderClientMetadata = (
         setMetadataCallback: (metadata: INodeMetadata) => void
     }
 ) => {
-    let baseURL = `/api/graphs/clients/${props.metadata.id}/metadata`;
+    let baseURL = `/api/graphs/clients/${props.metadata.fosId}/metadata`;
     const [client, setClient] = useState<ClientNodeResponseDTO>({
         id: "",
         name: "",
@@ -43,7 +44,7 @@ export const RenderClientMetadata = (
                 });
             });
 
-    }, [props.metadata.id]);
+    }, [props.metadata.fosId]);
 
     function addRelationshipModal(metadata: INodeMetadata) {
         setModalBody(<AddRelationshipModal metadata={metadata}/>);
@@ -63,8 +64,8 @@ export const RenderClientMetadata = (
                 {client.notices.map(notice => (
                     <ListGroup.Item action
                         onClick={() => props.setMetadataCallback({
-                            id: notice.id,
-                            type: NodeMetadataType.notice,
+                            fosId: notice.id,
+                            type: NodeTypeEnum.notice,
                             neo4j_id: "",
                             clear_graph: false,
                         })}

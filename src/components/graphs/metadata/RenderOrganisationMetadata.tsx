@@ -1,51 +1,53 @@
 import {useToasts} from "react-toast-notifications";
 import {Alert, Button, Col, Row} from "react-bootstrap";
 import React, {useContext, useEffect, useState} from "react";
-import {OrganisationMetadataDTO} from "../../../interfaces/DTO/OrganisationMetadataDTO";
 import axios from "axios";
 import {LoadingWrapper} from "../../LoadingWrapper";
 import FontAwesome from "react-fontawesome";
 import AppContext from "../../core/AppContext";
 import {VerifyCompanyModal} from "../modals/VerifyCompanyModal";
-import {INodeMetadata} from "../../../interfaces/INodeMetadata";
 import {AddRelationshipModal} from "../modals/AddRelationshipModal";
+import {OrganisationDTO} from "../../../generated/FosTypes";
+import {INodeMetadata} from "../../../interfaces/INodeMetadata";
 
 export const RenderOrganisationMetadata = (props: {metadata: INodeMetadata}) => {
     const {addToast} = useToasts();
-    const {setModalBody, hideModal} = useContext(AppContext);
+    const {setModalBody} = useContext(AppContext);
     const [doingRequest, setDoingRequest] = useState(false);
-    const [org, setOrg] = useState<OrganisationMetadataDTO>({
-        id: "",
+    const [org, setOrg] = useState<OrganisationDTO>({
+        fosId: "",
         name: "",
         verified: false
     });
-    const [companyNumber, setCompanyNumber] = useState("");
-    const [jurisdiction, setJurisdiction] = useState("");
+    const [companyNumber, setCompanyNumber] = useState<string | undefined>("");
+    const [jurisdiction, setJurisdiction] = useState<string | undefined>("");
 
     useEffect(() => {
-        if (undefined === org || "" === org.id) return;
-        setJurisdiction(org.id.split(":")[0]);
-        setCompanyNumber(org.id.split(":")[1]);
+        if (undefined === org || "" === org.fosId) return;
+        setJurisdiction(org.fosId?.split(":")[0]);
+        setCompanyNumber(org.fosId?.split(":")[1]);
     }, [org]);
 
     useEffect(() =>{
         setDoingRequest(true);
-        axios.get<OrganisationMetadataDTO>(`/api/graphs/organisations/${props.metadata.id}/metadata`)
+        axios.get<OrganisationDTO>(`/api/graphs/organisations/${props.metadata.fosId}/metadata`)
             .then(res => {
                 setDoingRequest(false);
                 setOrg(res.data);
             })
             .catch(() => {
-                addToast(`Unable to load data for org ${props.metadata.id}`, {
+                addToast(`Unable to load data for org ${props.metadata.fosId}`, {
                     appearance: "error",
                     autoDismiss: true
                 });
                 setDoingRequest(false);
             })
-    }, [props.metadata.id]);
+    }, [props.metadata.fosId]);
 
-    function verifyCompany(id: string) {
-        setModalBody(<VerifyCompanyModal id={id}/>)
+    function verifyCompany(id: string | undefined) {
+        if (id) {
+            setModalBody(<VerifyCompanyModal id={id}/>)
+        }
     }
 
     function addRelationshipModal(metadata: INodeMetadata) {
@@ -63,7 +65,7 @@ export const RenderOrganisationMetadata = (props: {metadata: INodeMetadata}) => 
                     <div className={"d-flex justify-content-between align-items-center"}>
                         <span>Not verified</span>
                         <Button
-                            onClick={() => verifyCompany(org.id)}
+                            onClick={() => verifyCompany(org.fosId)}
                             variant={"outline-secondary"} size={"sm"} className={"ml-3"}>verify</Button>
                     </div>
                 </Alert>

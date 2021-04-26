@@ -1,11 +1,12 @@
 import React, {useEffect, useState} from "react";
-import {INodeMetadata, NodeMetadataType} from "../interfaces/INodeMetadata";
+import {INodeMetadata} from "../interfaces/INodeMetadata";
 import FontAwesome from "react-fontawesome";
 import {RenderNoticeMetadata} from "./graphs/metadata/RenderNoticeMetadata";
 import {RenderClientMetadata} from "./graphs/metadata/RenderClientMetadata";
 import {RenderAwardMetadata} from "./graphs/metadata/RenderAwardMetadata";
 import {RenderPersonMetadata} from "./graphs/metadata/RenderPersonMetadata";
 import {RenderOrganisationMetadata} from "./graphs/metadata/RenderOrganisationMetadata";
+import {NodeTypeEnum} from "../generated/FosTypes";
 
 
 export const NodeMetadata = (
@@ -28,32 +29,32 @@ export const NodeMetadata = (
     }
 
     useEffect(() => {
-        if (undefined === props.metadata || undefined === props.metadata.type || undefined === props.metadata.id || props.metadata.id === "") {
+        if (undefined === props.metadata || undefined === props.metadata.type || undefined === props.metadata.fosId || props.metadata.fosId === "") {
             resetAndClose();
             return;
         }
-        if (props.metadata.type === NodeMetadataType.client) {
+        if (props.metadata.type === NodeTypeEnum.client) {
             setIcon(<FontAwesome name={"users"}/>);
             setOutput(<RenderClientMetadata metadata={props.metadata} setMetadataCallback={props.setMetadataCallback}/>);
             return;
         }
-        if (props.metadata.type === NodeMetadataType.notice) {
+        if (props.metadata.type === NodeTypeEnum.notice) {
             setIcon(<FontAwesome name={"file-text-o"}/>);
-            setOutput(<RenderNoticeMetadata id={props.metadata.id} awardDetailsCB={props.showAwardDetailsCB}/>);
+            setOutput(<RenderNoticeMetadata id={props.metadata.fosId} awardDetailsCB={props.showAwardDetailsCB}/>);
             return;
         }
-        if (props.metadata.type === NodeMetadataType.award) {
+        if (props.metadata.type === NodeTypeEnum.award) {
             setIcon(<FontAwesome name={"handshake-o"}/>);
-            setOutput(<RenderAwardMetadata id={props.metadata.id}/>);
+            setOutput(<RenderAwardMetadata id={props.metadata.fosId}/>);
             return;
         }
-        if (props.metadata.type === NodeMetadataType.organisation) {
+        if (props.metadata.type === NodeTypeEnum.organisation) {
             setIcon(<FontAwesome name={"building-o"}/>);
             //setOutput(<>{props.metadata.neo4j_id}</>);
             setOutput(<RenderOrganisationMetadata metadata={props.metadata}/>);
             return;
         }
-        if (props.metadata.type === NodeMetadataType.person) {
+        if (props.metadata.type === NodeTypeEnum.person) {
             setIcon(<FontAwesome name={"user"}/>);
             setOutput(<RenderPersonMetadata metadata={props.metadata}/>);
             return;
