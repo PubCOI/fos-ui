@@ -73,9 +73,6 @@ export const NodeMetadata = (
                         <button type={"button"} className={"close"} onClick={() => resetAndClose()}>
                             <span aria-hidden={"true"}>×</span>
                         </button>
-
-                        {/*<button type="button" className="close"><span aria-hidden="true">×</span><span*/}
-                        {/*    className="sr-only">Close</span></button>*/}
                     </div>
                 </div>
 

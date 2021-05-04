@@ -6,7 +6,7 @@ import {Badge, OverlayTrigger} from "react-bootstrap";
 import FontAwesome from "react-fontawesome";
 import {renderTooltip} from "../../hooks/Utils";
 
-export const GraphPanelBadge = (props: { type: NodeTypeEnum, id?: string }) => {
+export const GraphPanelBadge = (props: { type: NodeTypeEnum, id?: string, variant?: string }) => {
     const {setPaneTitle, setPaneSubtitle, setPaneContents, openPane} = useContext(PaneContext);
 
     function showPane() {
@@ -20,7 +20,7 @@ export const GraphPanelBadge = (props: { type: NodeTypeEnum, id?: string }) => {
 
     return (
         <>
-            <Badge variant={"light"} className={"ml-1"} onClick={() => showPane()} role={"button"}><OverlayTrigger
+            <Badge variant={(props.variant && props.variant !== "") ? props.variant : undefined} className={"ml-1 p-1"} onClick={() => showPane()} role={"button"}><OverlayTrigger
                 placement="auto"
                 delay={{show: 0, hide: 250}}
                 overlay={renderTooltip({text: "Show graph"})}>

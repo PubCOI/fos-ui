@@ -11,7 +11,8 @@ import {css} from "@emotion/css";
 import {AwardDetailsModal} from "../components/graphs/AwardDetailsModal";
 import AppContext from "../components/core/AppContext";
 import {renderTooltip} from "../hooks/Utils";
-import {AwardDTO, AwardsGraphListResponseDTO} from "../generated/FosTypes";
+import {AwardDTO, AwardsGraphListResponseDTO, NodeTypeEnum} from "../generated/FosTypes";
+import {GraphPanelBadge} from "../components/graphs/GraphPanelBadge";
 
 export const Awards = () => {
 
@@ -37,30 +38,31 @@ export const Awards = () => {
                 cell: (row: AwardsGraphListResponseDTO) => {
                     return (
                         // if there's an "aka" link, we want to render it below
-                        <>
-                            {Boolean(row.knownAs) && (
-                                <>
-                                    <div>
-                                        {row.awardee}
-                                    </div>
-                                    <OverlayTrigger
-                                        placement="left"
-                                        delay={{show: 100, hide: 200}}
-                                        overlay={renderTooltip(
-                                            {text: `Company is known as ${row.knownAs?.name}`}
-                                        )}>
-                                        <div
-                                            className={"d-flex justify-items-start align-items-center text-muted font-italic"}>
-                                            <FontAwesome name={"long-arrow-right"} fixedWidth/>
-                                            <div>{row.knownAs?.name}</div>
-                                        </div>
-                                    </OverlayTrigger>
-                                </>
-                            )}
-                            {Boolean(!row.knownAs) && (
-                                row.awardee
-                            )}
-                        </>
+                        <div className={"d-flex justify-content-start"}>
+                            <GraphPanelBadge type={NodeTypeEnum.award} id={row.id}/>
+                            <div>
+                                {Boolean(row.knownAs) && (
+                                    <>
+                                        <div>{row.awardee}</div>
+                                        <OverlayTrigger
+                                            placement="left"
+                                            delay={{show: 100, hide: 200}}
+                                            overlay={renderTooltip(
+                                                {text: `Company is known as ${row.knownAs?.name}`}
+                                            )}>
+                                            <div
+                                                className={"d-flex justify-items-start align-items-center text-muted font-italic"}>
+                                                <FontAwesome name={"long-arrow-right"} fixedWidth/>
+                                                <div>{row.knownAs?.name}</div>
+                                            </div>
+                                        </OverlayTrigger>
+                                    </>
+                                )}
+                                {Boolean(!row.knownAs) && (
+                                    <>{row.awardee}</>
+                                )}
+                            </div>
+                        </div>
                     )
                 }
             },
@@ -149,7 +151,9 @@ export const Awards = () => {
                            classes={tableClasses}
                            rowsPerPage={10}
                            rowsPerPageOption={[5, 10, 25, 50]}
-                           onRowClick={(o) => openModal(o.id)}
+                           onRowClick={(o) => {
+                               openModal(o.id);
+                           }}
                 />
 
             </Container>

@@ -143,7 +143,6 @@ export const Graph = (props: { object_type?: string, object_id?: string }) => {
                     reDraw(`node[neo4j_id=${r.data[0].c.neo4j_id}]`);
                 }
             });
-
         }
         if (graphMetadata.type as NodeTypeEnum === NodeTypeEnum.organisation) {
             axios.get<string, AxiosResponse<{

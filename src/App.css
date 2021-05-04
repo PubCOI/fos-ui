@@ -170,6 +170,10 @@ canvas > path {
     margin-left: 8px !important;
 }
 
+.slide-pane__content {
+    padding: 0!important;
+}
+
 .pane-top {
     position: absolute;
     top: 0;
