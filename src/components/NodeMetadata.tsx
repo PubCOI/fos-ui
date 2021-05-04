@@ -35,7 +35,8 @@ export const NodeMetadata = (
         }
         if (props.metadata.type === NodeTypeEnum.client) {
             setIcon(<FontAwesome name={"users"}/>);
-            setOutput(<RenderClientMetadata metadata={props.metadata} setMetadataCallback={props.setMetadataCallback}/>);
+            setOutput(<RenderClientMetadata metadata={props.metadata}
+                                            setMetadataCallback={props.setMetadataCallback}/>);
             return;
         }
         if (props.metadata.type === NodeTypeEnum.notice) {
@@ -66,7 +67,8 @@ export const NodeMetadata = (
         <>
             <div className={"metadata-parent shadow metadata-text-block"} hidden={props.hidden}>
                 <div className={"d-flex justify-content-between align-items-center"}>
-                    <div><h5 className={"ml-2 mr-3 mt-2"}><span className={"mr-2"}>{icon}</span> Node: {props.metadata.type}</h5></div>
+                    <div><h5 className={"ml-2 mr-3 mt-2"}><span
+                        className={"mr-2"}>{icon}</span> Node: {props.metadata.type}</h5></div>
                     <div>
                         <button type={"button"} className={"close"} onClick={() => resetAndClose()}>
                             <span aria-hidden={"true"}>×</span>

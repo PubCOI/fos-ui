@@ -133,7 +133,7 @@ const LoginNavbar = () => {
     )
 };
 
-export const DropdownPair = (props: {text: string, icon: string}) => {
+export const DropdownPair = (props: { text: string, icon: string }) => {
     return (
         <div className={"d-flex justify-content-between"}>
             <div>

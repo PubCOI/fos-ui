@@ -36,13 +36,19 @@ import {NodeTypeEnum} from "./generated/FosTypes";
 function App() {
 
     const MODAL_EMPTY = <></>;
+
     function hideModal() {
         setShowModal(false);
         setModalBody(MODAL_EMPTY);
     }
 
     // ***** graph settings *****
-    const [graphMetadata, setGraphMetadata] = useState<INodeMetadata>({type: NodeTypeEnum.client, fosId: "", neo4j_id: "", clear_graph: false});
+    const [graphMetadata, setGraphMetadata] = useState<INodeMetadata>({
+        type: NodeTypeEnum.client,
+        fosId: "",
+        neo4j_id: "",
+        clear_graph: false
+    });
     const [graphConfig, setGraphConfig] = useState<IGraphConfig>({show_timebase_data: TimebaseDataEnum.recent});
     // ***** end graph settings *****
 
@@ -51,7 +57,11 @@ function App() {
     const [showRightPane, setShowRightPane] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [modalBody, setModalBody] = useState(MODAL_EMPTY);
-    const [applicationConfig, setApplicationConfig] = useState<ApplicationConfig>({batch: false, debug: false, standalone: false});
+    const [applicationConfig, setApplicationConfig] = useState<ApplicationConfig>({
+        batch: false,
+        debug: false,
+        standalone: false
+    });
 
     const applicationSettings = {
         config: applicationConfig,
@@ -74,15 +84,18 @@ function App() {
     const [paneTitle, setPaneTitle] = useState("");
     const [paneSubtitle, setPaneSubtitle] = useState("");
     const [paneContents, setPaneContents] = useState(<>[null]</>);
+
     function openPane() {
         setShowRightPane(true);
     }
+
     function closePane() {
         setShowRightPane(false);
         setPaneTitle("");
         setPaneSubtitle("");
         setPaneContents(<></>);
     }
+
     const paneSettings = {
         paneTitle: paneTitle,
         setPaneTitle,
@@ -151,7 +164,9 @@ function App() {
                                 <Route exact path={"/data/upload"} component={Upload}/>
                                 <Route exact path={"/data/add"} component={AddData}/>
                                 <Route path={"/graph/:object_type?/:object_id?"} component={Graph}/>
-                                <Route exact path={"/search"} render={() => <Search groupBy={groupBy} searchParams={searchParams} searchType={searchType}/>}/>
+                                <Route exact path={"/search"}
+                                       render={() => <Search groupBy={groupBy} searchParams={searchParams}
+                                                             searchType={searchType}/>}/>
                                 <Route exact path={"/stats"} component={Stats}/>
                                 <Route path={"/view"} component={Viewer}/>
                             </Switch>

@@ -1,7 +1,7 @@
 import {FirebaseAuthConsumer} from "@react-firebase/auth";
 import {useHistory} from "react-router";
 import React from "react";
-import {Button, Card, Col, Container, Row} from "react-bootstrap";
+import {Button, Col, Container, Row} from "react-bootstrap";
 import FontAwesome from "react-fontawesome";
 import firebase from "firebase";
 import axios from "axios";
@@ -39,11 +39,12 @@ const LoginButtons = () => {
                         <p>Log in via OAuth2, using Google IdP. More login
                             options will be added in due course.
                         </p>
-                        <Button size={(size.width >= 576) ? "lg" : undefined} className={"rounded shadow-sm"} block onClick={() => {
-                            const googleAuthProvider = new firebase.auth.GoogleAuthProvider();
-                            firebase.auth().signInWithPopup(googleAuthProvider).then(r => {
-                            });
-                        }}>
+                        <Button size={(size.width >= 576) ? "lg" : undefined} className={"rounded shadow-sm"} block
+                                onClick={() => {
+                                    const googleAuthProvider = new firebase.auth.GoogleAuthProvider();
+                                    firebase.auth().signInWithPopup(googleAuthProvider).then(r => {
+                                    });
+                                }}>
                             <div className={"d-flex justify-content-between align-items-center"}>
                                 <FontAwesome name={"google"} size={"3x"}/>
                                 <h3>Sign in</h3>

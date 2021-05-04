@@ -63,13 +63,13 @@ export const RenderClientMetadata = (
 
                 {client.notices.map(notice => (
                     <ListGroup.Item action
-                        onClick={() => props.setMetadataCallback({
-                            fosId: notice.id,
-                            type: NodeTypeEnum.notice,
-                            neo4j_id: "",
-                            clear_graph: false,
-                        })}
-                        key={`notice_metadata_${notice.id}`}>
+                                    onClick={() => props.setMetadataCallback({
+                                        fosId: notice.id,
+                                        type: NodeTypeEnum.notice,
+                                        neo4j_id: "",
+                                        clear_graph: false,
+                                    })}
+                                    key={`notice_metadata_${notice.id}`}>
                         <div>{notice.description} (value <MinMaxValueFormat
                             min={notice.valueLow} max={notice.valueHigh}
                             rounded
@@ -85,7 +85,8 @@ export const RenderClientMetadata = (
             <div>
                 <Button
                     onClick={() => addRelationshipModal(props.metadata)}
-                    variant={"outline-secondary"} size={"sm"} block><FontAwesome name={"plus"}/> Add relationship</Button>
+                    variant={"outline-secondary"} size={"sm"} block><FontAwesome name={"plus"}/> Add
+                    relationship</Button>
             </div>
         </>
     );

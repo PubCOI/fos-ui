@@ -1,4 +1,4 @@
-import React, {useContext, useEffect} from "react";
+import React, {useContext} from "react";
 import AppContext from "../core/AppContext";
 import PaneContext from "../core/PaneContext";
 import FontAwesome from "react-fontawesome";
@@ -16,7 +16,8 @@ export const PaneContainer = () => {
                 overlayClassName="pane-overlay"
                 isOpen={showRightPane}
                 width={(size.width >= 768 ? "80%" : "100%")}
-                closeIcon={(size.width >= 768) ? <FontAwesome name={"caret-right"} size={"2x"}/> : <FontAwesome name={"window-close-o"} size={"2x"}/>}
+                closeIcon={(size.width >= 768) ? <FontAwesome name={"caret-right"} size={"2x"}/> :
+                    <FontAwesome name={"window-close-o"} size={"2x"}/>}
                 title={paneTitle}
                 subtitle={paneSubtitle}
                 onRequestClose={() => {

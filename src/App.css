@@ -1,194 +1,197 @@
 #footer-nav::before {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  background: url("img/pubcoi-network.svg") no-repeat fixed bottom right;
-  /* strangely, the order here matters ... */
-  background-size: 140% auto;
-  opacity: 0.08;
-  content: "";
-  z-index: -1;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: url("img/pubcoi-network.svg") no-repeat fixed bottom right;
+    /* strangely, the order here matters ... */
+    background-size: 140% auto;
+    opacity: 0.08;
+    content: "";
+    z-index: -1;
 }
 
 .fos-toast-container {
-  position: absolute;
-  z-index: 1250 !important;
+    position: absolute;
+    z-index: 1250 !important;
 }
 
 #cy {
-  height: 90vh!important;
+    height: 90vh !important;
 }
 
 .pdf-navigation {
-  background-color: rgba(254, 251, 255, 0.28);
+    background-color: rgba(254, 251, 255, 0.28);
 }
 
 .fa-badge {
-  position: absolute;
-  background-color: #1a6dca;
-  top: 0;
-  left: 0;
-  padding: 2px;
-  font-size: small;
-  color: #8fbdf0;
+    position: absolute;
+    background-color: #1a6dca;
+    top: 0;
+    left: 0;
+    padding: 2px;
+    font-size: small;
+    color: #8fbdf0;
 }
 
 canvas > path {
-  fill: none;
-  stroke: #000;
-  stroke-width: 3px;
-  stroke-linejoin: round;
-  stroke-linecap: round;
+    fill: none;
+    stroke: #000;
+    stroke-width: 3px;
+    stroke-linejoin: round;
+    stroke-linecap: round;
 }
 
 .second-nav {
-  position: sticky;
-  z-index: 999; /** main menu dropdown is 1000 **/
-  width: 100%;
-  top: 54px;
+    position: sticky;
+    z-index: 999; /** main menu dropdown is 1000 **/
+    width: 100%;
+    top: 54px;
 }
 
 /****** GRAPH AUTOCOMPLETE ******/
 /* autocomplete status placeholder */
 .rbt-aux {
-  position: absolute;
-  top: auto;
-  right: 0;
-  z-index: 1300;
-  margin-top: 10px;
-  margin-right: 10px;
+    position: absolute;
+    top: auto;
+    right: 0;
+    z-index: 1300;
+    margin-top: 10px;
+    margin-right: 10px;
 }
 
 .rbt-menu .typeahead-pos-right {
-  position: fixed!important;
-  top: 88px!important;
-  transform: unset!important;
-  text-align: right!important;
-  right: 0!important;
-  z-index: 1000;
-  left: unset!important;
-  max-height: unset!important;
+    position: fixed !important;
+    top: 88px !important;
+    transform: unset !important;
+    text-align: right !important;
+    right: 0 !important;
+    z-index: 1000;
+    left: unset !important;
+    max-height: unset !important;
 }
 
 @media screen and (max-width: 399px) {
-  .rbt-menu .typeahead-pos-right {
-    width: 98% !important;
-  }
+    .rbt-menu .typeahead-pos-right {
+        width: 98% !important;
+    }
 }
 
 @media screen and (min-width: 400px) {
-  .rbt-menu .typeahead-pos-right {
-    min-width: 80% !important;
-  }
+    .rbt-menu .typeahead-pos-right {
+        min-width: 80% !important;
+    }
 }
 
 @media screen and (min-width: 576px) {
-  .rbt-menu .typeahead-pos-right {
-    min-width: 65% !important;
-  }
+    .rbt-menu .typeahead-pos-right {
+        min-width: 65% !important;
+    }
 }
 
 @media screen and (min-width: 800px) {
-  .rbt-menu .typeahead-pos-right {
-    min-width: 50% !important;
-  }
+    .rbt-menu .typeahead-pos-right {
+        min-width: 50% !important;
+    }
 }
 
 .typeahead-pos-right .rbt-menu a {
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }
+
 /****** END GRAPH AUTOCOMPLETE ******/
 
 .metadata-parent {
-  z-index: 900;
+    z-index: 900;
 }
 
 @media screen and (max-width: 379px) {
-  .metadata-parent {
-    margin: 0;
-    padding: 10px;
-    background-color: rgba(255, 255, 255, 0.9);
-    position: absolute;
-    top: auto;
-    left: 0;
-    right: 0;
-    max-height: 35vh;
-  }
+    .metadata-parent {
+        margin: 0;
+        padding: 10px;
+        background-color: rgba(255, 255, 255, 0.9);
+        position: absolute;
+        top: auto;
+        left: 0;
+        right: 0;
+        max-height: 35vh;
+    }
 }
 
 @media screen and (min-width: 380px) {
-  .metadata-parent {
-    padding: 20px;
-    background-color: rgba(255, 255, 255, 0.8);
-    position: fixed;
-    margin-top: 20px;
-    margin-left: 20px;
-    right: 20px;
-    max-height: 85vh;
-  }
+    .metadata-parent {
+        padding: 20px;
+        background-color: rgba(255, 255, 255, 0.8);
+        position: fixed;
+        margin-top: 20px;
+        margin-left: 20px;
+        right: 20px;
+        max-height: 85vh;
+    }
 }
 
 @media screen and (min-width: 576px) {
-  .metadata-text-block {
-    text-wrap: normal;
-    max-width: 40%;
-  }
+    .metadata-text-block {
+        text-wrap: normal;
+        max-width: 40%;
+    }
 }
 
 .fix-widget-inside-accordion {
-  position: absolute;
-  bottom: 0;
-  right: 0;
+    position: absolute;
+    bottom: 0;
+    right: 0;
 }
 
 .y-scroll {
-  overflow-y: scroll;
-  max-height: 50vh;
+    overflow-y: scroll;
+    max-height: 50vh;
 }
 
 .truncate-ellipsis {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .pane-overlay {
-  z-index: 1200;
+    z-index: 1200;
 }
 
 /* PANE */
 .slide-pane__title-wrapper {
-  margin-left: 0!important;
+    margin-left: 0 !important;
 }
+
 .slide-pane__close {
-  margin-left: 8px!important;
+    margin-left: 8px !important;
 }
+
 .pane-top {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  text-align: right;
-  background-color: rgba(255, 255, 255, 0.5);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    text-align: right;
+    background-color: rgba(255, 255, 255, 0.5);
 }
 
 .pane-accordion-metadata {
-  z-index: -1;
+    z-index: -1;
 }
 
 /*used for the flagging*/
 .text-grey {
-  color: #757575;
+    color: #757575;
 }
 
 /** used for the redraw buttons on the graph etc **/
 .graph-redraw-block {
-  position: fixed;
-  margin-top: 10px;
-  margin-left: 10px;
-  z-index: 9999;
+    position: fixed;
+    margin-top: 10px;
+    margin-left: 10px;
+    z-index: 9999;
 }

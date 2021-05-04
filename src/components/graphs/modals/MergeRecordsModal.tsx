@@ -129,7 +129,8 @@ export const MergeRecordsModal = (props: { id: string }) => {
                                            isLoading={doingPersonSearch}
                                            renderMenu={
                                                ((results, menuProps) =>
-                                                       <RenderAutocompleteResults results={results} menuProps={menuProps}/>
+                                                       <RenderAutocompleteResults results={results}
+                                                                                  menuProps={menuProps}/>
                                                )}>
                                 </Typeahead>
                             </InputGroup>

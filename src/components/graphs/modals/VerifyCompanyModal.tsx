@@ -254,13 +254,16 @@ export const VerifyCompanyModal = (props: { id: string }) => {
                                 be resolved to a valid record. You have a couple of options:
                                 <div className={"mt-3 d-flex align-items-center"}>
                                     <Button variant={"primary"} className={"mr-3"} onClick={() => showPane()}>Report
-                                        issue</Button><div>if you want to
-                                    flag this record as needing another pair of eyes</div>
+                                        issue</Button>
+                                    <div>if you want to
+                                        flag this record as needing another pair of eyes
+                                    </div>
                                 </div>
                                 <div className={"my-3 d-flex align-items-center"}>
                                     <Button variant={"outline-primary"} className={"mr-3"}
                                             onClick={() => manualDetails(props.id)}>Enter details
-                                        manually</Button><div>if you have found the company number elsewhere</div>
+                                        manually</Button>
+                                    <div>if you have found the company number elsewhere</div>
                                 </div>
                             </div>
                         </Alert>

@@ -1,4 +1,4 @@
-import {Button, Col, Form, Jumbotron, Row} from "react-bootstrap";
+import {Col, Jumbotron, Row} from "react-bootstrap";
 import React from "react";
 
 export const EmptyInterestsSearchResponse = () => {

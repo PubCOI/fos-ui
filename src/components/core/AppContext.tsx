@@ -13,25 +13,34 @@ const AppContext = React.createContext({
         debug: false,
         standalone: false,
     },
-    setApplicationConfig: (conf: ApplicationConfig) => {},
+    setApplicationConfig: (conf: ApplicationConfig) => {
+    },
     displayName: "",
-    setDisplayName: (name: string) => {console.error("not implemented")},
+    setDisplayName: (name: string) => {
+        console.error("not implemented")
+    },
     showRightPane: false,
-    setShowRightPane: (show: boolean) => {console.error("not implemented")},
+    setShowRightPane: (show: boolean) => {
+        console.error("not implemented")
+    },
     modalBody: <></>,
-    setModalBody: (body: any) => {},
-    hideModal: () => {},
+    setModalBody: (body: any) => {
+    },
+    hideModal: () => {
+    },
     graphMetadata: {
         type: NodeTypeEnum.client,
         fosId: "",
         neo4j_id: "",
         clear_graph: false,
     },
-    setGraphMetadata: (metadata: INodeMetadata) => {},
+    setGraphMetadata: (metadata: INodeMetadata) => {
+    },
     graphConfig: {
         show_timebase_data: TimebaseDataEnum.recent
     },
-    setGraphConfig: (config: IGraphConfig) => {},
+    setGraphConfig: (config: IGraphConfig) => {
+    },
 });
 
 export default AppContext;

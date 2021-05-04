@@ -11,7 +11,8 @@ export const ContractValueFormat = (props: { award: AwardDTO }) => {
         return (<>[Data unavailable] <OverlayTrigger
             placement="auto"
             delay={{show: 100, hide: 250}}
-            overlay={renderTooltip({text: "Data missing from this record"})}><FontAwesome name={"warning"}/></OverlayTrigger></>)
+            overlay={renderTooltip({text: "Data missing from this record"})}><FontAwesome
+            name={"warning"}/></OverlayTrigger></>)
     }
     if (0 !== props.award.value) {
         return (

@@ -4,11 +4,11 @@ import axios from "axios";
 import {NoticeResponseDTO} from "../../../interfaces/NoticeResponseDTO";
 import Moment from "react-moment";
 import {MinMaxValueFormat} from "../../MinMaxValueFormat";
-import {Button, ListGroup} from "react-bootstrap";
+import {ListGroup} from "react-bootstrap";
 import {ContractValueFormat} from "../../ContractValueFormat";
 import {AwardDTO} from "../../../generated/FosTypes";
 
-export const RenderNoticeMetadata = (props: {id: string, awardDetailsCB: (id: string) => void}) => {
+export const RenderNoticeMetadata = (props: { id: string, awardDetailsCB: (id: string) => void }) => {
     const {addToast} = useToasts();
 
     const [notice, setNotice] = useState<NoticeResponseDTO>({
@@ -42,8 +42,12 @@ export const RenderNoticeMetadata = (props: {id: string, awardDetailsCB: (id: st
     return (
         <>
             <div>{notice.title}</div>
-            <div className={"mb-2 text-muted small"}>Published by {notice.organisation} <Moment date={notice.postedDT} format={"DD MMM yyyy"}/> (<Moment from={notice.postedDT} ago/> ago)</div>
-            <div className={"mb-2"}>Value {<MinMaxValueFormat min={notice.valueLow} max={notice.valueHigh} rounded/>}</div>
+            <div className={"mb-2 text-muted small"}>Published by {notice.organisation} <Moment date={notice.postedDT}
+                                                                                                format={"DD MMM yyyy"}/> (<Moment
+                from={notice.postedDT} ago/> ago)
+            </div>
+            <div className={"mb-2"}>Value {<MinMaxValueFormat min={notice.valueLow} max={notice.valueHigh}
+                                                              rounded/>}</div>
             <h6>{notice.awards.length} {notice.awards.length === 1 ? "award" : "awards"} published</h6>
             <ListGroup className={"y-scroll"}>
 

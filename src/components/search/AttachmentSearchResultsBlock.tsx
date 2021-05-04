@@ -1,6 +1,6 @@
-import {BaseAttachmentsSearchResult, AttachmentsSearchResultsWrapper} from "./SearchInterfaces";
-import {Badge, Button, Col, ListGroup, Media, OverlayTrigger, Row, Table} from "react-bootstrap";
-import React, {useContext, useEffect, useState} from "react";
+import {AttachmentsSearchResultsWrapper, BaseAttachmentsSearchResult} from "./SearchInterfaces";
+import {Badge, Button, Col, ListGroup, Media, Row} from "react-bootstrap";
+import React, {useContext} from "react";
 import Moment from "react-moment";
 import FontAwesome from "react-fontawesome";
 import PaneContext from "../core/PaneContext";
@@ -79,20 +79,24 @@ export const AttachmentSearchResultsBlock = (props: { data: AttachmentsSearchRes
     )
 };
 
-const SearchMetadataBlock = (props: { item: BaseAttachmentsSearchResult}) => {
+const SearchMetadataBlock = (props: { item: BaseAttachmentsSearchResult }) => {
     return (
         <>
             <SearchMetadataRow icon={"building-o"} label={"Purchaser"} value={props.item.client}/>
-            <SearchMetadataRow icon={"calendar"} label={"First award date"} value={<Moment date={props.item.firstAwardDT} format={"DD MMM yyyy"}/>}/>
+            <SearchMetadataRow icon={"calendar"} label={"First award date"}
+                               value={<Moment date={props.item.firstAwardDT} format={"DD MMM yyyy"}/>}/>
             <SearchMetadataRow icon={"calendar"} label={"Published"} value={<>
-                <Moment date={props.item.noticeDT} format={"DD MMM yyyy"}/> (<Moment duration={props.item.firstAwardDT} date={props.item.noticeDT} format={"D"}/> days later)
+                <Moment date={props.item.noticeDT} format={"DD MMM yyyy"}/> (<Moment duration={props.item.firstAwardDT}
+                                                                                     date={props.item.noticeDT}
+                                                                                     format={"D"}/> days later)
             </>}/>
-            <SearchMetadataRow icon={"quote-right"} label={"Contract description"} value={props.item.noticeDescription}/>
+            <SearchMetadataRow icon={"quote-right"} label={"Contract description"}
+                               value={props.item.noticeDescription}/>
         </>
     )
 };
 
-const SearchMetadataRow = (props: {icon: string, label: string, value: any}) => {
+const SearchMetadataRow = (props: { icon: string, label: string, value: any }) => {
     return (
         <Row className={"small"}>
             <Col md={3} className={"text-nowrap"}>

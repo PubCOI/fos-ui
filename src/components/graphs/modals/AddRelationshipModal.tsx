@@ -388,7 +388,8 @@ export const AddRelationshipModal = (props: { metadata: INodeMetadata }) => {
                                                isLoading={doingPersonSearch}
                                                renderMenu={
                                                    ((results, menuProps) =>
-                                                           <RenderAutocompleteResults results={results} menuProps={menuProps}/>
+                                                           <RenderAutocompleteResults results={results}
+                                                                                      menuProps={menuProps}/>
                                                    )}>
                                     </Typeahead>
                                 </InputGroup>
@@ -410,7 +411,8 @@ export const AddRelationshipModal = (props: { metadata: INodeMetadata }) => {
                                                isLoading={doingOrgSearch}
                                                renderMenu={
                                                    ((results, menuProps) =>
-                                                           <RenderAutocompleteResults results={results} menuProps={menuProps}/>
+                                                           <RenderAutocompleteResults results={results}
+                                                                                      menuProps={menuProps}/>
                                                    )}>
                                     </Typeahead>
                                 </InputGroup>
@@ -446,17 +448,17 @@ export const AddRelationshipModal = (props: { metadata: INodeMetadata }) => {
                                               setRelTypeSelect(AddRelCoiTypeEnum[e.target.value as keyof typeof AddRelCoiTypeEnum]);
                                           }}>
                                 {/*{Boolean(direct) && (*/}
-                                    <>
-                                        <option value={"direct_financial"}>Direct financial</option>
-                                        <option value={"non_financial_professional"}>Non-financial professional</option>
-                                        <option value={"non_financial_personal"}>Non-financial personal</option>
-                                    </>
+                                <>
+                                    <option value={"direct_financial"}>Direct financial</option>
+                                    <option value={"non_financial_professional"}>Non-financial professional</option>
+                                    <option value={"non_financial_personal"}>Non-financial personal</option>
+                                </>
                                 {/*)}*/}
                                 {/*{Boolean(!direct) && (*/}
-                                    <>
-                                        <option value={"indirect_financial"}>Indirect financial</option>
-                                        <option value={"indirect"}>Indirect (other)</option>
-                                    </>
+                                <>
+                                    <option value={"indirect_financial"}>Indirect financial</option>
+                                    <option value={"indirect"}>Indirect (other)</option>
+                                </>
                                 {/*)}*/}
                             </Form.Control>
                         </Form.Group>

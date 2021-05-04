@@ -1,4 +1,4 @@
-import {Button, Col, Form, Jumbotron, Row} from "react-bootstrap";
+import {Col, Jumbotron, Row} from "react-bootstrap";
 import React from "react";
 
 export const EmptyAttachmentSearchResponse = () => {
@@ -10,7 +10,8 @@ export const EmptyAttachmentSearchResponse = () => {
                     <pre>:(</pre>
                     <p>Either the data isn't loaded or hasn't been fully scanned yet</p>
                     <div className={"text-muted"}>
-                        <p>If you've just added data to the system, note it can take some hours for data to be scanned</p>
+                        <p>If you've just added data to the system, note it can take some hours for data to be
+                            scanned</p>
                     </div>
                 </Jumbotron>
             </Col>

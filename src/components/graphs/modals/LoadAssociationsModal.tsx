@@ -7,7 +7,7 @@ import axios from "axios";
 import firebase from "firebase";
 import {LoadingWrapper} from "../../LoadingWrapper";
 
-export const LoadAssociationsModal = (props: {metadata: INodeMetadata}) => {
+export const LoadAssociationsModal = (props: { metadata: INodeMetadata }) => {
 
     const {hideModal} = useContext(AppContext);
     const {addToast} = useToasts();
@@ -56,36 +56,36 @@ export const LoadAssociationsModal = (props: {metadata: INodeMetadata}) => {
     return (
         <>
             <Modal backdrop={"static"} show centered>
-                    <Modal.Header closeButton onClick={() => hideModal()}>
-                        <Modal.Title>Retrieve associations</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        {Boolean(authToken) && (
-                            <Alert variant={"primary"}>
-                                <p>This will request all associations for this person. Please only request this data if you
-                                    wish all their associated companies to be loaded into the system.</p>
-                                <div>
-                                    Note this can take some time to complete: A notification will display in your browser
-                                    once the process has finished.
-                                </div>
-                            </Alert>
-                        )}
-                        {Boolean(!authToken) && (
-                            <Alert variant={"warning"}>
-                                Sorry, you need to be logged in to do that
-                            </Alert>
-                        )}
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button
-                            variant="outline-secondary"
-                            onClick={() => hideModal()}>
-                            Cancel
-                        </Button>
-                        <Button variant="success" disabled={!authToken} onClick={() => doLoad(props.metadata.fosId)}>
-                            Begin data load
-                        </Button>
-                    </Modal.Footer>
+                <Modal.Header closeButton onClick={() => hideModal()}>
+                    <Modal.Title>Retrieve associations</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    {Boolean(authToken) && (
+                        <Alert variant={"primary"}>
+                            <p>This will request all associations for this person. Please only request this data if you
+                                wish all their associated companies to be loaded into the system.</p>
+                            <div>
+                                Note this can take some time to complete: A notification will display in your browser
+                                once the process has finished.
+                            </div>
+                        </Alert>
+                    )}
+                    {Boolean(!authToken) && (
+                        <Alert variant={"warning"}>
+                            Sorry, you need to be logged in to do that
+                        </Alert>
+                    )}
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button
+                        variant="outline-secondary"
+                        onClick={() => hideModal()}>
+                        Cancel
+                    </Button>
+                    <Button variant="success" disabled={!authToken} onClick={() => doLoad(props.metadata.fosId)}>
+                        Begin data load
+                    </Button>
+                </Modal.Footer>
             </Modal>
         </>
     )

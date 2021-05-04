@@ -1,7 +1,7 @@
 import FontAwesome from "react-fontawesome";
 import React, {useEffect, useState} from "react";
 
-export const GetOpenExtLink = (props: {href?: string}) => {
+export const GetOpenExtLink = (props: { href?: string }) => {
 
     const [url, setUrl] = useState("");
 
@@ -12,6 +12,7 @@ export const GetOpenExtLink = (props: {href?: string}) => {
     }, [props]);
 
     return (
-        (url === "") ? (<></>) : <a href={url} onClick={() => window.open(url)}><FontAwesome name={"external-link"}/></a>
+        (url === "") ? (<></>) :
+            <a href={url} onClick={() => window.open(url)}><FontAwesome name={"external-link"}/></a>
     )
 };

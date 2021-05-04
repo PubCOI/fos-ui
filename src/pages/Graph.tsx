@@ -31,7 +31,7 @@ import {useParams} from "react-router";
 let contextMenus = require('cytoscape-context-menus');
 let coseBilkent = require('cytoscape-cose-bilkent');
 
-export const Graph = (props: {object_type?: string, object_id?: string}) => {
+export const Graph = (props: { object_type?: string, object_id?: string }) => {
     let {object_type, object_id} = useParams<{ object_type: string, object_id: string }>();
     const {setModalBody, graphMetadata, setGraphMetadata, graphConfig} = useContext(AppContext);
 

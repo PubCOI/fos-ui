@@ -10,7 +10,7 @@ import {AddRelationshipModal} from "../modals/AddRelationshipModal";
 import {OrganisationDTO} from "../../../generated/FosTypes";
 import {INodeMetadata} from "../../../interfaces/INodeMetadata";
 
-export const RenderOrganisationMetadata = (props: {metadata: INodeMetadata}) => {
+export const RenderOrganisationMetadata = (props: { metadata: INodeMetadata }) => {
     const {addToast} = useToasts();
     const {setModalBody} = useContext(AppContext);
     const [doingRequest, setDoingRequest] = useState(false);
@@ -28,7 +28,7 @@ export const RenderOrganisationMetadata = (props: {metadata: INodeMetadata}) => 
         setCompanyNumber(org.fosId?.split(":")[1]);
     }, [org]);
 
-    useEffect(() =>{
+    useEffect(() => {
         setDoingRequest(true);
         axios.get<OrganisationDTO>(`/api/graphs/organisations/${props.metadata.fosId}/metadata`)
             .then(res => {
@@ -93,9 +93,10 @@ export const RenderOrganisationMetadata = (props: {metadata: INodeMetadata}) => 
             )}
             <Row className={"mt-3"}>
                 <Col>
-                <Button
-                    onClick={() => addRelationshipModal(props.metadata)}
-                    variant={"outline-secondary"} size={"sm"} block><FontAwesome name={"plus"}/> Add relationship</Button>
+                    <Button
+                        onClick={() => addRelationshipModal(props.metadata)}
+                        variant={"outline-secondary"} size={"sm"} block><FontAwesome name={"plus"}/> Add
+                        relationship</Button>
                 </Col>
             </Row>
         </>

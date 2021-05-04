@@ -13,8 +13,10 @@ export const Footer = () => {
                         &copy; 2021 PubCOI.org
                     </NavbarBrand>
                     <Nav>
-                        <Nav.Link href={"https://github.com/PubCOI/fos"} className={"text-muted mx-2"} bsPrefix={"small"}>GitHub</Nav.Link>
-                        <Nav.Link as={Link} to={"/stats"} className={`text-muted ${(config.batch) ? "" : "d-none"}`} bsPrefix={"small"}>Stats</Nav.Link>
+                        <Nav.Link href={"https://github.com/PubCOI/fos"} className={"text-muted mx-2"}
+                                  bsPrefix={"small"}>GitHub</Nav.Link>
+                        <Nav.Link as={Link} to={"/stats"} className={`text-muted ${(config.batch) ? "" : "d-none"}`}
+                                  bsPrefix={"small"}>Stats</Nav.Link>
                     </Nav>
                 </Navbar>
             </div>

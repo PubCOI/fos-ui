@@ -1,4 +1,4 @@
-import React, {useContext, useEffect} from "react";
+import React, {useContext} from "react";
 import {Button, OverlayTrigger} from "react-bootstrap";
 import FontAwesome from "react-fontawesome";
 import PaneContext from "../core/PaneContext";

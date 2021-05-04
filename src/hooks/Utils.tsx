@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useEffect, useState} from 'react';
 import {Tooltip} from "react-bootstrap";
 
 // by @gabe_ragland from https://usehooks.com/useWindowSize/

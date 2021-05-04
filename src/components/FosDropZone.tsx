@@ -1,9 +1,7 @@
 import Dropzone, {IFileWithMeta} from "react-dropzone-uploader";
-import React, {useContext, useEffect, useState} from "react";
+import React, {useContext, useState} from "react";
 import {StatusValue} from "react-dropzone-uploader/dist/Dropzone";
 import {useToasts} from "react-toast-notifications";
-import firebase from "firebase";
-import {LoadingWrapper} from "./LoadingWrapper";
 import {Alert} from "react-bootstrap";
 import FontAwesome from "react-fontawesome";
 import AppContext from "./core/AppContext";
@@ -21,7 +19,7 @@ export const FosDropZone = () => {
         return {url, fields}
     };
 
-    const handleChangeStatus = ( file: IFileWithMeta, status: StatusValue) => {
+    const handleChangeStatus = (file: IFileWithMeta, status: StatusValue) => {
         switch (status) {
             case "rejected_file_type":
             case "rejected_max_files":
@@ -75,32 +73,32 @@ export const FosDropZone = () => {
 
     return (
         <>
-        <Dropzone
-            getUploadParams={getUploadParams}
-            onChangeStatus={handleChangeStatus}
-            onSubmit={handleSubmit}
-            accept="application/xml,.xml"
-            inputContent={(files, { reject }) => (reject ? "XML files only" : "Drag Contracts XML here")}
-            maxFiles={1}
-            multiple={false}
-            addClassNames={{
-                dropzone: "form-group p-2 px-3 block",
-                input: "form-control-file",
-                submitButtonContainer: "d-none"
-            }}
-            canRemove={true}
-            styles={{
-                dropzone: { borderColor: "#CCC", borderStyle: "dashed" },
-                dropzoneActive: { borderColor: "green" },
-                dropzoneReject: { borderColor: "red", backgroundColor: "#DAA" },
-            }}
-        />
-        <Alert variant={"success"} show={success}>
-            <div className={"lead"}><FontAwesome name={"check-circle"} className={"mr-1"}/> Uploaded</div>
-            <div>
-                Records will start appearing over the next few hours
-            </div>
-        </Alert>
+            <Dropzone
+                getUploadParams={getUploadParams}
+                onChangeStatus={handleChangeStatus}
+                onSubmit={handleSubmit}
+                accept="application/xml,.xml"
+                inputContent={(files, {reject}) => (reject ? "XML files only" : "Drag Contracts XML here")}
+                maxFiles={1}
+                multiple={false}
+                addClassNames={{
+                    dropzone: "form-group p-2 px-3 block",
+                    input: "form-control-file",
+                    submitButtonContainer: "d-none"
+                }}
+                canRemove={true}
+                styles={{
+                    dropzone: {borderColor: "#CCC", borderStyle: "dashed"},
+                    dropzoneActive: {borderColor: "green"},
+                    dropzoneReject: {borderColor: "red", backgroundColor: "#DAA"},
+                }}
+            />
+            <Alert variant={"success"} show={success}>
+                <div className={"lead"}><FontAwesome name={"check-circle"} className={"mr-1"}/> Uploaded</div>
+                <div>
+                    Records will start appearing over the next few hours
+                </div>
+            </Alert>
         </>
     )
 };

@@ -24,7 +24,7 @@ export const SearchBar =
         useEffect(() => {
             const htDT_key = "htDT";
             let htDT = localStorage.getItem(htDT_key);
-            if (null === htDT || moment(htDT).diff(new Date()) > 60*60*3*1000) {
+            if (null === htDT || moment(htDT).diff(new Date()) > 60 * 60 * 3 * 1000) {
                 setTimeout(() => {
                     setHelperTooltip(true);
                 }, 500);
@@ -67,16 +67,16 @@ export const SearchBar =
                                 show={helperTooltip}
                                 delay={{show: 100, hide: 250}}
                                 overlay={renderTooltip({text: "Select type of record here: you can search members' interests as well as contract data"})}>
-                            <InputGroup.Prepend>
-                                <Form.Control
-                                    as="select"
-                                    onChange={(e: React.ChangeEvent<HTMLSelectElement>): void => {
-                                        setSearchType(e.target.value);
-                                    }}>
-                                    <option value={"contracts"}>Contracts</option>
-                                    <option value={"interests"}>MP/Lords Interests</option>
-                                </Form.Control>
-                            </InputGroup.Prepend>
+                                <InputGroup.Prepend>
+                                    <Form.Control
+                                        as="select"
+                                        onChange={(e: React.ChangeEvent<HTMLSelectElement>): void => {
+                                            setSearchType(e.target.value);
+                                        }}>
+                                        <option value={"contracts"}>Contracts</option>
+                                        <option value={"interests"}>MP/Lords Interests</option>
+                                    </Form.Control>
+                                </InputGroup.Prepend>
                             </OverlayTrigger>
                             <FormControl
                                 aria-label="Search"

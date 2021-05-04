@@ -7,7 +7,7 @@ import {ContractValueFormat} from "../../ContractValueFormat";
 import {AttachmentsAccordion} from "../AttachmentsAccordion";
 import {AwardDTO} from "../../../generated/FosTypes";
 
-export const RenderAwardMetadata = (props: {id: string}) => {
+export const RenderAwardMetadata = (props: { id: string }) => {
     const {addToast} = useToasts();
 
     const [award, setAward] = useState<AwardDTO>();

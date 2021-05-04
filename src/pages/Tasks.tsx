@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useState} from "react";
-import {Alert, Badge, Container, ListGroup} from "react-bootstrap";
+import {Alert, Container} from "react-bootstrap";
 import {FirebaseAuthConsumer} from "@react-firebase/auth";
 import FontAwesome from "react-fontawesome";
 import axios from "axios";
