@@ -1,24 +1,21 @@
 import React, {useEffect, useState} from "react";
 import {useToasts} from "react-toast-notifications";
 import axios from "axios";
-import {NoticeResponseDTO} from "../../../interfaces/NoticeResponseDTO";
-import Moment from "react-moment";
-import {AwardMDBDTO} from "../../../interfaces/DTO/AwardMDBDTO";
-import {MinMaxValueFormat} from "../../MinMaxValueFormat";
-import {Alert, Badge, Button, ListGroup} from "react-bootstrap";
+import {Alert, Badge} from "react-bootstrap";
 import FontAwesome from "react-fontawesome";
 import {ContractValueFormat} from "../../ContractValueFormat";
 import {AttachmentsAccordion} from "../AttachmentsAccordion";
+import {AwardDTO} from "../../../generated/FosTypes";
 
 export const RenderAwardMetadata = (props: {id: string}) => {
     const {addToast} = useToasts();
 
-    const [award, setAward] = useState<AwardMDBDTO>();
+    const [award, setAward] = useState<AwardDTO>();
 
     let baseURL = `/api/graphs/awards/${props.id}/metadata`;
 
     useEffect(() => {
-        axios.get<AwardMDBDTO>(baseURL).then(response => {
+        axios.get<AwardDTO>(baseURL).then(response => {
             setAward(response.data);
         })
             .then(() => {
@@ -48,7 +45,7 @@ export const RenderAwardMetadata = (props: {id: string}) => {
 
             <AttachmentsAccordion award={award}/>
 
-            {(award.attachments.length === 0) && (
+            {(award.attachments && award.attachments.length === 0) && (
                 <Alert variant={"primary"}><FontAwesome name={"warning"}/> No attachments</Alert>
             )}
         </>

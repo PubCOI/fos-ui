@@ -6,7 +6,7 @@ import {useWindowSize} from "../../hooks/Utils";
 import FontAwesome from "react-fontawesome";
 import axios, {AxiosResponse} from "axios";
 import {useToasts} from "react-toast-notifications";
-import {AttachmentDTO} from "../../interfaces/AttachmentDTO";
+import {AttachmentDTO} from "../../generated/FosTypes";
 
 export const CFViewer = (props: { attachment_id: string, page_number: string }) => {
     const {addToast} = useToasts();

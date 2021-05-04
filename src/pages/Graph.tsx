@@ -23,6 +23,7 @@ import imgUserFormer from '../img/graph-user-former.svg';
 import imgOrgVerified from '../img/graph-org-verified.svg';
 import imgOrgUnverified from '../img/graph-org-unverified.svg';
 import {NodeTypeEnum} from "../generated/FosTypes";
+import {useParams} from "react-router";
 
 // import ctxAdd from '../img/graph-context-add.svg';
 // image: {src: ctxAdd, width: 12, height: 12, x: 6, y: 4},
@@ -30,7 +31,8 @@ import {NodeTypeEnum} from "../generated/FosTypes";
 let contextMenus = require('cytoscape-context-menus');
 let coseBilkent = require('cytoscape-cose-bilkent');
 
-export const Graph = (props: { location: Location }) => {
+export const Graph = (props: {object_type?: string, object_id?: string}) => {
+    let {object_type, object_id} = useParams<{ object_type: string, object_id: string }>();
     const {setModalBody, graphMetadata, setGraphMetadata, graphConfig} = useContext(AppContext);
 
     cytoscape.use(coseBilkent);
@@ -40,6 +42,18 @@ export const Graph = (props: { location: Location }) => {
     const [refVisible, setRefVisible] = useState(false);
     const [cy, setCy] = useState({} as cytoscape.Core);
     const [showMetadata, setShowMetadata] = useState(false);
+
+    useEffect(() => {
+        if (cyIsNull()) return;
+        if ((object_id && object_type) || (props.object_type && props.object_id)) {
+            setMetadataViaCallback({
+                type: props.object_type as NodeTypeEnum || props.object_type as NodeTypeEnum,
+                fosId: props.object_id || object_id,
+                clear_graph: true,
+                neo4j_id: "",
+            });
+        }
+    }, [cy]);
 
     useEffect(() => {
         if (undefined !== graphMetadata.type && undefined !== graphMetadata.fosId && graphMetadata.fosId !== "") {
@@ -65,10 +79,7 @@ export const Graph = (props: { location: Location }) => {
     }, [graphConfig]);
 
     function doTimeFilter() {
-        if (cy === undefined || cy.$id === undefined) {
-            console.debug("Cytoscape not yet initialised");
-            return;
-        }
+        if (cyIsNull()) return;
         let timeFilter = (graphConfig.show_timebase_data as TimebaseDataEnum === TimebaseDataEnum.current ? 100 : (graphConfig.show_timebase_data as TimebaseDataEnum === TimebaseDataEnum.recent ? 50 : 0));
         cy.elements(`*[hasTimeFilter][timeFilter_numeric < ${timeFilter}]`).css({
             "display": "none"
@@ -78,11 +89,16 @@ export const Graph = (props: { location: Location }) => {
         });
     }
 
-    useEffect(() => {
-        if (cy === undefined || cy.$id === undefined) {
+    function cyIsNull() {
+        if (undefined === cy || undefined === cy.$id) {
             console.debug("Cytoscape not yet initialised");
-            return;
+            return true;
         }
+        return false;
+    }
+
+    useEffect(() => {
+        if (cyIsNull()) return;
         if (graphMetadata.type === undefined || graphMetadata.fosId === "") return;
         console.debug("Got update", graphMetadata);
         if (graphMetadata.clear_graph) {
@@ -154,7 +170,7 @@ export const Graph = (props: { location: Location }) => {
     }, [graphMetadata]);
 
     function setMetadataViaCallback(data: INodeMetadata) {
-        let ele = `node[fos_id="${data.fosId}"]`;
+        let ele = `node[fosId="${data.fosId}"]`;
         console.debug("Updating node", ele);
         cy.elements(ele).flashClass("highlight", 1500);
         setGraphMetadata(data);
@@ -226,11 +242,25 @@ export const Graph = (props: { location: Location }) => {
                 })
                     .then(() => {
                         if (dataAdded) {
-                            console.debug("Data added to graph, redrawing - center", metadata.neo4j_id);
-                            reDraw(`node[neo4j_id=${metadata.neo4j_id}]`);
+                            reDrawViaMeta(metadata);
                         }
                     });
             })
+    }
+
+    function reDrawViaMeta(metadata: INodeMetadata) {
+        if (metadata.neo4j_id) {
+            console.debug("Redrawing via neo4j_id");
+            return reDraw(`node[neo4j_id=${metadata.neo4j_id}]`);
+        }
+        if (metadata.fosId) {
+            console.debug("Redrawing via fosId");
+            return reDraw(`node[fosId="${metadata.fosId}"]`);
+        }
+        if (undefined === metadata.neo4j_id && undefined === metadata.fosId) {
+            console.debug("Unable to redraw with center, meta is", metadata);
+        }
+        reDraw();
     }
 
     function getAwardNodes(metadata: INodeMetadata) {
@@ -286,8 +316,7 @@ export const Graph = (props: { location: Location }) => {
         })
             .then(() => {
                 if (dataAdded) {
-                    console.debug("Data added to graph, redrawing - center", metadata.neo4j_id);
-                    reDraw(`node[neo4j_id=${metadata.neo4j_id}]`);
+                    reDrawViaMeta(metadata);
                 }
             });
     }
@@ -319,8 +348,7 @@ export const Graph = (props: { location: Location }) => {
             })
             .then(() => {
                 if (dataAdded) {
-                    console.debug("Data added to graph, redrawing - center", metadata.neo4j_id);
-                    reDraw(("" === metadata.neo4j_id) ? undefined : `node[neo4j_id=${metadata.neo4j_id}]`);
+                    reDrawViaMeta(metadata);
                 }
             })
     }
@@ -411,11 +439,10 @@ export const Graph = (props: { location: Location }) => {
                 })
             })
             .then(() => {
-            if (dataAdded) {
-                console.debug("Data added to graph, redrawing - center", metadata.neo4j_id);
-                reDraw(("" === metadata.neo4j_id) ? undefined : `node[neo4j_id=${metadata.neo4j_id}]`);
-            }
-        })
+                if (dataAdded) {
+                    reDrawViaMeta(metadata);
+                }
+            })
     }
 
     useEffect(() => {
@@ -561,6 +588,10 @@ export const Graph = (props: { location: Location }) => {
         // remove all elements
         cy.remove(cy.$("*"));
 
+        if ((object_id && object_type) || (props.object_id && props.object_type)) {
+            return;
+        }
+
         return axios.get<string, AxiosResponse<{
             c: INode,
             n: INode,
@@ -585,10 +616,7 @@ export const Graph = (props: { location: Location }) => {
     }
 
     function addNode(node: INode, type?: string) {
-        if (cy === undefined || cy.$id === undefined) {
-            console.debug("Cytoscape not yet initialised");
-            return false;
-        }
+        if (cyIsNull()) return;
         const count = cy.$id("node_" + node.neo4j_id);
         if (count["length"] === 0) {
             let output: { [key: string]: any } = {
@@ -621,10 +649,7 @@ export const Graph = (props: { location: Location }) => {
 
     // verify if edge exists, add it if it doesn't
     function addEdge(edge: IRef) {
-        if (cy === undefined || cy.$id === undefined) {
-            console.debug("Cytoscape not yet initialised");
-            return false;
-        }
+        if (cyIsNull()) return;
         const found = cy.$id(`edge_${edge.neo4j_id}`);
         if (found["length"] === 0) {
             let output: { [key: string]: any } = {
@@ -637,7 +662,7 @@ export const Graph = (props: { location: Location }) => {
 
             Object.keys(edge.properties).forEach(key => {
                 if (key === "id") {
-                    output["fos_id"] = edge.properties[key];
+                    output["fosId"] = edge.properties[key];
                 } else {
                     output[key] = edge.properties[key];
                 }
@@ -657,11 +682,7 @@ export const Graph = (props: { location: Location }) => {
     }
 
     function reDraw(center?: string) {
-        if (cy === undefined || cy.$id === undefined) {
-            console.debug("Cytoscape not yet initialised");
-            return;
-        }
-
+        if (cyIsNull()) return;
         console.debug("redrawing, center is", center);
         const layoutOptions = {
             name: "cose-bilkent",
@@ -688,7 +709,7 @@ export const Graph = (props: { location: Location }) => {
                             eles: ele
                         }
                     });
-                    ele.flashClass("highlight");
+                    ele.flashClass("highlight", 1500);
                 }
             }
         });
@@ -766,7 +787,8 @@ export const Graph = (props: { location: Location }) => {
                     <OverlayTrigger
                         placement="auto"
                         delay={{show: 100, hide: 250}}
-                        overlay={renderTooltip({text: "Force redraw and reset positions"})}><FontAwesome name={"refresh"} fixedWidth/></OverlayTrigger>
+                        overlay={renderTooltip({text: "Force redraw and reset positions"})}><FontAwesome
+                        name={"refresh"} fixedWidth/></OverlayTrigger>
                 </div>
             </div>
             <NodeMetadata hidden={!showMetadata} hideCallback={hideMetadata} metadata={graphMetadata}

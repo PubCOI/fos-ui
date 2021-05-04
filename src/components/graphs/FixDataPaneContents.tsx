@@ -7,6 +7,7 @@ import axios, {AxiosError, AxiosResponse} from "axios";
 import {useToasts} from "react-toast-notifications";
 import {CreateTaskRequestDTO, CreateTaskResponseDTO} from "../../interfaces/DTO/TaskDTO";
 import AppContext from "../core/AppContext";
+import PaneContext from "../core/PaneContext";
 
 interface OptionItem {
     value: string,
@@ -18,6 +19,7 @@ interface OptionItem {
 export const FixDataPaneContents = (props: { type: DataTypeEnum, id: string }) => {
     const {addToast} = useToasts();
     const {displayName} = useContext(AppContext);
+    const {closePane} = useContext(PaneContext);
 
     const [loaded, setLoaded] = useState(false);
     const [options, setOptions] = useState([] as OptionItem[]);
@@ -62,8 +64,7 @@ export const FixDataPaneContents = (props: { type: DataTypeEnum, id: string }) =
                 })
             })
             .then(() => {
-                // setTimeout(close, 1000)
-                console.log("all good")
+                setTimeout(() => closePane(), 1000)
             })
             .catch((e: AxiosError) => {
                 addToast(`${e?.response?.data.message}`, {

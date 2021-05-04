@@ -1,9 +1,9 @@
 import NumberFormat from "react-number-format";
 import React from "react";
 
-export const MinMaxValueFormat = (props: { min: number, max: number, rounded?: boolean }) => {
-    let min = (props.rounded) ? Math.round(props.min) : props.min;
-    let max = (props.rounded) ? Math.round(props.max) : props.max;
+export const MinMaxValueFormat = (props: { min?: number, max?: number, rounded?: boolean }) => {
+    let min = (props.rounded) ? Math.round(props.min || 0) : props.min;
+    let max = (props.rounded) ? Math.round(props.max || 0) : props.max;
     if (0 === min) {
         return (<>up to <NumberFormat thousandSeparator
                                        displayType={"text"} prefix={"£"}

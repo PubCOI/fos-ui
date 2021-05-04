@@ -1,20 +1,21 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {Modal} from "react-bootstrap";
 import axios from "axios";
-import {AwardMDBDTO} from "../../interfaces/DTO/AwardMDBDTO";
+
 import {AwardDetailsModalBody} from "./AwardDetailsModalBody";
 import {DataTypeEnum, FixDataIssueWidget} from "./FixDataIssueWidget";
 import AppContext from "../core/AppContext";
 import {LoadingGrow} from "../LoadingGrow";
+import {AwardDTO} from "../../generated/FosTypes";
 
 export const AwardDetailsModal = (props: { id: string }) => {
 
     const {hideModal, showRightPane} = useContext(AppContext);
     const [loaded, setLoaded] = useState(false);
-    const [award, setAward] = useState<AwardMDBDTO>();
+    const [award, setAward] = useState<AwardDTO>();
 
     useEffect(() => {
-        axios.get<AwardMDBDTO>(`/api/graphs/awards/${props.id}/metadata`)
+        axios.get<AwardDTO>(`/api/graphs/awards/${props.id}/metadata`)
             .then(response => {
                 setAward(response.data);
                 setLoaded(true);

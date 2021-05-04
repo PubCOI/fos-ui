@@ -42,6 +42,38 @@ export interface OrganisationDTO {
     verified?: boolean;
 }
 
+export interface AwardDTO {
+    id: string;
+    noticeId: string;
+    noticeTitle?: string;
+    organisation?: string;
+    supplierName?: string;
+    supplierNumTotalAwards?: number;
+    value: number;
+    valueMin?: number;
+    valueMax?: number;
+    awardDate: Date;
+    startDate?: Date;
+    endDate?: Date;
+    attachments?: AttachmentDTO[];
+    group_award?: boolean;
+}
+
+export interface AwardsGraphListResponseDTO {
+    id: string;
+    noticeId: string;
+    client?: string;
+    awardee?: string;
+    value?: number;
+    valueMin?: number;
+    valueMax?: number;
+    awardDate: Date;
+    startDate?: Date;
+    endDate?: Date;
+    groupAward?: boolean;
+    knownAs?: KnownAsDTO;
+}
+
 export interface ByRegion {
     items?: RegionItems;
     other?: number;
@@ -63,6 +95,22 @@ export interface NoticeList {
 
 export interface GraphSearchResponseDTO extends GenericIDNameFTSResponse {
     type?: NodeTypeEnum;
+}
+
+export interface AttachmentDTO {
+    id: string;
+    noticeId: string;
+    description?: string;
+    type: string;
+    href?: string;
+    textData?: string;
+    mime?: string;
+    ocr?: boolean;
+}
+
+export interface KnownAsDTO {
+    id: string;
+    name: string;
 }
 
 export interface RegionItems {

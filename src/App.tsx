@@ -150,7 +150,7 @@ function App() {
                                 <Route exact path={"/profile"} component={Profile}/>
                                 <Route exact path={"/data/upload"} component={Upload}/>
                                 <Route exact path={"/data/add"} component={AddData}/>
-                                <Route exact path={"/graph"} component={Graph}/>
+                                <Route path={"/graph/:object_type?/:object_id?"} component={Graph}/>
                                 <Route exact path={"/search"} render={() => <Search groupBy={groupBy} searchParams={searchParams} searchType={searchType}/>}/>
                                 <Route exact path={"/stats"} component={Stats}/>
                                 <Route path={"/view"} component={Viewer}/>

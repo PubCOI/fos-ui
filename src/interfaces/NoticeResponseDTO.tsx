@@ -1,4 +1,4 @@
-import {AwardMDBDTO} from "./DTO/AwardMDBDTO";
+import {AwardDTO} from "../generated/FosTypes";
 
 export interface NoticeResponseDTO {
     id: string,
@@ -8,5 +8,5 @@ export interface NoticeResponseDTO {
     description: string,
     valueLow: number,
     valueHigh: number,
-    awards: AwardMDBDTO[]
+    awards: AwardDTO[]
 }

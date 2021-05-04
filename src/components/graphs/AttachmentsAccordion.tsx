@@ -1,14 +1,14 @@
-import {AwardMDBDTO} from "../../interfaces/DTO/AwardMDBDTO";
 import {Accordion, Alert, Card} from "react-bootstrap";
 import {GetOpenExtLink} from "../GetOpenExtLink";
 import FontAwesome from "react-fontawesome";
 import React from "react";
 import {AttachmentAccordionLinks} from "./AttachmentAccordionLinks";
 import {DataTypeEnum, FixDataIssueWidget} from "./FixDataIssueWidget";
+import {AwardDTO} from "../../generated/FosTypes";
 
-export const AttachmentsAccordion = (props: { award: AwardMDBDTO }) => {
+export const AttachmentsAccordion = (props: { award: AwardDTO }) => {
 
-    const hasAttachment = (props: { award: AwardMDBDTO }) => {
+    const hasAttachment = (props: { award: AwardDTO }) => {
         return (!props.award?.attachments || props.award.attachments.length < 1)
     };
 
@@ -16,7 +16,7 @@ export const AttachmentsAccordion = (props: { award: AwardMDBDTO }) => {
         <>
             <div hidden={hasAttachment({award: props.award})}>
                 <Accordion>
-                    {props.award.attachments.map(attachment => (
+                    {props.award.attachments?.map(attachment => (
                         <Card key={"attachment_card_" + attachment.id}>
                             <Accordion.Toggle as={Card.Header} eventKey={"attachment-" + attachment.id}>
                                 <div className={"d-flex align-items-center justify-content-between"}>
@@ -46,7 +46,9 @@ export const AttachmentsAccordion = (props: { award: AwardMDBDTO }) => {
                                         href={attachment.href}/>
                                     </div>
 
-                                    <AttachmentAccordionLinks attachment={attachment}/>
+                                    {Boolean(attachment) && (
+                                        <AttachmentAccordionLinks attachment={attachment}/>
+                                    )}
 
                                     <div className={"fix-widget-inside-accordion"}>
                                         <FixDataIssueWidget type={DataTypeEnum.attachment} id={attachment.id}/>

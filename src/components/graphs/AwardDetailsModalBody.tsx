@@ -1,12 +1,13 @@
-import {AwardMDBDTO} from "../../interfaces/DTO/AwardMDBDTO";
 import {Col, Modal, OverlayTrigger, Row} from "react-bootstrap";
 import React, {useEffect, useState} from "react";
 import {ContractValueFormat} from "../ContractValueFormat";
 import FontAwesome from "react-fontawesome";
 import {AttachmentsAccordion} from "./AttachmentsAccordion";
 import {renderTooltip} from "../../hooks/Utils";
+import {GraphPanelBadge} from "./GraphPanelBadge";
+import {AwardDTO, NodeTypeEnum} from "../../generated/FosTypes";
 
-export const AwardDetailsModalBody = (props: { award: AwardMDBDTO | undefined }) => {
+export const AwardDetailsModalBody = (props: { award: AwardDTO | undefined }) => {
 
     const [noticeURL, setNoticeURL] = useState("");
     const [awardURL, setAwardURL] = useState("");
@@ -33,11 +34,11 @@ export const AwardDetailsModalBody = (props: { award: AwardMDBDTO | undefined })
                 </Row>
                 <Row>
                     <Col sm={titleRowWidth}>Award&nbsp;ID</Col>
-                    <Col>{props.award?.id}</Col>
+                    <Col>{props.award?.id}<GraphPanelBadge type={NodeTypeEnum.award} id={props.award?.id}/></Col>
                 </Row>
                 <Row>
                     <Col sm={titleRowWidth}>Notice ID</Col>
-                    <Col>{props.award?.noticeId}</Col>
+                    <Col>{props.award?.noticeId}<GraphPanelBadge type={NodeTypeEnum.notice} id={props.award?.noticeId}/></Col>
                 </Row>
                 <Row>
                     <Col sm={titleRowWidth}>Awarded to</Col>
@@ -71,8 +72,8 @@ export const AwardDetailsModalBody = (props: { award: AwardMDBDTO | undefined })
                                              {text: "No attachments on this notice, consider creating a task to follow up"}
                                          )}>
                         <FontAwesome name={"warning"} className={"mr-2"}
-                                     hidden={props.award?.attachments.length > 0}/>
-                    </OverlayTrigger>{props.award?.attachments.length} total</Col>
+                                     hidden={(props.award?.attachments && props.award?.attachments?.length > 0)}/>
+                    </OverlayTrigger>{props.award?.attachments?.length} total</Col>
                 </Row>
                 <Row className={"my-2"}>
                     <Col><AttachmentsAccordion award={props.award}/></Col>
