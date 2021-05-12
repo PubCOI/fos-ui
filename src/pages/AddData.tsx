@@ -35,6 +35,7 @@ export const AddData = () => {
 
     function resetSearch() {
         setHasValidResponse(false);
+        setSearchResponse(undefined);
     }
 
     return (
