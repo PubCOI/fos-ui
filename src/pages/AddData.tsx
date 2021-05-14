@@ -174,7 +174,7 @@ const RenderResponseTable = (props: { data: NoticeIndex[] | undefined }) => {
                 prop: 'text',
                 filterable: true,
                 cell: (row: NoticeIndex) => {
-                    return (<FetchAddButton addNoticeCallback={addNotice} row={row}/>);
+                    return (<FetchAddButton key={row.id} addNoticeCallback={addNotice} row={row}/>);
                 }
             }
         ];
