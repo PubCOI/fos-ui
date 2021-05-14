@@ -1,22 +1,22 @@
 import {Container, OverlayTrigger} from "react-bootstrap";
 import React, {useContext, useEffect, useState} from "react";
-import {LoadingWrapper} from "../components/LoadingWrapper";
-import {AlertWrapper} from "../components/AlertWrapper";
+import {LoadingWrapper} from "../../components/LoadingWrapper";
+import {AlertWrapper} from "../../components/AlertWrapper";
 import axios from "axios";
 import FontAwesome from "react-fontawesome";
-import {PageTitle} from "../components/PageTitle";
+import {PageTitle} from "../../components/PageTitle";
 import Datatable from 'react-bs-datatable';
-import {ContractValueFormat} from "../components/ContractValueFormat";
+import {ContractValueFormat} from "../../components/ContractValueFormat";
 import {css} from "@emotion/css";
-import {AwardDetailsModal} from "../components/graphs/AwardDetailsModal";
-import AppContext from "../components/core/AppContext";
-import {renderTooltip} from "../hooks/Utils";
-import {AwardDTO, AwardsGraphListResponseDTO, NodeTypeEnum} from "../generated/FosTypes";
-import {GraphPanelBadge} from "../components/graphs/GraphPanelBadge";
+import {AwardDetailsModal} from "../../components/graphs/AwardDetailsModal";
+import AppContext from "../../components/core/AppContext";
+import {renderTooltip} from "../../hooks/Utils";
+import {AwardDTO, AwardsGraphListResponseDTO, NodeTypeEnum} from "../../generated/FosTypes";
+import {GraphPanelBadge} from "../../components/graphs/GraphPanelBadge";
 
 export const Awards = () => {
 
-    let url = "/api/awards";
+    let url = "/api/datasets/awards";
     const [awards, setAwardsList] = useState<AwardsGraphListResponseDTO[]>([]);
     const [loaded, setLoaded] = useState(false);
     const [error, setError] = useState(false);

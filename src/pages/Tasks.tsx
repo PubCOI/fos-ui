@@ -10,6 +10,7 @@ import {PageTitle} from "../components/PageTitle";
 import Datatable from 'react-bs-datatable';
 import AppContext from "../components/core/AppContext";
 import {css} from "@emotion/css";
+import {ResolvePotentialCOIModal} from "../components/tasks/ResolvePotentialCOIModal";
 
 interface Task {
     taskId: string,
@@ -47,6 +48,8 @@ export const Tasks = () => {
         console.debug(`Opening ${taskType} task ${taskId}`);
         if (taskType === "resolve_client") {
             setModalBody(<ResolveClientModal id={entity} taskId={taskId} removeTaskCB={removeTaskCallback}/>)
+        } else if (taskType === "resolve_potential_coi") {
+            setModalBody(<ResolvePotentialCOIModal taskId={taskId} removeTaskCB={removeTaskCallback}/>)
         } else {
             console.log("Not implemented")
         }
@@ -100,26 +103,6 @@ export const Tasks = () => {
 
                 )}
 
-                {/*{Boolean(loaded) && (*/}
-                {/*    <ListGroup>*/}
-                {/*        {*/}
-                {/*            openTasks.length > 0 ?*/}
-                {/*                openTasks.map(task => (*/}
-                {/*                    <ListGroup.Item action key={task.taskId}*/}
-                {/*                                    onClick={() => openResolveModal(task.taskType, task.taskId, task.entity, removeTask)}>*/}
-                {/*                        <div className={"d-flex"}>*/}
-                {/*                            <div className={"mr-3"}>*/}
-                {/*                                <Badge variant={"info"}>{task.taskType}</Badge>*/}
-                {/*                            </div>*/}
-                {/*                            <div className={"text-left"}>{task.description}</div>*/}
-                {/*                        </div>*/}
-                {/*                    </ListGroup.Item>*/}
-                {/*                )) :*/}
-                {/*                <ListGroup.Item>No tasks found</ListGroup.Item>*/}
-                {/*        }*/}
-                {/*    </ListGroup>*/}
-                {/*)}*/}
-                {/*<h2 className={"mt-3"}>Recently completed tasks</h2>*/}
             </Container>
         </>
     )

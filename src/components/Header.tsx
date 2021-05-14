@@ -29,33 +29,19 @@ export const Header = () => {
                     <Nav className="mr-auto">
                         {/*todo: toggle entire navbar when submenu clicked*/}
                         <NavDropdown title="Datasets" id="basic-nav-dropdown" data-toggle={"collapse"}>
-                            <NavDropdown.Item as={NavLink} to={"/data/awards"}
-                                              activeClassName={"active"}
-                                              data-toggle={"collapse"}>Contract
-                                Awards</NavDropdown.Item>
-                            <NavDropdown.Item as={NavLink} to={"/data/clients"}
-                                              activeClassName={"active"}
-                                              disabled
-                                              data-toggle={"collapse"}>Clients /
-                                Commissioners</NavDropdown.Item>
-                            <NavDropdown.Item as={NavLink} to={"/data/companies"}
-                                              activeClassName={"active"}
-                                              disabled
-                                              data-toggle={"collapse"}>Companies</NavDropdown.Item>
-                            <NavDropdown.Item as={NavLink} to={"/data/officers"}
-                                              activeClassName={"active"}
-                                              disabled
-                                              data-toggle={"collapse"}>Officers</NavDropdown.Item>
-                            <NavDropdown.Divider className={authenticated ? "" : "d-none"}/>
-                            <NavDropdown.Item as={NavLink} to={"/data/add"}
-                                              className={(authenticated && !config.standalone) ? "" : "d-none"}
-                                              activeClassName={"active"}
-                                              data-toggle={"collapse"}><FontAwesome name={"plus"}
-                                                                                    className={"mr-1"}/> Add
-                                data</NavDropdown.Item>
-                            <NavDropdown.Item as={NavLink} to={"/data/upload"}
-                                              className={(config.standalone || config.debug) ? "" : "d-none"}
-                                              activeClassName={"active"}
+                            <NavDropdown.Item as={NavLink} to={"/data/awards"} activeClassName={"active"}
+                                              data-toggle={"collapse"}>Contract Awards</NavDropdown.Item>
+                            <NavDropdown.Item as={NavLink} to={"/data/clients"} activeClassName={"active"}
+                                              data-toggle={"collapse"}>Clients / Commissioners</NavDropdown.Item>
+                            <NavDropdown.Item as={NavLink} to={"/data/organisations"} activeClassName={"active"}
+                                              data-toggle={"collapse"}>Organisations</NavDropdown.Item> {/*<NavDropdown.Item as={NavLink} to={"/data/officers"}*/} {/*                  activeClassName={"active"}*/} {/*                  disabled*/} {/*                  data-toggle={"collapse"}>Officers</NavDropdown.Item>*/}
+                            <NavDropdown.Divider className={authenticated ? "" : "d-none"}/> <NavDropdown.Item
+                            as={NavLink} to={"/data/add"}
+                            className={(authenticated && !config.standalone) ? "" : "d-none"} activeClassName={"active"}
+                            data-toggle={"collapse"}><FontAwesome name={"plus"} className={"mr-1"}/> Add
+                            data</NavDropdown.Item> <NavDropdown.Item as={NavLink} to={"/data/upload"}
+                                                                      className={(config.standalone || config.debug) ? "" : "d-none"}
+                                                                      activeClassName={"active"}
                                               data-toggle={"collapse"}><FontAwesome name={"upload"}
                                                                                     className={"mr-1"}/> Upload
                                 data</NavDropdown.Item>

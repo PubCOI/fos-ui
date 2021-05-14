@@ -1,5 +1,4 @@
 /* tslint:disable */
-
 /* eslint-disable */
 
 export interface NoticeSearchResponse {
@@ -75,6 +74,33 @@ export interface AwardsGraphListResponseDTO {
     knownAs?: KnownAsDTO;
 }
 
+export interface ClientsGraphListResponseDTO {
+    fosId?: string;
+    name?: string;
+    total?: number;
+    canonical?: boolean;
+    hidden?: boolean;
+    firstNotice?: Date;
+    lastNotice?: Date;
+    notices?: string[];
+}
+
+export interface OrganisationsGraphListResponseDTO {
+    organisation?: OrganisationDTO;
+    totalAwards?: number;
+    awards?: string[];
+    awardDetails?: AwardDTO[];
+}
+
+export interface ResolvePotentialCOIDTO extends TaskDTO {
+    organisation?: FosOrganisation;
+    memberInterest?: MemberInterest;
+}
+
+export interface ResolvedCOIDTOResponse {
+    nextTaskId?: string;
+}
+
 export interface ByRegion {
     items?: RegionItems;
     other?: number;
@@ -114,6 +140,44 @@ export interface KnownAsDTO {
     name: string;
 }
 
+export interface FosOrganisation extends FosEntity {
+    jurisdiction?: string;
+    companyName?: string;
+    companyAddress?: string;
+    referenceType?: string;
+    reference?: string;
+    verified?: boolean;
+}
+
+export interface MemberInterest {
+    id?: string;
+    personNodeId?: string;
+    mnisInterestId?: number;
+    pwInterestId?: string;
+    pwPersonId?: string;
+    mnisPersonId?: number;
+    personFullName?: string;
+    text?: string;
+    registeredDate?: Date;
+    pwCategory?: number;
+    pwCategoryDescription?: string;
+    mnisCategory?: number;
+    mnisCategoryDescription?: string;
+    donation?: boolean;
+    donorName?: string;
+    datasets?: string[];
+    valueSum?: number;
+    source?: SourceEnum;
+}
+
+export interface TaskDTO {
+    taskId?: string;
+    taskType?: FosTaskType;
+    entity?: string;
+    description?: string;
+    linkedEntity?: string;
+}
+
 export interface RegionItems {
     keyValuePairOfstringlongs?: KVPType[];
 }
@@ -135,6 +199,11 @@ export interface GenericIDNameFTSResponse {
     id?: string;
     name?: string;
     score?: number;
+}
+
+export interface FosEntity {
+    fosId?: string;
+    hidden?: boolean;
 }
 
 export interface KVPType {
@@ -215,4 +284,15 @@ export enum NodeTypeEnum {
     person = "person",
     notice = "notice",
     award = "award",
+}
+
+export enum FosTaskType {
+    resolve_client = "resolve_client",
+    resolve_potential_coi = "resolve_potential_coi",
+    resolve_company = "resolve_company",
+}
+
+export enum SourceEnum {
+    pw = "pw",
+    mnis = "mnis",
 }
