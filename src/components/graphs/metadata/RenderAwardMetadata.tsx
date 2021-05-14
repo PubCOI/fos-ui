@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {useToasts} from "react-toast-notifications";
-import axios from "axios";
+import axios, {AxiosError} from "axios";
 import {Alert, Badge} from "react-bootstrap";
 import FontAwesome from "react-fontawesome";
 import {ContractValueFormat} from "../../ContractValueFormat";
@@ -20,11 +20,19 @@ export const RenderAwardMetadata = (props: { id: string }) => {
         })
             .then(() => {
             })
-            .catch(() => {
-                addToast("Error, unable to load data", {
-                    appearance: "error",
-                    autoDismiss: true,
-                });
+            .catch((err: AxiosError) => {
+                if (err.response?.status === 404) {
+                    addToast(`Unable to find metadata for award ${props.id}`, {
+                        appearance: "warning",
+                        autoDismiss: true
+                    })
+                }
+                else {
+                    addToast("Error, unable to load data", {
+                        appearance: "error",
+                        autoDismiss: true,
+                    });
+                }
             });
 
     }, [props.id]);

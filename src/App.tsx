@@ -140,6 +140,7 @@ function App() {
     useEffect(() => {
         if (undefined !== modalBody && modalBody !== MODAL_EMPTY) {
             setShowModal(true);
+            closePane();
         }
     }, [modalBody]);
 

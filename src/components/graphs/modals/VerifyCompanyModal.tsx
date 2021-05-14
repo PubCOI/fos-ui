@@ -1,7 +1,7 @@
 import React, {useContext, useEffect, useState} from "react";
 import AppContext from "../../core/AppContext";
 import {useToasts} from "react-toast-notifications";
-import {Alert, Button, ListGroup, Modal, OverlayTrigger} from "react-bootstrap";
+import {Alert, Button, Col, ListGroup, Modal, OverlayTrigger, Row} from "react-bootstrap";
 import FontAwesome from "react-fontawesome";
 import axios, {AxiosResponse} from "axios";
 import {VerifyCompanySearchResponse} from "../../../interfaces/DTO/VerifyCompanySearchResponse";
@@ -237,6 +237,7 @@ export const VerifyCompanyModal = (props: { id: string }) => {
                         <ListGroup className={"mt-3"}>
                             {searchResponse.map(item => (
                                 <OCSearchResponseItem
+                                    key={`oc_response_${item.id}`}
                                     item={item}
                                     mergeRecordCallback={mergeRecord}
                                     setFlagCallback={setFlag}
@@ -252,20 +253,25 @@ export const VerifyCompanyModal = (props: { id: string }) => {
                                 In some cases, such as when the wrong company name is used on a contract, the company
                                 cannot
                                 be resolved to a valid record. You have a couple of options:
-                                <div className={"mt-3 d-flex align-items-center"}>
-                                    <Button variant={"primary"} className={"mr-3"} onClick={() => showPane()}>Report
-                                        issue</Button>
-                                    <div>if you want to
-                                        flag this record as needing another pair of eyes
-                                    </div>
-                                </div>
-                                <div className={"my-3 d-flex align-items-center"}>
-                                    <Button variant={"outline-primary"} className={"mr-3"}
-                                            onClick={() => manualDetails(props.id)}>Enter details
-                                        manually</Button>
-                                    <div>if you have found the company number elsewhere</div>
-                                </div>
                             </div>
+                            <Row className={"my-2 d-flex align-items-center"}>
+                                <Col sm={4}>
+                                    <Button block variant={"primary"} className={"mr-3"} onClick={() => showPane()}>Report
+                                        issue</Button>
+                                </Col>
+                                <Col>
+                                    if you want to flag this record as needing another pair of eyes
+                                </Col>
+                            </Row>
+                            <Row className={"mb-2 d-flex align-items-center"}>
+                                <Col sm={4}>
+                                    <Button block variant={"outline-primary"} className={"mr-3"}
+                                            onClick={() => manualDetails(props.id)}>Enter details manually</Button>
+                                </Col>
+                                <Col>
+                                    if you have found the company number elsewhere
+                                </Col>
+                            </Row>
                         </Alert>
                     )}
 

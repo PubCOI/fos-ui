@@ -63,7 +63,7 @@ export const RenderPersonMetadata = (props: { metadata: INodeMetadata }) => {
     return (
         <>
             <Row>
-                <Col sm={3}>Name</Col>
+                <Col sm={4}>Name</Col>
                 <Col>
                     {person.commonName}
                 </Col>
@@ -71,7 +71,7 @@ export const RenderPersonMetadata = (props: { metadata: INodeMetadata }) => {
 
             {Boolean(person.occupation) && (
                 <Row>
-                    <Col sm={3}>Occupation</Col>
+                    <Col sm={4}>Occupation</Col>
                     <Col>
                         {person.occupation}
                     </Col>
@@ -80,7 +80,7 @@ export const RenderPersonMetadata = (props: { metadata: INodeMetadata }) => {
 
             {Boolean(person.nationality) && (
                 <Row>
-                    <Col sm={3}>Nationality</Col>
+                    <Col sm={4}>Nationality</Col>
                     <Col>
                         {person.nationality}
                     </Col>
