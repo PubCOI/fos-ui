@@ -43,12 +43,12 @@ export const ResolvePotentialCOIModal = (props: {
     }, []);
 
     function flag() {
-        console.log('flagging', props.taskId);
+        console.debug('flagging', props.taskId);
         resolve(`/api/ui/tasks/resolve_potential_coi/${props.taskId}/flag`)
     }
 
     function ignore() {
-        console.log('ignoring', props.taskId);
+        console.debug('ignoring', props.taskId);
         resolve(`/api/ui/tasks/resolve_potential_coi/${props.taskId}/ignore`)
     }
 
@@ -86,21 +86,24 @@ export const ResolvePotentialCOIModal = (props: {
     if (!loaded) return <LoadingWrapper/>;
 
     return (
-        <Modal backdrop={"static"} show centered size={"xl"}> <Modal.Header closeButton onClick={() => hideModal()}>
-            <Modal.Title>Task: Resolve potential conflict of interest</Modal.Title> </Modal.Header> <Modal.Body>
-            <p>The following records have been flagged as possibly related</p>
-            <Alert variant={"dark"}>
-                <div className={"text-muted font-weight-bold"}>Organisation</div>
-                <div>{resolveCOIResponse?.organisation?.companyName}</div>
-                <div className={"text-muted"}>{resolveCOIResponse?.organisation?.companyAddress}</div>
-            </Alert> <Alert variant={"primary"}>
-            <div className={"text-muted font-weight-bold"}>Politician</div>
-            <div className={"text-muted"}>Name: {resolveCOIResponse?.memberInterest?.personFullName}</div>
-            <div>Declaration statement:</div>
-            <div>{resolveCOIResponse?.memberInterest?.text}</div>
-        </Alert> <Row> <Col> <Button variant={"danger"} block onClick={() => flag()}>Flag: potential conflict</Button>
-        </Col> <Col> <Button variant={"primary"} block onClick={() => ignore()}>Ignore: false positive</Button> </Col>
-        </Row> </Modal.Body> <Modal.Footer> <Button variant="primary" onClick={() => hideModal()}> Cancel </Button>
-        </Modal.Footer> </Modal>
+        <>
+            <Modal backdrop={"static"} show centered size={"xl"}> <Modal.Header closeButton onClick={() => hideModal()}>
+                <Modal.Title>Task: Resolve potential conflict of interest</Modal.Title> </Modal.Header> <Modal.Body>
+                <p>The following records have been flagged as possibly related</p>
+                <Alert variant={"dark"}>
+                    <div className={"text-muted font-weight-bold"}>Organisation</div>
+                    <div>{resolveCOIResponse?.organisation?.companyName}</div>
+                    <div className={"text-muted"}>{resolveCOIResponse?.organisation?.companyAddress}</div>
+                </Alert> <Alert variant={"primary"}>
+                <div className={"text-muted font-weight-bold"}>Politician</div>
+                <div className={"text-muted"}>Name: {resolveCOIResponse?.memberInterest?.personFullName}</div>
+                <div>Declaration statement:</div>
+                <div>{resolveCOIResponse?.memberInterest?.text}</div>
+            </Alert> <Row> <Col> <Button variant={"danger"} block onClick={() => flag()}>Flag: potential
+                conflict</Button> </Col> <Col> <Button variant={"primary"} block onClick={() => ignore()}>Ignore: false
+                positive</Button> </Col> </Row> </Modal.Body> <Modal.Footer> <Button variant="outline-primary"
+                                                                                     onClick={() => hideModal()}> Close</Button>
+            </Modal.Footer> </Modal>
+        </>
     );
 };

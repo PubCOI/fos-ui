@@ -6,8 +6,9 @@ import axios from "axios";
 import {PageTitle} from "../../components/PageTitle";
 import Datatable from 'react-bs-datatable';
 import {css} from "@emotion/css";
-import AppContext from "../../components/core/AppContext";
-import {ClientsGraphListResponseDTO} from "../../generated/FosTypes";
+import {ClientsGraphListResponseDTO, NodeTypeEnum} from "../../generated/FosTypes";
+import {Graph} from "../Graph";
+import PaneContext from "../../components/core/PaneContext";
 
 export const Clients = () => {
 
@@ -15,7 +16,7 @@ export const Clients = () => {
     const [awards, setClientsList] = useState<ClientsGraphListResponseDTO[]>([]);
     const [loaded, setLoaded] = useState(false);
     const [error, setError] = useState(false);
-    const {setModalBody} = useContext(AppContext);
+    const {setPaneTitle, setPaneSubtitle, setPaneContents, openPane} = useContext(PaneContext);
 
     function getHeader() {
         return [
@@ -31,7 +32,9 @@ export const Clients = () => {
                 sortable: true,
                 cell: (row: ClientsGraphListResponseDTO) => {
                     return (
-                        <>{row.notices?.length}</>
+                        <>
+                            {row.notices?.length}
+                        </>
                     )
                 }
             },
@@ -84,7 +87,13 @@ export const Clients = () => {
 
                 <Datatable tableHeaders={getHeader()} tableBody={awards}
                            initialSort={{prop: 'created', isAscending: false}} classes={tableClasses} rowsPerPage={10}
-                           onSort={onSort} rowsPerPageOption={[5, 10, 25, 50]}/>
+                           onRowClick={(row: ClientsGraphListResponseDTO) => {
+                               console.debug(row);
+                               setPaneTitle(`Details for commissioning body ${row.name}`);
+                               setPaneSubtitle(`Showing all relationships for entity ${row.fosId}`);
+                               setPaneContents(<Graph object_type={NodeTypeEnum.client} object_id={row.fosId}/>);
+                               openPane();
+                           }} onSort={onSort} rowsPerPageOption={[5, 10, 25, 50]}/>
 
             </Container>
         </>
