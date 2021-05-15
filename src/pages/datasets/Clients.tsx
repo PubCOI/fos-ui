@@ -13,7 +13,7 @@ import PaneContext from "../../components/core/PaneContext";
 export const Clients = () => {
 
     let url = "/api/datasets/clients";
-    const [awards, setClientsList] = useState<ClientsGraphListResponseDTO[]>([]);
+    const [clients, setClientsList] = useState<ClientsGraphListResponseDTO[]>([]);
     const [loaded, setLoaded] = useState(false);
     const [error, setError] = useState(false);
     const {setPaneTitle, setPaneSubtitle, setPaneContents, openPane} = useContext(PaneContext);
@@ -85,7 +85,7 @@ export const Clients = () => {
 
                 <Alert variant={"info"}>Note that metrics refer to total awards loaded onto this system</Alert>
 
-                <Datatable tableHeaders={getHeader()} tableBody={awards}
+                <Datatable tableHeaders={getHeader()} tableBody={clients}
                            initialSort={{prop: 'created', isAscending: false}} classes={tableClasses} rowsPerPage={10}
                            onRowClick={(row: ClientsGraphListResponseDTO) => {
                                console.debug(row);

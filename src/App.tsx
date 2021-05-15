@@ -34,6 +34,7 @@ import {INodeMetadata} from "./interfaces/INodeMetadata";
 import {NodeTypeEnum} from "./generated/FosTypes";
 import {Clients} from "./pages/datasets/Clients";
 import {Organisations} from "./pages/datasets/Organisations";
+import {Conflicts} from "./pages/datasets/Conflicts";
 
 function App() {
 
@@ -157,26 +158,23 @@ function App() {
                     </Switch>
                     <Container fluid className={"p-0"}>
                         <main role={"main"}>
-                            <Switch> <Route exact path={"/"} component={Home}/> <Route exact path={"/login"}
-                                                                                       component={Login}/> <Route exact
-                                                                                                                  path={"/data/awards"}
-                                                                                                                  component={Awards}/>
-                                <Route exact path={"/data/clients"} component={Clients}/> <Route exact
-                                                                                                 path={"/data/organisations"}
-                                                                                                 component={Organisations}/>
-                                <Route exact path={"/about"} component={About}/> <Route exact path={"/tasks"}
-                                                                                        component={Tasks}/> <Route exact
-                                                                                                                   path={"/profile"}
-                                                                                                                   component={Profile}/>
-                                <Route exact path={"/data/upload"} component={Upload}/> <Route exact path={"/data/add"}
-                                                                                               component={AddData}/>
-                                <Route path={"/graph/:object_type?/:object_id?"} component={Graph}/> <Route exact
-                                                                                                            path={"/search"}
-                                                                                                            render={() =>
-                                                                                                                <Search
-                                                                                                                    groupBy={groupBy}
-                                                                                                                    searchParams={searchParams}
-                                                                                                                    searchType={searchType}/>}/>
+                            <Switch> <Route exact path={"/"} component={Home}/>
+                                <Route exact path={"/login"} component={Login}/>
+                                <Route exact path={"/data/awards"} component={Awards}/>
+                                <Route exact path={"/data/clients"} component={Clients}/>
+                                <Route exact path={"/data/organisations"} component={Organisations}/>
+                                <Route exact path={"/data/conflicts"} component={Conflicts}/>
+                                <Route exact path={"/about"} component={About}/>
+                                <Route exact path={"/tasks"} component={Tasks}/>
+                                <Route exact path={"/profile"} component={Profile}/>
+                                <Route exact path={"/data/upload"} component={Upload}/>
+                                <Route exact path={"/data/add"} component={AddData}/>
+                                <Route path={"/graph/:object_type?/:object_id?"} component={Graph}/>
+                                <Route exact path={"/search"} render={() =>
+                                    <Search
+                                        groupBy={groupBy}
+                                        searchParams={searchParams}
+                                        searchType={searchType}/>}/>
                                 <Route exact path={"/stats"} component={Stats}/>
                                 <Route path={"/view"} component={Viewer}/>
                             </Switch>

@@ -34,7 +34,9 @@ export const Header = () => {
                             <NavDropdown.Item as={NavLink} to={"/data/clients"} activeClassName={"active"}
                                               data-toggle={"collapse"}>Clients / Commissioners</NavDropdown.Item>
                             <NavDropdown.Item as={NavLink} to={"/data/organisations"} activeClassName={"active"}
-                                              data-toggle={"collapse"}>Organisations</NavDropdown.Item> {/*<NavDropdown.Item as={NavLink} to={"/data/officers"}*/} {/*                  activeClassName={"active"}*/} {/*                  disabled*/} {/*                  data-toggle={"collapse"}>Officers</NavDropdown.Item>*/}
+                                              data-toggle={"collapse"}>Organisations</NavDropdown.Item>
+                            <NavDropdown.Item as={NavLink} to={"/data/conflicts"} activeClassName={"active"}
+                                              data-toggle={"collapse"}>Conflicts</NavDropdown.Item>
                             <NavDropdown.Divider className={authenticated ? "" : "d-none"}/> <NavDropdown.Item
                             as={NavLink} to={"/data/add"}
                             className={(authenticated && !config.standalone) ? "" : "d-none"} activeClassName={"active"}

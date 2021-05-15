@@ -13,7 +13,7 @@ import {Graph} from "../Graph";
 export const Organisations = () => {
 
     let url = "/api/datasets/organisations";
-    const [awards, setClientsList] = useState<OrganisationsGraphListResponseDTO[]>([]);
+    const [organisations, setOrganisationsList] = useState<OrganisationsGraphListResponseDTO[]>([]);
     const [loaded, setLoaded] = useState(false);
     const [error, setError] = useState(false);
     const {setPaneTitle, setPaneSubtitle, setPaneContents, openPane} = useContext(PaneContext);
@@ -70,7 +70,7 @@ export const Organisations = () => {
 
     useEffect(() => {
         axios.get<OrganisationsGraphListResponseDTO[]>(url).then(response => {
-            setClientsList(response.data)
+            setOrganisationsList(response.data)
         })
             .then(() => setLoaded(true))
             .catch(() => setError(true));
@@ -92,7 +92,7 @@ export const Organisations = () => {
 
                 <Alert variant={"info"}>Note that metrics refer to total awards loaded onto this system</Alert>
 
-                <Datatable tableHeaders={getHeader()} tableBody={awards}
+                <Datatable tableHeaders={getHeader()} tableBody={organisations}
                            initialSort={{prop: 'created', isAscending: false}} classes={tableClasses} rowsPerPage={10}
                            onSort={onSort} onRowClick={(row: OrganisationsGraphListResponseDTO) => {
                     console.debug("returning details for entity", row);

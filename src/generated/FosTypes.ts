@@ -101,6 +101,17 @@ export interface ResolvedCOIDTOResponse {
     nextTaskId?: string;
 }
 
+export interface PotentialConflictDTO {
+    id?: string;
+    sourceId?: string;
+    sourceName?: string;
+    targetId?: string;
+    targetName?: string;
+    text?: string;
+    resolvedBy?: string;
+    conflictType?: PotentialConflictTypeEnum;
+}
+
 export interface ByRegion {
     items?: RegionItems;
     other?: number;
@@ -176,6 +187,8 @@ export interface TaskDTO {
     entity?: string;
     description?: string;
     linkedEntity?: string;
+    completedDT?: Date;
+    completed?: boolean;
 }
 
 export interface RegionItems {
@@ -202,8 +215,8 @@ export interface GenericIDNameFTSResponse {
 }
 
 export interface FosEntity {
-    fosId?: string;
     hidden?: boolean;
+    fosId?: string;
 }
 
 export interface KVPType {
@@ -290,6 +303,11 @@ export enum FosTaskType {
     resolve_client = "resolve_client",
     resolve_potential_coi = "resolve_potential_coi",
     resolve_company = "resolve_company",
+}
+
+export enum PotentialConflictTypeEnum {
+    false_positive = "false_positive",
+    flagged = "flagged",
 }
 
 export enum SourceEnum {

@@ -6,10 +6,11 @@ import {useToasts} from "react-toast-notifications";
 import {LoadingWrapper} from "../LoadingWrapper";
 import {Alert, Button, Col, Modal, Row} from "react-bootstrap";
 import firebase from "firebase";
+import Moment from "react-moment";
 
 export const ResolvePotentialCOIModal = (props: {
     taskId: string,
-    removeTaskCB: (taskID: string) => void
+    removeTaskCB?: (taskID: string) => void
 }) => {
     const {setModalBody, hideModal} = useContext(AppContext);
     const {addToast} = useToasts();
@@ -64,7 +65,7 @@ export const ResolvePotentialCOIModal = (props: {
                     autoDismiss: true,
                     appearance: "info"
                 });
-                props.removeTaskCB(props.taskId);
+                props.removeTaskCB?.(props.taskId);
                 if (undefined !== response.data.nextTaskId && "" !== response.data.nextTaskId) {
                     hideModal();
                     setModalBody(<ResolvePotentialCOIModal taskId={response.data.nextTaskId}
@@ -78,7 +79,7 @@ export const ResolvePotentialCOIModal = (props: {
                     appearance: "error",
                     autoDismiss: true,
                 });
-                props.removeTaskCB(props.taskId);
+                props.removeTaskCB?.(props.taskId);
                 hideModal();
             })
     }
@@ -87,23 +88,47 @@ export const ResolvePotentialCOIModal = (props: {
 
     return (
         <>
-            <Modal backdrop={"static"} show centered size={"xl"}> <Modal.Header closeButton onClick={() => hideModal()}>
-                <Modal.Title>Task: Resolve potential conflict of interest</Modal.Title> </Modal.Header> <Modal.Body>
-                <p>The following records have been flagged as possibly related</p>
-                <Alert variant={"dark"}>
-                    <div className={"text-muted font-weight-bold"}>Organisation</div>
-                    <div>{resolveCOIResponse?.organisation?.companyName}</div>
-                    <div className={"text-muted"}>{resolveCOIResponse?.organisation?.companyAddress}</div>
-                </Alert> <Alert variant={"primary"}>
-                <div className={"text-muted font-weight-bold"}>Politician</div>
-                <div className={"text-muted"}>Name: {resolveCOIResponse?.memberInterest?.personFullName}</div>
-                <div>Declaration statement:</div>
-                <div>{resolveCOIResponse?.memberInterest?.text}</div>
-            </Alert> <Row> <Col> <Button variant={"danger"} block onClick={() => flag()}>Flag: potential
-                conflict</Button> </Col> <Col> <Button variant={"primary"} block onClick={() => ignore()}>Ignore: false
-                positive</Button> </Col> </Row> </Modal.Body> <Modal.Footer> <Button variant="outline-primary"
-                                                                                     onClick={() => hideModal()}> Close</Button>
-            </Modal.Footer> </Modal>
+            <Modal backdrop={"static"} show centered size={"xl"}>
+                <Modal.Header closeButton onClick={() => hideModal()}>
+                    <Modal.Title>Potential conflict of interest</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    {Boolean(resolveCOIResponse?.completed) && (
+                        <Alert variant={"info"}>
+                            The following COI was resolved on <Moment date={resolveCOIResponse?.completedDT} format={"yyyy-MM-DD"}/>
+                        </Alert>
+                    )}
+                    {Boolean(!resolveCOIResponse?.completed) && (
+                        <p>The following records have been flagged as possibly related</p>
+                    )}
+                    <Alert variant={"dark"}>
+                        <div className={"text-muted font-weight-bold"}>Organisation</div>
+                        <div>{resolveCOIResponse?.organisation?.companyName}</div>
+                        <div className={"text-muted"}>{resolveCOIResponse?.organisation?.companyAddress}</div>
+                    </Alert>
+                    <Alert variant={"primary"}>
+                        <div className={"text-muted font-weight-bold"}>Politician</div>
+                        <div className={"text-muted"}>Name: {resolveCOIResponse?.memberInterest?.personFullName}</div>
+                        <div>Declaration statement:</div>
+                        <div>{resolveCOIResponse?.memberInterest?.text}</div>
+                    </Alert>
+                    {Boolean(!resolveCOIResponse?.completed) && (
+                        <Row>
+                            <Col>
+                                <Button variant={"danger"} block onClick={() => flag()}>Flag: potential
+                                    conflict</Button>
+                            </Col>
+                            <Col>
+                                <Button variant={"primary"} block onClick={() => ignore()}>Ignore: false
+                                    positive</Button>
+                            </Col>
+                        </Row>
+                    )}
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="outline-primary" onClick={() => hideModal()}> Close</Button>
+                </Modal.Footer>
+            </Modal>
         </>
     );
 };
