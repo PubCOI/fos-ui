@@ -31,7 +31,7 @@ interface BatchExecution {
     steps: BatchStep[]
 }
 
-export const Stats = () => {
+export const BatchStatusPage = () => {
 
     let url = "/api/batch/jobs/executions";
     const [executionData, setExecutionData] = useState<BatchExecution[]>([]);

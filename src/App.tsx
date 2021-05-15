@@ -19,7 +19,7 @@ import {Upload} from "./pages/Upload";
 import {Graph} from "./pages/Graph";
 import {Search} from "./pages/Search";
 import {Viewer} from "./pages/Viewer";
-import {Stats} from "./pages/Stats";
+import {BatchStatusPage} from "./pages/BatchStatusPage";
 import "react-sliding-pane/dist/react-sliding-pane.css";
 import {PaneContainer} from "./components/pane/PaneContainer";
 import PaneContext from "./components/core/PaneContext";
@@ -35,6 +35,7 @@ import {NodeTypeEnum} from "./generated/FosTypes";
 import {Clients} from "./pages/datasets/Clients";
 import {Organisations} from "./pages/datasets/Organisations";
 import {Conflicts} from "./pages/datasets/Conflicts";
+import {Status} from "./pages/Status";
 
 function App() {
 
@@ -175,7 +176,7 @@ function App() {
                                         groupBy={groupBy}
                                         searchParams={searchParams}
                                         searchType={searchType}/>}/>
-                                <Route exact path={"/stats"} component={Stats}/>
+                                <Route exact path={"/stats"} component={Status}/>
                                 <Route path={"/view"} component={Viewer}/>
                             </Switch>
                         </main>

@@ -112,6 +112,13 @@ export interface PotentialConflictDTO {
     conflictType?: PotentialConflictTypeEnum;
 }
 
+export interface ApplicationStatsDTO {
+    ocrPages?: number;
+    interests?: number;
+    persons?: number;
+    awards?: number;
+}
+
 export interface ByRegion {
     items?: RegionItems;
     other?: number;
