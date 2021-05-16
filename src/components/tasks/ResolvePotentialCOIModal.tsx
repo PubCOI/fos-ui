@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from "react";
+import React, {KeyboardEventHandler, useContext, useEffect, useState} from "react";
 import AppContext from "../core/AppContext";
 import axios, {AxiosResponse} from "axios";
 import {ResolvedCOIDTOResponse, ResolvePotentialCOIDTO} from "../../generated/FosTypes";
@@ -44,11 +44,13 @@ export const ResolvePotentialCOIModal = (props: {
     }, []);
 
     function flag() {
+        if (resolveCOIResponse?.completed) return;
         console.debug('flagging', props.taskId);
         resolve(`/api/ui/tasks/resolve_potential_coi/${props.taskId}/flag`)
     }
 
     function ignore() {
+        if (resolveCOIResponse?.completed) return;
         console.debug('ignoring', props.taskId);
         resolve(`/api/ui/tasks/resolve_potential_coi/${props.taskId}/ignore`)
     }
@@ -84,6 +86,19 @@ export const ResolvePotentialCOIModal = (props: {
             })
     }
 
+    function handleKeyDown(e: KeyboardEvent) {
+        if (e.code === "Escape") hideModal();
+        if (e.code === "Digit1") flag();
+        if (e.code === "Digit2") ignore();
+    }
+
+    useEffect(() => {
+        document.addEventListener('keydown', handleKeyDown);
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown);
+        }
+    }, []);
+
     if (!loaded) return <LoadingWrapper/>;
 
     return (
@@ -116,17 +131,17 @@ export const ResolvePotentialCOIModal = (props: {
                         <Row>
                             <Col>
                                 <Button variant={"danger"} block onClick={() => flag()}>Flag: potential
-                                    conflict</Button>
+                                    conflict [1]</Button>
                             </Col>
                             <Col>
                                 <Button variant={"primary"} block onClick={() => ignore()}>Ignore: false
-                                    positive</Button>
+                                    positive [2]</Button>
                             </Col>
                         </Row>
                     )}
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="outline-primary" onClick={() => hideModal()}> Close</Button>
+                    <Button variant="outline-primary" onClick={() => hideModal()}> Close [esc]</Button>
                 </Modal.Footer>
             </Modal>
         </>

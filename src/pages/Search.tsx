@@ -7,14 +7,18 @@ import {AttachmentSearchResultsBlock} from "../components/search/AttachmentSearc
 import {useToasts} from "react-toast-notifications";
 import {InterestsSearchResultsBlock} from "../components/search/InterestsSearchResultBlock";
 import {EmptyInterestsSearchResponse} from "../components/search/EmptyInterestsSearchResponse";
+import {useParams} from "react-router";
+
+export enum SearchType {
+    interests = "interests", contracts = "contracts"
+}
 
 export const Search = (
     props: {
         groupBy: boolean,
-        searchParams: string,
-        searchType: string
+        searchParams: string
     }) => {
-
+    let {searchType} = useParams<{ searchType: SearchType }>();
     const {addToast} = useToasts();
     const [loaded, setLoaded] = useState(false);
     const [error, setError] = useState(false);
@@ -29,13 +33,9 @@ export const Search = (
     useEffect(() => {
         if (props.searchParams === "") return;
         if (!doneInitialSearch) setDoneInitialSearch(true);
-        if (props.searchType === "contracts") {
-            return doContractSearch();
-        }
-        if (props.searchType === "interests") {
-            return doInterestsSearch();
-        }
-    }, [props.searchParams, props.groupBy, props.searchType]);
+        if (searchType === SearchType.contracts) doContractSearch();
+        if (searchType === SearchType.interests) doInterestsSearch();
+    }, [props.searchParams, props.groupBy, searchType]);
 
     function doContractSearch() {
         axios.post<AttachmentsSearchResultsWrapper>("/api/search/attachments", {
@@ -81,20 +81,20 @@ export const Search = (
     return (
         <>
 
-            {Boolean(doneInitialSearch && props.searchType === "contracts") && (
+            {Boolean(doneInitialSearch && searchType === SearchType.contracts) && (
                 (undefined !== attachmentsSearchResults && attachmentsSearchResults?.count > 0) ?
                     <AttachmentSearchResultsBlock data={attachmentsSearchResults} aggregated={props.groupBy}/> :
                     <EmptyAttachmentSearchResponse/>
             )}
 
-            {Boolean(doneInitialSearch && props.searchType === "interests") && (
+            {Boolean(doneInitialSearch && searchType === SearchType.interests) && (
                 (undefined !== interestsSearchResults && interestsSearchResults?.count > 0) ?
                     <InterestsSearchResultsBlock data={interestsSearchResults}/> :
                     <EmptyInterestsSearchResponse/>
             )}
 
             {Boolean(!doneInitialSearch) && (
-                <SearchInfoBlock type={props.searchType}/>
+                <SearchInfoBlock type={searchType}/>
             )}
 
             <div className={"my-5"}>&nbsp;</div>

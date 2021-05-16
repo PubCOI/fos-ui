@@ -155,7 +155,7 @@ function App() {
                     <Header/>
                     <Switch>
                         <Route exact path={"/graph"} component={GraphFilterBar}/>
-                        <Route exact path={"/search"} render={() => <SearchBar {...searchBarParams} />}/>
+                        <Route path={"/search/:searchType"} render={() => <SearchBar {...searchBarParams} />}/>
                     </Switch>
                     <Container fluid className={"p-0"}>
                         <main role={"main"}>
@@ -171,11 +171,10 @@ function App() {
                                 <Route exact path={"/data/upload"} component={Upload}/>
                                 <Route exact path={"/data/add"} component={AddData}/>
                                 <Route path={"/graph/:object_type?/:object_id?"} component={Graph}/>
-                                <Route exact path={"/search"} render={() =>
+                                <Route path={"/search/:searchType"} render={() =>
                                     <Search
                                         groupBy={groupBy}
-                                        searchParams={searchParams}
-                                        searchType={searchType}/>}/>
+                                        searchParams={searchParams}/>}/>
                                 <Route exact path={"/stats"} component={Status}/>
                                 <Route path={"/view"} component={Viewer}/>
                             </Switch>

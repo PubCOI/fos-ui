@@ -10,6 +10,7 @@ import {useToasts} from "react-toast-notifications";
 import axios, {AxiosError} from "axios";
 import firebase from "firebase";
 import {NoticeHitType, NoticeIndex, NoticeSearchResponse} from "../generated/FosTypes";
+import NumberFormat from "react-number-format";
 
 export const AddData = () => {
 
@@ -125,7 +126,7 @@ const RenderResponseTable = (props: { data: NoticeIndex[] | undefined }) => {
             appearance: "info",
             autoDismiss: true
         });
-        return await axios.put(`/api/notices/${id}`, null,
+        return axios.put(`/api/notices/${id}`, null,
             {
                 headers: {
                     authToken: authToken
@@ -134,7 +135,10 @@ const RenderResponseTable = (props: { data: NoticeIndex[] | undefined }) => {
             .then(() => {
                 return 0;
             });
-        // return 0;
+    }
+
+    function openLink(url: string) {
+        window.open(url);
     }
 
     function getHeader() {
@@ -162,6 +166,23 @@ const RenderResponseTable = (props: { data: NoticeIndex[] | undefined }) => {
                 prop: 'title',
                 sortable: true,
                 filterable: true,
+                cell: (row: NoticeIndex) => {
+                    return (
+                        <>
+                            <div>{row.title}</div>
+                        </>
+                    )
+                }
+            },
+            {
+                title: 'Value',
+                prop: 'awardedValue',
+                sortable: true,
+                cell: (row: NoticeIndex) => {
+                    return (<NumberFormat thousandSeparator
+                                          displayType={"text"} prefix={"£"}
+                                          value={row.awardedValue ? Math.round(row.awardedValue) : 0}/>)
+                }
             },
             {
                 title: 'Awarded to',
@@ -174,7 +195,20 @@ const RenderResponseTable = (props: { data: NoticeIndex[] | undefined }) => {
                 prop: 'text',
                 filterable: true,
                 cell: (row: NoticeIndex) => {
-                    return (<FetchAddButton key={row.id} addNoticeCallback={addNotice} row={row}/>);
+                    return (
+                        <>
+                            <div className={"d-flex"}>
+                                <Button variant={"outline-primary"} size={"sm"}
+                                        className={"rounded mr-1"}
+                                        onClick={() => {
+                                            openLink(`https://www.contractsfinder.service.gov.uk/Notice/${row.id}`)
+                                        }}>
+                                    <FontAwesome name={"external-link"} fixedWidth/>
+                                </Button>
+                                <FetchAddButton key={row.id} addNoticeCallback={addNotice} row={row}/>
+                            </div>
+                        </>
+                    );
                 }
             }
         ];
@@ -241,6 +275,8 @@ const FetchAddButton = (props: { row: NoticeIndex, addNoticeCallback: (id: strin
         setDoingUpdate(true);
         props.addNoticeCallback(id).then((response) => {
             setResponse((response) ? response : -1);
+            setDoingUpdate(false);
+            setIcon("check");
         }).catch((err: AxiosError) => {
             addToast(`Error: ${err.message}`, {
                 autoDismiss: true,
@@ -253,9 +289,10 @@ const FetchAddButton = (props: { row: NoticeIndex, addNoticeCallback: (id: strin
 
     return (
 
-        <Button variant={"outline-success"} size={"sm"} className={"rounded"} disabled={disabled} onClick={() => {
-            if (props.row.id) addNotice(props.row.id)
-        }}>
+        <Button variant={"outline-success"} size={"sm"} className={"rounded"} disabled={disabled}
+                onClick={() => {
+                    if (props.row.id) addNotice(props.row.id)
+                }}>
             <FontAwesome name={icon} fixedWidth spin={doingUpdate}/>
         </Button>
 

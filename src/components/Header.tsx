@@ -39,7 +39,7 @@ export const Header = () => {
                                               data-toggle={"collapse"}>Conflicts</NavDropdown.Item>
                             <NavDropdown.Divider className={authenticated ? "" : "d-none"}/> <NavDropdown.Item
                             as={NavLink} to={"/data/add"}
-                            className={(authenticated && !config.standalone) ? "" : "d-none"} activeClassName={"active"}
+                            className={(authenticated) ? "" : "d-none"} activeClassName={"active"}
                             data-toggle={"collapse"}><FontAwesome name={"plus"} className={"mr-1"}/> Add
                             data</NavDropdown.Item> <NavDropdown.Item as={NavLink} to={"/data/upload"}
                                                                       className={(config.standalone || config.debug) ? "" : "d-none"}
@@ -48,14 +48,18 @@ export const Header = () => {
                                                                                     className={"mr-1"}/> Upload
                                 data</NavDropdown.Item>
                         </NavDropdown>
+
                         <Nav.Link as={NavLink} to={"/graph"} data-toggle={"collapse"}
                                   activeClassName={"active"}
                                   active={pathname.includes("/graph")}
                                   eventKey={4}>Graph</Nav.Link>
-                        <Nav.Link as={NavLink} to={"/search"} data-toggle={"collapse"}
-                                  activeClassName={"active"}
-                                  active={pathname.includes("/search")}
-                                  eventKey={6}>Search</Nav.Link>
+
+                        <NavDropdown title="Search" id="basic-nav-dropdown" data-toggle={"collapse"}>
+                            <NavDropdown.Item as={NavLink} to={"/search/contracts"} activeClassName={"active"}
+                                              data-toggle={"collapse"}>Contract documents</NavDropdown.Item>
+                            <NavDropdown.Item as={NavLink} to={"/search/interests"} activeClassName={"active"}
+                                              data-toggle={"collapse"}>Registers of interest</NavDropdown.Item>
+                        </NavDropdown>
                     </Nav>
                     <Nav>
                         <LoginNavbar/>

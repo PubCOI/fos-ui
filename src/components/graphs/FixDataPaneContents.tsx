@@ -1,7 +1,7 @@
 import React, {FormEvent, useContext, useEffect, useState} from "react";
 import {DataTypeEnum} from "./FixDataIssueWidget";
 import firebase from "firebase";
-import {Alert, Button, Col, Form, Row} from "react-bootstrap";
+import {Alert, Button, Col, Container, Form, Row} from "react-bootstrap";
 import {LoadingGrow} from "../LoadingGrow";
 import axios, {AxiosError, AxiosResponse} from "axios";
 import {useToasts} from "react-toast-notifications";
@@ -148,53 +148,56 @@ export const FixDataPaneContents = (props: { type: DataTypeEnum, id: string }) =
                     <div className={"text-muted small"}>to change the name displayed publicly, go to your profile</div>
                 </Alert></Col>
             </Row>
-            <Form id={"reportData"} className={"form"} onSubmit={doReport}>
-                <Form.Group controlId="reportData.error_id">
-                    <Form.Label>Node ID</Form.Label>
-                    <Alert variant={"dark"} className={"text-muted small"}>{props.type}:{props.id}</Alert>
-                    {/*<Form.Control as={Alert} variant={"light"}>{props.type}:{props.id}</Form.Control>*/}
-                </Form.Group>
-                <Form.Group controlId="reportData.error_type">
-                    <Form.Label>Error type</Form.Label>
-                    <Form.Control as={"select"}
-                                  onChange={(
-                                      e: React.ChangeEvent<HTMLSelectElement>
-                                  ): void => {
-                                      setErrorType(e.target.value);
-                                      let help = e.target.options[e.target.selectedIndex].getAttribute("data-help");
-                                      setOptionHelp((null !== help) ? help : "");
-                                      let canHelp = e.target.options[e.target.selectedIndex].getAttribute("data-can-help");
-                                      setCanHelp((null !== canHelp && canHelp === "true"));
-                                  }}>
-                        {options.map(option => (
-                            <option value={option.value} data-help={option.help}
-                                    data-can-help={option.canHelp} key={`opt_${option.value}`}>{option.text}</option>
-                        ))}
-                    </Form.Control>
-                    <Alert variant={"success"} hidden={optionHelp === ""}>
-                        {optionHelp}
-                    </Alert>
-                </Form.Group>
-                <Form.Group controlId="reportData.notes">
-                    <Form.Label>Additional notes</Form.Label>
-                    <Form.Control as="textarea" type={"text"} rows={3} onChange={(
-                        e: React.ChangeEvent<HTMLTextAreaElement>
-                    ): void => {
-                        setAdditionalNotes(e.target.value);
-                    }}/>
-                </Form.Group>
-                <Form.Group className={"d-flex justify-content-end"}>
-                    <Button type={"submit"} variant={"primary"} className={"m-1"}>report</Button>
-                    <Button type={"submit"} variant={"success"}
-                            disabled={!canHelp || isSubmitting}
-                            className={"m-1 " + (canHelp ? "" : "d-none")}>report and start
-                        fixing
-                    </Button>
-                </Form.Group>
-                <div className={"justify-content-end " + ((isSubmitting) ? "d-flex" : "d-none")}>
-                    <LoadingGrow/>
-                </div>
-            </Form>
+            <Container>
+                <Form id={"reportData"} className={"form"} onSubmit={doReport}>
+                    <Form.Group controlId="reportData.error_id">
+                        <Form.Label>Node ID</Form.Label>
+                        <Alert variant={"dark"} className={"text-muted small"}>{props.type}:{props.id}</Alert>
+                        {/*<Form.Control as={Alert} variant={"light"}>{props.type}:{props.id}</Form.Control>*/}
+                    </Form.Group>
+                    <Form.Group controlId="reportData.error_type">
+                        <Form.Label>Error type</Form.Label>
+                        <Form.Control as={"select"}
+                                      onChange={(
+                                          e: React.ChangeEvent<HTMLSelectElement>
+                                      ): void => {
+                                          setErrorType(e.target.value);
+                                          let help = e.target.options[e.target.selectedIndex].getAttribute("data-help");
+                                          setOptionHelp((null !== help) ? help : "");
+                                          let canHelp = e.target.options[e.target.selectedIndex].getAttribute("data-can-help");
+                                          setCanHelp((null !== canHelp && canHelp === "true"));
+                                      }}>
+                            {options.map(option => (
+                                <option value={option.value} data-help={option.help}
+                                        data-can-help={option.canHelp}
+                                        key={`opt_${option.value}`}>{option.text}</option>
+                            ))}
+                        </Form.Control>
+                        <Alert variant={"success"} hidden={optionHelp === ""}>
+                            {optionHelp}
+                        </Alert>
+                    </Form.Group>
+                    <Form.Group controlId="reportData.notes">
+                        <Form.Label>Additional notes</Form.Label>
+                        <Form.Control as="textarea" type={"text"} rows={3} onChange={(
+                            e: React.ChangeEvent<HTMLTextAreaElement>
+                        ): void => {
+                            setAdditionalNotes(e.target.value);
+                        }}/>
+                    </Form.Group>
+                    <Form.Group className={"d-flex justify-content-end"}>
+                        <Button type={"submit"} variant={"primary"} className={"m-1"}>report</Button>
+                        <Button type={"submit"} variant={"success"}
+                                disabled={!canHelp || isSubmitting}
+                                className={"m-1 " + (canHelp ? "" : "d-none")}>report and start
+                            fixing
+                        </Button>
+                    </Form.Group>
+                    <div className={"justify-content-end " + ((isSubmitting) ? "d-flex" : "d-none")}>
+                        <LoadingGrow/>
+                    </div>
+                </Form>
+            </Container>
         </>
     )
 };
